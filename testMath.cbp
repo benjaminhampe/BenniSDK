@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Irrlicht Example 00 testMath" />
+		<Option pch_mode="0" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Linux">
+				<Option platforms="Unix;" />
+				<Option output="testMath" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/Linux" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+				</Compiler>
+				<Linker>
+					<Add library="Xxf86vm" />
+					<Add library="Xcursor" />
+					<Add library="GL" />
+					<Add directory="../../lib/Linux" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Release">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/testMath" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc/" />
+				<Option object_output="obj/Win64-gcc_Release_static" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-m64" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-m64" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add directory="../../SDK/irrlicht-svn4716/lib/Win32-gcc" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Debug">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/testMath" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc/" />
+				<Option object_output="obj/Win64-gcc_Debug_static" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-m64" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-m64" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add directory="../../SDK/irrlicht-svn4716/lib/Win32-gcc" />
+				</Linker>
+			</Target>
+			<Target title="Win32_Release">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win32-gcc/testMath" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win32-gcc/" />
+				<Option object_output="obj/Win32-gcc_Release_static" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-m32" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-m32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add directory="../../SDK/irrlicht-svn4716/lib/Win32-gcc" />
+				</Linker>
+			</Target>
+			<Target title="Win32_Debug">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win32-gcc/testMath" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win32-gcc/" />
+				<Option object_output="obj/Win32-gcc_Debug_static" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-m32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-DSFML_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-m32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add directory="../../SDK/irrlicht-svn4716/lib/Win32-gcc" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Debug_shared">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/testMath" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc" />
+				<Option object_output="obj/Win64-gcc_Debug_shared" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add library="bin\Win64-gcc\Irrlicht.dll" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="fftw3" />
+					<Add library="freetype" />
+					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
+					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="Win64_Release;Linux;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-g" />
+			<Add directory="lib/libIrrlicht-svn4716/include" />
+			<Add directory="lib/libfftw-3.3.3/api" />
+			<Add directory="lib/libfreetype-2.5.2/include" />
+			<Add directory="lib/libSFML-2.1/include" />
+			<Add directory="include" />
+		</Compiler>
+		<Unit filename="include/libImage/CMath.cpp" />
+		<Unit filename="include/libImage/CMath.h" />
+		<Unit filename="testMath_main.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
