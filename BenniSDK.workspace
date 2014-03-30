@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="BenniSDK">
+		<Project filename="irrlicht_fltk.cbp" />
+		<Project filename="AudioAnimator3d.cbp" />
+		<Project filename="AudioAnimator3d_fltk.cbp" />
+		<Project filename="CbProjSuperBuilder.cbp" />
+		<Project filename="testMath.cbp" />
+		<Project filename="testSFML.cbp" />
+		<Project filename="testSFML_recording.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>

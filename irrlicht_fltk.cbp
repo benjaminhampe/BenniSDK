@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="irrlicht_fltk" />
+		<Option pch_mode="0" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Linux">
+				<Option platforms="Unix;" />
+				<Option output="bin/Linux/irrlicht_fltk" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="bin/Linux" />
+				<Option object_output="obj/Linux" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+				</Compiler>
+				<Linker>
+					<Add library="Xxf86vm" />
+					<Add library="Xcursor" />
+					<Add library="GL" />
+					<Add directory="../../lib/Linux" />
+				</Linker>
+			</Target>
+			<Target title="Win32_Release">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win32-gcc/irrlicht_fltk" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win32-gcc/" />
+				<Option object_output="obj/Win32-gcc_Release_static" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-m32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-DSFML_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-m32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+				</Linker>
+			</Target>
+			<Target title="Win32_Debug">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win32-gcc/irrlicht_fltk" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win32-gcc/" />
+				<Option object_output="obj/Win32-gcc_Debug_static" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-m32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-DSFML_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-m32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Release_static">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/irrlicht_fltk" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc/" />
+				<Option object_output="obj/Win64-gcc_Release_static" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-DSFML_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="sfml-audio-2" />
+					<Add library="sfml-system-2" />
+					<Add library="Irrlicht" />
+					<Add library="fltk" />
+					<Add library="fltk_forms" />
+					<Add library="fltk_gl" />
+					<Add library="fltk_images" />
+					<Add library="fltk_jpeg" />
+					<Add library="fltk_png" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="comctl32" />
+					<Add library="comdlg32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="fftw3" />
+					<Add library="freetype" />
+					<Add library="ole32" />
+					<Add library="uuid" />
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+					<Add directory="lib/fltk-1.3.2/lib" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Debug_static">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/irrlicht_fltk" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc/" />
+				<Option object_output="obj/Win64-gcc_Debug_static" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-DSFML_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+					<Add directory="lib/fltk-1.3.2/lib" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Release_shared">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/irrlicht_fltk" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc" />
+				<Option object_output="obj/Win64-gcc_Release_shared" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
+					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
+					<Add library="bin\Win64-gcc\Irrlicht.dll" />
+					<Add library="fltk" />
+					<Add library="fltk_forms" />
+					<Add library="fltk_gl" />
+					<Add library="fltk_images" />
+					<Add library="fltk_jpeg" />
+					<Add library="fltk_png" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="comctl32" />
+					<Add library="comdlg32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="fftw3" />
+					<Add library="freetype" />
+					<Add library="ole32" />
+					<Add library="uuid" />
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+					<Add directory="lib/fltk-1.3.2/lib" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Debug_shared">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/irrlicht_fltk" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc" />
+				<Option object_output="obj/Win64-gcc_Debug_shared" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
+					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
+					<Add library="bin\Win64-gcc\Irrlicht.dll" />
+					<Add library="fltk" />
+					<Add library="fltk_forms" />
+					<Add library="fltk_gl" />
+					<Add library="fltk_images" />
+					<Add library="fltk_jpeg" />
+					<Add library="fltk_png" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="comctl32" />
+					<Add library="comdlg32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="fftw3" />
+					<Add library="freetype" />
+					<Add library="ole32" />
+					<Add library="uuid" />
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+					<Add directory="lib/fltk-1.3.2/lib" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="Win64_Release_static;Linux;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-g" />
+			<Add directory="lib/libIrrlicht-svn4716/include" />
+			<Add directory="lib/libfftw-3.3.3/api" />
+			<Add directory="lib/libfreetype-2.5.2/include" />
+			<Add directory="lib/libSFML-2.1/include" />
+			<Add directory="lib/fltk-1.3.2" />
+			<Add directory="include" />
+		</Compiler>
+		<Unit filename="include/CompileConfig.h" />
+		<Unit filename="include/core.cpp" />
+		<Unit filename="include/core.h" />
+		<Unit filename="include/libAudio/CADSREnvelope.cpp" />
+		<Unit filename="include/libAudio/CADSREnvelope.h" />
+		<Unit filename="include/libAudio/CAudioPlayerSFML.cpp" />
+		<Unit filename="include/libAudio/CAudioPlayerSFML.h" />
+		<Unit filename="include/libAudio/CCombinedOscillator.cpp" />
+		<Unit filename="include/libAudio/CCombinedOscillator.h" />
+		<Unit filename="include/libAudio/CGUIAudioDisplaySFML.cpp" />
+		<Unit filename="include/libAudio/CGUIAudioDisplaySFML.h" />
+		<Unit filename="include/libAudio/CGUIAudioEQGraph.cpp" />
+		<Unit filename="include/libAudio/CGUIAudioEQGraph.h" />
+		<Unit filename="include/libAudio/CGUIAudioPlayer.cpp" />
+		<Unit filename="include/libAudio/CGUIAudioPlayer.h" />
+		<Unit filename="include/libAudio/CGUIMasterKeyboard.cpp" />
+		<Unit filename="include/libAudio/CGUIMasterKeyboard.h" />
+		<Unit filename="include/libAudio/CMidi.cpp" />
+		<Unit filename="include/libAudio/CMidi.h" />
+		<Unit filename="include/libAudio/CPulseOscillator.cpp" />
+		<Unit filename="include/libAudio/CPulseOscillator.h" />
+		<Unit filename="include/libAudio/CSawOscillator.cpp" />
+		<Unit filename="include/libAudio/CSawOscillator.h" />
+		<Unit filename="include/libAudio/CSineOscillator.cpp" />
+		<Unit filename="include/libAudio/CSineOscillator.h" />
+		<Unit filename="include/libAudio/CTriangleOscillator.cpp" />
+		<Unit filename="include/libAudio/CTriangleOscillator.h" />
+		<Unit filename="include/libAudio/FourierTransformRtoC.cpp" />
+		<Unit filename="include/libAudio/FourierTransformRtoC.h" />
+		<Unit filename="include/libAudio/IAudioPlayer.h" />
+		<Unit filename="include/libAudio/RingBuffer.h" />
+		<Unit filename="include/libAudio/drawData1D.h" />
+		<Unit filename="include/libAudio/drawGrid.h" />
+		<Unit filename="include/libAudio/goertzel.cpp" />
+		<Unit filename="include/libAudio/goertzel.h" />
+		<Unit filename="include/libAudio/irrAudio.cpp" />
+		<Unit filename="include/libAudio/irrAudio.h" />
+		<Unit filename="include/libAudio/libAudio.h" />
+		<Unit filename="include/libImage/CAutoMeshSceneNode.cpp" />
+		<Unit filename="include/libImage/CAutoMeshSceneNode.h" />
+		<Unit filename="include/libImage/CGUIPlot.cpp" />
+		<Unit filename="include/libImage/CGUIPlot.h" />
+		<Unit filename="include/libImage/CGUITTFont.cpp" />
+		<Unit filename="include/libImage/CGUITTFont.h" />
+		<Unit filename="include/libImage/CGUIViewport.cpp" />
+		<Unit filename="include/libImage/CGUIViewport.h" />
+		<Unit filename="include/libImage/CImageLoaderXPM.cpp" />
+		<Unit filename="include/libImage/CImageLoaderXPM.h" />
+		<Unit filename="include/libImage/CImageWriterXPM.cpp" />
+		<Unit filename="include/libImage/CImageWriterXPM.h" />
+		<Unit filename="include/libImage/CLinearColorGradient.cpp" />
+		<Unit filename="include/libImage/CLinearColorGradient.h" />
+		<Unit filename="include/libImage/CLinearColorGradientTable.cpp" />
+		<Unit filename="include/libImage/CLinearColorGradientTable.h" />
+		<Unit filename="include/libImage/CMath.cpp" />
+		<Unit filename="include/libImage/CMath.h" />
+		<Unit filename="include/libImage/CMatrix.cpp" />
+		<Unit filename="include/libImage/CMatrix.h" />
+		<Unit filename="include/libImage/CMatrixSceneNode.cpp" />
+		<Unit filename="include/libImage/CMatrixSceneNode.h" />
+		<Unit filename="include/libImage/Camera.cpp" />
+		<Unit filename="include/libImage/Camera.h" />
+		<Unit filename="include/libImage/ColorConstants.h" />
+		<Unit filename="include/libImage/IColorGradient.h" />
+		<Unit filename="include/libImage/IFunction.h" />
+		<Unit filename="include/libImage/IGUITTFont.h" />
+		<Unit filename="include/libImage/UString.h" />
+		<Unit filename="include/libImage/draw3DCircle.cpp" />
+		<Unit filename="include/libImage/draw3DCircle.h" />
+		<Unit filename="include/libImage/drawLoadingScreen.cpp" />
+		<Unit filename="include/libImage/drawLoadingScreen.h" />
+		<Unit filename="include/libImage/geometry.cpp" />
+		<Unit filename="include/libImage/geometry.h" />
+		<Unit filename="include/libImage/geometry_meshbuffer.cpp" />
+		<Unit filename="include/libImage/geometry_meshbuffer.h" />
+		<Unit filename="include/libImage/imageTool.cpp" />
+		<Unit filename="include/libImage/imageTool.h" />
+		<Unit filename="include/libImage/imageTool_Draw.cpp" />
+		<Unit filename="include/libImage/imageTool_Filter.cpp" />
+		<Unit filename="include/libImage/imageTool_FloodFill.cpp" />
+		<Unit filename="include/libImage/imageTool_Repeat.cpp" />
+		<Unit filename="include/libImage/imageTool_Resize.cpp" />
+		<Unit filename="include/libImage/imageTool_Rotate.cpp" />
+		<Unit filename="include/libImage/imageTool_Split.h" />
+		<Unit filename="include/libImage/imageTool_Text.cpp" />
+		<Unit filename="include/libImage/renderByPrimitiveType.cpp" />
+		<Unit filename="include/libImage/renderByPrimitiveType.h" />
+		<Unit filename="include/libImage/renderToImage.cpp" />
+		<Unit filename="include/libImage/renderToImage.h" />
+		<Unit filename="include/libImage/sinCosTable.h" />
+		<Unit filename="include/resources.h" />
+		<Unit filename="include/resources.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="irrlicht_fltk_main.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
