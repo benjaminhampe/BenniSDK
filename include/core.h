@@ -54,6 +54,12 @@ namespace irr
 		const core::position2di& pos, const video::SColor& color = 0xffffffff,
 		s32 hAlign = -1, s32 vAlign = -1, core::recti* clipRect = 0);
 
+	//! @brief create a aligned static UI text-element
+	gui::IGUIStaticText* createLabel( gui::IGUIEnvironment* env, gui::IGUIElement* parent,
+		const core::stringw& txt, s32 x, s32 y, s32 hAlign = -1, s32 vAlign = -1,
+		s32 padding = 5, bool withBorder = false, bool wordWrap = false, bool fillBackground = true,
+		gui::IGUIFont* font = 0, s32 id = -1);
+
 	///@brief draw backdrop-texture to current rendertarget ( screen or RTT )
 	void drawBackdrop( video::IVideoDriver* driver, video::ITexture* tex );
 
@@ -103,13 +109,13 @@ namespace irr
 	//WS_VISIBLE 0x10000000L	The window is initially visible. This style can be turned on and off by using the ShowWindow or SetWindowPos function.
 	//WS_VSCROLL 0x00200000L The window has a vertical scroll bar.
 
-	///@brief getWindowPosition
+	///@brief getWindowPosition on Desktop
 	core::recti getWindowPosition( IrrlichtDevice* device );
 
-	///@brief setWindowPosition
+	///@brief setWindowPosition on Desktop
 	bool setWindowPosition( IrrlichtDevice* device, s32 x, s32 y );
 
-	///@brief centerWindow
+	///@brief centerWindow on Desktop
 	bool centerWindow( IrrlichtDevice* device );
 
 	///@brief Get refresh rate of ( primary? ) monitor

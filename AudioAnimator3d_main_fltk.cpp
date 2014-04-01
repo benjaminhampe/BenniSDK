@@ -33,9 +33,9 @@ using namespace irr;
 
 
 
-void btn_pressed(Fl_Widget*, void *data) {
-
-   scene::ICameraSceneNode* ptr = (scene::ISceneNode *) data;
+void btn_pressed(Fl_Widget*, void *data)
+{
+   scene::ICameraSceneNode* ptr = (scene::ICameraSceneNode *) data;
 
    core::vector3df pos = ptr->getPosition();
    pos.Y++;

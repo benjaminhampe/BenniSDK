@@ -16,6 +16,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
 					<Add library="Xxf86vm" />
@@ -38,6 +39,7 @@
 					<Add option="-DNDEBUG" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-DSFML_STATIC" />
+					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -65,6 +67,7 @@
 					<Add option="-DDEBUG" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-DSFML_STATIC" />
+					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
 					<Add option="-m32" />
@@ -81,7 +84,7 @@
 			<Target title="Win64_Release_static">
 				<Option platforms="Windows;" />
 				<Option output="bin/Win64-gcc/AudioAnimator3d" prefix_auto="0" extension_auto="1" />
-				<Option working_dir="bin/Win64-gcc/" />
+				<Option working_dir="bin/Win64-gcc" />
 				<Option object_output="obj/Win64-gcc_Release_static" />
 				<Option type="0" />
 				<Option compiler="gcc" />
@@ -91,20 +94,22 @@
 					<Add option="-DNDEBUG" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-DSFML_STATIC" />
+					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="user32" />
-					<Add library="kernel32" />
-					<Add library="gdi32" />
-					<Add library="winmm" />
-					<Add library="advapi32" />
-					<Add library="opengl32" />
-					<Add library="glu32" />
+					<Add library="Irrlicht" />
 					<Add library="sfml-audio" />
 					<Add library="sfml-system" />
-					<Add library="Irrlicht" />
 					<Add library="fftw3" />
+					<Add library="freetype" />
+					<Add library="winmm" />
+					<Add library="glu32" />
+					<Add library="opengl32" />
+					<Add library="advapi32" />
+					<Add library="gdi32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
 					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
 					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
@@ -114,7 +119,7 @@
 			<Target title="Win64_Debug_static">
 				<Option platforms="Windows;" />
 				<Option output="bin/Win64-gcc/AudioAnimator3d" prefix_auto="0" extension_auto="1" />
-				<Option working_dir="bin/Win64-gcc/" />
+				<Option working_dir="bin/Win64-gcc" />
 				<Option object_output="obj/Win64-gcc_Debug_static" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -124,19 +129,21 @@
 					<Add option="-DDEBUG" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-DSFML_STATIC" />
+					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
-					<Add library="user32" />
-					<Add library="kernel32" />
-					<Add library="gdi32" />
-					<Add library="winmm" />
-					<Add library="advapi32" />
-					<Add library="opengl32" />
-					<Add library="glu32" />
+					<Add library="Irrlicht" />
 					<Add library="sfml-audio" />
 					<Add library="sfml-system" />
-					<Add library="Irrlicht" />
 					<Add library="fftw3" />
+					<Add library="freetype" />
+					<Add library="winmm" />
+					<Add library="glu32" />
+					<Add library="opengl32" />
+					<Add library="advapi32" />
+					<Add library="gdi32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
 					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
 					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
@@ -153,10 +160,15 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DNDEBUG" />
+					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="bin\Win64-gcc\Irrlicht.dll" />
+					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
+					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
+					<Add library="freetype" />
+					<Add library="fftw3" />
 					<Add library="user32" />
 					<Add library="kernel32" />
 					<Add library="gdi32" />
@@ -164,10 +176,6 @@
 					<Add library="advapi32" />
 					<Add library="opengl32" />
 					<Add library="glu32" />
-					<Add library="fftw3" />
-					<Add library="freetype" />
-					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
-					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
 					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
 					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
@@ -184,9 +192,14 @@
 				<Compiler>
 					<Add option="-D_DEBUG" />
 					<Add option="-DDEBUG" />
+					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
 					<Add library="bin\Win64-gcc\Irrlicht.dll" />
+					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
+					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
+					<Add library="freetype" />
+					<Add library="fftw3" />
 					<Add library="user32" />
 					<Add library="kernel32" />
 					<Add library="gdi32" />
@@ -194,10 +207,6 @@
 					<Add library="advapi32" />
 					<Add library="opengl32" />
 					<Add library="glu32" />
-					<Add library="fftw3" />
-					<Add library="freetype" />
-					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
-					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
 					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
 					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
@@ -217,10 +226,13 @@
 			<Add directory="lib/libSFML-2.1/include" />
 			<Add directory="include" />
 		</Compiler>
-		<Unit filename="AudioAnimator3d_main_irr_sfml_fftw3.cpp" />
+		<Unit filename="AudioAnimator3d_App.cpp" />
+		<Unit filename="AudioAnimator3d_App.h" />
+		<Unit filename="AudioAnimator3d_main_irr_2014.cpp" />
 		<Unit filename="include/CompileConfig.h" />
 		<Unit filename="include/core.cpp" />
 		<Unit filename="include/core.h" />
+		<Unit filename="include/hampe.h" />
 		<Unit filename="include/libAudio/CADSREnvelope.cpp" />
 		<Unit filename="include/libAudio/CADSREnvelope.h" />
 		<Unit filename="include/libAudio/CAudioPlayerSFML.cpp" />

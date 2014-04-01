@@ -47,6 +47,7 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	//	Environment->addStaticText( txt.c_str(), core::recti(core::position2di(x+ex,y+ey), txt_size), false, false, this, -1);
 	//	y+=dy;
 
+	dx = 3*24;
 	MasterVolume = env->addSpinBox( L"0.10", core::recti(x,y,x+dx-1,y+dy-1), true, this, -1);
 	if (MasterVolume)
 	{
@@ -55,7 +56,7 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 		MasterVolume->setStepSize(0.01f);
 		MasterVolume->setValue( Player->getVolume() );
 	}
-	x+=100; // y+=dy;
+	x+=dx;
 
 	/// Speed / Pitch
 	//    txt = L"Speed"; txt_size = font->getDimension( txt.c_str() );
@@ -72,7 +73,7 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 		MasterPitch->setStepSize(0.1f);
 		MasterPitch->setValue( Player->getPitch() );
 	}
-	x+=100; // y+=dy;
+	x+=dx; // y+=dy;
 
 	/// Pan
 	// txt = L"Panning"; txt_size = font->getDimension( txt.c_str() );
@@ -89,7 +90,7 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 		MasterPan->setStepSize(.05f);
 		MasterPan->setValue( Player->getPan() );
 	}
-	x+=100; // y+=dy;
+	x+=dx; // y+=dy;
 
 
 
@@ -301,209 +302,6 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 
 	return IGUIElement::OnEvent(event);
 }
-
-//
-//	printf( "CGUIAudioPlayer::create fft colorgradients()\n" );
-//
-//	/// ColorGradient for waveforms
-//	WAV_Gradient = new video::CLinearColorGradientTable();
-//	if (WAV_Gradient)
-//	{
-////		WAV_Gradient->addColor( video::SColor(255,255,255,255), 0.0f );
-////		WAV_Gradient->addColor( video::SColor(255,255,255,255), 1.0f );
-//		WAV_Gradient->addColor( video::SColor(255,0,0,0), 0.00f );
-//		WAV_Gradient->addColor( video::SColor(255,0,0,255), 0.25f );
-//		WAV_Gradient->addColor( video::SColor(255,0,255,0), 0.50f );
-//		WAV_Gradient->addColor( video::SColor(255,255,255,0), 0.75f );
-//		WAV_Gradient->addColor( video::SColor(255,255,0,0), 1.00f );
-//
-//		((video::CLinearColorGradientTable*)WAV_Gradient)->setTableSize( 128 );
-//		((video::CLinearColorGradientTable*)WAV_Gradient)->updateTable();
-//	}
-//
-//	// #ifdef DEBUG
-//	// printf( "CGUIAudioPlayer::create fft colorgradients()\n" );
-//	// #endif // DEBUG
-//
-//	/// ColorGradient for waveforms
-//	FFT_Gradient = new video::CLinearColorGradientTable();
-//	if (FFT_Gradient)
-//	{
-//	/// black
-////		FFT_Gradient->addColor( video::SColor(255,0,0,0), 0.00f );
-////		FFT_Gradient->addColor( video::SColor(255,25,25,25), 0.25f );
-////		FFT_Gradient->addColor( video::SColor(255,75,75,75), 0.50f );
-////		FFT_Gradient->addColor( video::SColor(255,95,95,95), 0.60f );
-////		FFT_Gradient->addColor( video::SColor(255,115,115,115), 0.70f );
-////		FFT_Gradient->addColor( video::SColor(255,155,155,155), 0.80f );
-////		FFT_Gradient->addColor( video::SColor(255,255,255,255), 0.90f );
-////		FFT_Gradient->addColor( video::SColor(255,255,255,0), 0.95f );
-////		FFT_Gradient->addColor( video::SColor(255,255,0,0), 1.00f );
-//		FFT_Gradient->addColor( video::SColor(255,0,0,0), 0.00f );
-//		FFT_Gradient->addColor( video::SColor(255,25,25,25), 0.10f );
-//		FFT_Gradient->addColor( video::SColor(255,50,50,50), 0.20f );
-//		FFT_Gradient->addColor( video::SColor(255,75,75,75), 0.30f );
-//		FFT_Gradient->addColor( video::SColor(255,100,100,100), 0.40f );
-//		FFT_Gradient->addColor( video::SColor(255,125,125,125), 0.45f );
-//		//FFT_Gradient->addColor( video::SColor(255,0,0,100), 0.5f );
-//		FFT_Gradient->addColor( video::SColor(255,0,0,255), 0.50f );
-//		FFT_Gradient->addColor( video::SColor(255,0,200,0), .60f );
-//		FFT_Gradient->addColor( video::SColor(255,255,255,0), .80f );
-//		FFT_Gradient->addColor( video::SColor(255,255,0,0), 1.0f );
-//		//FFT_Gradient->addColor( video::SColor(255,255,255,255), 1.0f );
-//
-//	/// blue
-//
-//	//	FFT_Gradient->addColor( video::SColor(255,0,0,255), 0.00f );
-//	//	FFT_Gradient->addColor( video::SColor(255,25,25,50), 0.25f );
-//	//	FFT_Gradient->addColor( video::SColor(255,50,50,75), 0.50f );
-//	//	FFT_Gradient->addColor( video::SColor(255,75,75,95), 0.60f );
-//	//	FFT_Gradient->addColor( video::SColor(255,95,95,155), 0.70f );
-//	//	FFT_Gradient->addColor( video::SColor(255,105,105,255), 0.80f );
-//	//	FFT_Gradient->addColor( video::SColor(255,255,255,255), 0.90f );
-//	//	FFT_Gradient->addColor( video::SColor(255,255,255,0), 0.95f );
-//	//	FFT_Gradient->addColor( video::SColor(255,255,0,0), 1.00f );
-//
-//	/// blue1
-////		FFT_Gradient->addColor( video::SColor(255,0,0,0), 0.00f );
-////		FFT_Gradient->addColor( video::SColor(255,0,0,255), 0.25f );
-////		FFT_Gradient->addColor( video::SColor(255,0,255,0), 0.50f );
-////		FFT_Gradient->addColor( video::SColor(255,255,255,0), 0.75f );
-////		FFT_Gradient->addColor( video::SColor(255,255,0,0), 1.00f );
-//
-//		((video::CLinearColorGradientTable*)FFT_Gradient)->setTableSize( 1024 );
-//		((video::CLinearColorGradientTable*)FFT_Gradient)->updateTable();
-//	}
-//
-//	// #ifdef DEBUG
-//	// printf( "load fonts.\n" );
-//	// #endif // DEBUG
-//
-
-//
-////! Writes attributes of the element.
-//void CGUIAudioPlayer::serializeAttributes( io::IAttributes* out, io::SAttributeReadWriteOptions* options ) const
-//{
-//	IGUIElement::serializeAttributes(out,options);
-//
-//	//	out->addBool	("PushButton",		IsPushButton );
-//	//	if (IsPushButton)
-//	//		out->addBool("Pressed",		Pressed);
-//	//
-//	//	out->addTexture ("Image",		Image);
-//	//	out->addRect	("ImageRect",		ImageRect);
-//	//	out->addTexture	("PressedImage",	PressedImage);
-//	//	out->addRect	("PressedImageRect",	PressedImageRect);
-//	//	out->addBool	("UseAlphaChannel",	isAlphaChannelUsed());
-//	//	out->addBool	("Border",		isDrawingBorder());
-//	//	out->addBool	("ScaleImage",		isScalingImage());
-//	//  out->addString  ("OverrideFont",	OverrideFont);
-//}
-//
-////! Reads attributes of the element
-//void CGUIAudioPlayer::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
-//{
-//	IGUIElement::deserializeAttributes(in,options);
-//
-//	//	IsPushButton	= in->getAttributeAsBool("PushButton");
-//	//	Pressed		= IsPushButton ? in->getAttributeAsBool("Pressed") : false;
-//	//
-//	//	core::rect<s32> rec = in->getAttributeAsRect("ImageRect");
-//	//	if (rec.isValid())
-//	//		setImage( in->getAttributeAsTexture("Image"), rec);
-//	//	else
-//	//		setImage( in->getAttributeAsTexture("Image") );
-//	//
-//	//	rec = in->getAttributeAsRect("PressedImageRect");
-//	//	if (rec.isValid())
-//	//		setPressedImage( in->getAttributeAsTexture("PressedImage"), rec);
-//	//	else
-//	//		setPressedImage( in->getAttributeAsTexture("PressedImage") );
-//	//
-//	//	setDrawBorder(in->getAttributeAsBool("Border"));
-//	//	setUseAlphaChannel(in->getAttributeAsBool("UseAlphaChannel"));
-//	//	setScaleImage(in->getAttributeAsBool("ScaleImage"));
-//	//  setOverrideFont(in->getAttributeAsString("OverrideFont"));
-//
-//	updateAbsolutePosition();
-//}
-//
-/////@brief create image from soundbuffer-waveform ( 16bit per sample * channel_count * sample_rate = bits per sec = 8*bytes per sec )
-//video::IImage* CGUIAudioPlayer::createImageFromSoundBufferWaveform( const core::dimension2du& img_size, const video::SColor& clearColor ) const
-//{
-//	#ifdef DEBUG
-//	printf( "CGUIAudioPlayer::createImageFromSoundBufferWaveform( %d, %d )\n", img_size.Width, img_size.Height );
-//	#endif // DEBUG
-//
-//	video::CImage* img = new video::CImage( video::ECF_A8R8G8B8, img_size );
-//	if (!img)
-//	{
-//		return 0;
-//	}
-//
-//	#ifdef _DEBUG
-//	const u32 img_bpp = video::IImage::getBitsPerPixelFromFormat( img->getColorFormat() );
-//	printf("Created image(%d,%d,%d);\n", img_size.Width, img_size.Height, img_bpp );
-//	#endif // _DEBUG
-//
-//	//! fill image pixels to fully transparent ( alpha == 0 )
-//	img->fill( clearColor );
-//
-//	//! make place for a change in drawing positions
-//	const u32 d = core::round32( (f32)img_size.Height / (f32)SoundBuffer.getChannelCount() );
-//	const core::dimension2du small_size( img_size.Width, d );
-//	const s32 x = 0;
-//	s32 y = 0;
-//
-//	/// loop channels
-//	for ( u32 channel_index = 0; channel_index < SoundBuffer.getChannelCount(); channel_index++)
-//	{
-//		sfx::drawAudioWaveformFast( img, core::recti( core::position2di(x,y), small_size ), WAV_Gradient, &SoundBuffer, channel_index, false );
-//		y += d;
-//	}
-//
-//	return img;
-//}
-//
-///// create image from FFT-PowerSpectrum
-//video::IImage* CGUIAudioPlayer::createImageFromSoundBufferPowerSpectrum( const core::dimension2du& img_size ) const
-//{
-//	#ifdef DEBUG
-//	printf( "CGUIAudioPlayer::createImageFromSoundBufferPowerSpectrum( %d, %d )\n", img_size.Width, img_size.Height );
-//	#endif // DEBUG
-//
-//	video::CImage* img = new video::CImage( video::ECF_A8R8G8B8, img_size );
-//	if (!img)
-//	{
-//		return 0;
-//	}
-//
-//	#ifdef _DEBUG
-//	const u32 img_bpp = video::IImage::getBitsPerPixelFromFormat( img->getColorFormat() );
-//	printf("Created image(%d,%d,%d);\n", img_size.Width, img_size.Height, img_bpp );
-//	#endif // _DEBUG
-//
-//	//! fill image pixels to fully transparent ( alpha == 0 )
-//	img->fill( video::SColor(200,0,0,0) );
-//
-//	//! make place for a change in drawing positions
-//
-//	// const u32 d = core::round32( (f32)img_size.Height / (f32)my_channel_count );
-//	// const core::dimension2du small_size( img_size.Width, d );
-//	s32 x = 0;
-//	s32 y = 0;
-//
-//	/// loop channels
-//	// for ( u32 channel_index = 0; channel_index < SoundBuffer.getChannelCount(); channel_index++)
-//	// {
-//
-//		/// draw spectrum
-//		sfx::drawAudioSpectrum( img, core::recti(core::position2di(x,y),img_size), FFT_Gradient, &SoundBuffer, 0);
-//	//	y += d;
-//	// }
-//
-//	return img;
-//}
 
 } // end namespace gui
 

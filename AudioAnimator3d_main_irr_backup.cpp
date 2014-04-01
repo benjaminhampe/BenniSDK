@@ -1,52 +1,56 @@
-/// Copyright (C) 2002-2013 Benjamin Hampe
-/// This file is part of the "irrlicht-engine"
-/// For conditions of distribution and use, see copyright notice in irrlicht.h
-
 /**
+ * @page AudioAnimator3d for Linux, Windows and MacOSX
+ *
  * @brief this program creates animated 3d powerspectrum from audio-files
  *
- * idea found at http://www.youtube.com/watch?v=gbuZVcw3ZiM
+ * @author Benjamin Hampe <benjaminhampe@gmx.de>
+ * @copyright Copyright (C) 2002-2014 by Benjamin Hampe
+ * @license This file is part of the "irrlicht-engine"
+ * For conditions of distribution and use, see copyright notice in irrlicht.h
+
+ * @desc idea found at http://www.youtube.com/watch?v=gbuZVcw3ZiM
  * no copyright infringement intended i just like working with audio-data
  *
- * to compile this program u need fftw3, SFML2.0 Audio, freetype, OpenGL, Irrlicht
+ * to compile this program u need fftw3, SFML2.1 Audio, freetype, OpenGL, Irrlicht
  *
- * tested so far only on Windows7 32-bit professional
- * on Core2Duo E6600 2x 2,4 GHz, 2GiB RAM, Ati HD5450 512MiByte VRAM
- * i got 30 FPS so far at FFT-Size 8192 and 8192/16 = 512 Tiles per MatrixRow ( == 2 Triangles )
+ * tested on Windows7 32-bit Professional
+ * tested on Windows7 64-bit Home Premium
+ *
+ * test system 1: Core2Duo E6600 2x 2,4 GHz, 2GiB RAM, Ati HD5450 512MiByte VRAM
+ * test system 2: Core i5 2x 2,53 GHz, 4GiB RAM, Geforce 310M 1024MiByte VRAM + Intel Graphics Hybrid
+ * 	+ 	load audio-file using SFML 2.0 Audio Library
+ * 	+ 	calculate its PowerSpectrum (0...160 dB) using fftw3 FastFourierTransform
+ *  	create image from wavform and power-spectrum using CLinearColorGradient
+ * 	+ 	create 2D and 3D animated meshes from power-spectrum
+ * each loop:
+ *	+ 	get N samples at timeNow - lastRenderTime -> can lead to fluctuations when paused
+ *	- 	do some windowing, filtering stuff
+ * 	+ 	calculate power-spectrum with N samples
+ * 	+ 	use only first N * 16 frequencies to create meshes ( much faster )
+ * 	+ 	shift matrix one row
+ * 	+ 	set matrix data at first row( y = row-index = 0 ) from power-spectrum
+ * 	+ 	create front mesh from power-spectrum
+ * 	+ 	create matrix mesh
+ * 	+ 	render power-spectrum as background-texture
+ * 	+ 	render matrix-mesh
+ * 	+ 	render front-mesh
+ * 	+ 	render x,y,z meter ( currently pure OpenGL )
+ * 	+ 	render GUI
+ * 	+ 	set WindowCaption with new information
+ * 	+ 	loop until ESCAPE-Key
+ *
+ * @todo
+ * + Speed improvements! ( pls give advices )
+ * - Use assembler to speed up sin * cos ( both can be computed with one instruction )
+ * - Use Goertzel's algorithm to speed up FFT at specific frequencies ( tones )
+ * - WindowFunctions ( Cos, Gauss, Hamming, Hann, Blackman )
+ *   impulse-response functions -> each create different responses in freq-domain
+ * - 2D Plot Window ( linear and logarithmic scales ) for current data
+ * - 3D Plot Window ( insert CMatrixSceneNode in a IGUIElement )
+ * - Equalizer window with user interactive curve-manipulation ( 1-8 point polynom )
+ * - do chromatic-tone-pitch estimation
+ * - build piano-tuner using microphone
  */
-
-///@desc			+ load audio-file using SFML 2.0 Audio Library
-/// 				+ calculate its PowerSpectrum (0...160 dB) using fftw3 FastFourierTransform
-///					  create image from wavform and power-spectrum using CLinearColorGradient
-/// 				+ create 2D and 3D animated meshes from power-spectrum
-/// each loop:
-///					+ get N samples at timeNow - lastRenderTime -> can lead to fluctuations when paused
-///					- do some windowing, filtering stuff
-///					+ calculate power-spectrum with N samples
-///					+ use only first N/16 frequencies to create meshes ( much faster )
-///					+ shift matrix one row
-///					+ set matrix data at first row( y = row-index = 0 ) from power-spectrum
-///					+ create front mesh from power-spectrum
-///					+ create matrix mesh
-///					+ render power-spectrum as background-texture
-///					+ render matrix-mesh
-///					+ render front-mesh
-///					+ render x,y,z meter ( currently pure OpenGL )
-///					+ render GUI
-///					+ set WindowCaption with new information
-///					+ loop until ESCAPE-Key
-///
-///	@todo
-///					+ Speed improvements! ( pls give advices )
-///					- Use assembler to speed up sin/cos ( both can be computed with one instruction )
-///					- Use Goertzel's algorithm to speed up FFT at specific frequencies ( tones )
-///					- WindowFunctions ( Cos, Gauss, Hamming, Hann, Blackman )
-///					  impulse-response functions -> each create different responses in freq-domain
-///					- 2D Plot Window ( linear and logarithmic scales ) for current data
-///					- 3D Plot Window ( insert CMatrixSceneNode in a IGUIElement )
-///					- Equalizer window with user interactive curve-manipulation ( 1-8 point polynom )
-///					- do chromatic-tone-pitch estimation
-///					- build piano-tuner using microphone
 
 ///   +++ Includes +++
 
@@ -361,17 +365,11 @@ s32 main( s32 argc, c8** argv)
 	//	smgr->addLightSceneNode( smgr->getRootSceneNode(), core::vector3df(100,0,0), video::SColorf(0,0,1,1), 200, -1);
 
 	/// +++ AudioPlayer +++
-
-	s32 WindowPaddingX = 50;
-	s32 WindowPaddingY = 10;
-
 	CAudioPlayerSFML player;
 
 	gui::IGUIWindow* playerWindow = env->addWindow(
-		core::recti( WindowPaddingX,
-			3*ScreenSize.Height/4,
-			ScreenSize.Width-WindowPaddingX,
-			ScreenSize.Height-WindowPaddingY), false, L"GUI AudioPlayer (SFML API)", env->getRootGUIElement(), -1);
+		core::recti( 50, 3*ScreenSize.Height/4, ScreenSize.Width-50, ScreenSize.Height-10),
+		false, L"GUI AudioPlayer (SFML API)", env->getRootGUIElement(), -1);
 
 	gui::CGUIAudioPlayer* playerPanel = new gui::CGUIAudioPlayer(
 		&player, env, playerWindow, -1, playerWindow->getClientRect() );
@@ -379,8 +377,7 @@ s32 main( s32 argc, c8** argv)
 	player.loadFile( MY_DEFAULT_AUDIO_FILE );
 
 
-
-	/// +++ ColorGradient for Waveforms +++
+	/// +++ WAV ColorGradient +++
 	video::CLinearColorGradientTable WAV_Gradient;
 	WAV_Gradient.addColor( video::SColor(255,0,0,0), 0.00f );
 	WAV_Gradient.addColor( video::SColor(255,0,0,255), 0.25f );
@@ -390,7 +387,40 @@ s32 main( s32 argc, c8** argv)
 	WAV_Gradient.setTableSize( 128 );
 	WAV_Gradient.updateTable();
 
-	/// +++ ColorGradient for FourierTransform +++
+//	/// +++ WAV 2D MatrixData +++
+//	u32 mm_waveform_cols = 512;
+//	u32 mm_waveform_rows = 10;
+//	core::CMatrix<f32> mm_waveform( mm_waveform_rows, mm_waveform_cols );
+//	mm_waveform.fill( 0 );
+//
+//	/// +++ WAV 3D MatrixSceneNode +++
+//	scene::CMatrixSceneNode* node_wav = new scene::CMatrixSceneNode(
+//		scene::EPT_TRIANGLES, MeshSize, &WAV_Gradient, &mm_waveform,
+//		smgr, smgr->getRootSceneNode(), -1, core::vector3df(0,0,0) );
+//
+//	if (!node_wav)
+//	{
+//		printf("Could not create CMatrixSceneNode\n");
+//	}
+//	else
+//	{
+//		node_wav->setMaterialFlag( video::EMF_LIGHTING, false );
+//		// node_wav->setDebugDataVisible( scene::EDS_BBOX );
+//		node_wav->setPosition( core::vector3df( -MeshSize.X, 0,0 ) );
+//	}
+//
+//	/// +++ WAV FrontMeshBuffer +++
+//	scene::SMeshBuffer FrontWav;
+//	FrontWav.Vertices.reallocate( 4*(mm_waveform_cols-1) );
+//	FrontWav.Indices.reallocate( 6*(mm_waveform_cols-1) );
+//	FrontWav.Vertices.set_used( 0 );
+//	FrontWav.Indices.set_used( 0 );
+//	FrontWav.Material.MaterialType = video::EMT_SOLID;
+//	FrontWav.Material.Lighting = false;
+//	FrontWav.Material.Wireframe = false;
+//	FrontWav.Material.FogEnable = false;
+
+	/// +++ FFT ColorGradient +++
 	video::CLinearColorGradientTable FFT_Gradient;
 	FFT_Gradient.addColor( video::SColor(255,0,0,0), 0.00f );
 	FFT_Gradient.addColor( video::SColor(255,25,25,25), 0.10f );
@@ -405,65 +435,24 @@ s32 main( s32 argc, c8** argv)
 	FFT_Gradient.setTableSize( 1024 );
 	FFT_Gradient.updateTable();
 
-	/// +++ 2D Matrix Container +++
-
-	// +++ 2D Matrix Container +++
-	dbPRINT("create Matrix for Waveform\n")
-	u32 mm_waveform_cols = 512;
-	u32 mm_waveform_rows = 10;
-	core::CMatrix<f32> mm_waveform( mm_waveform_rows, mm_waveform_cols );
-	mm_waveform.fill( 0 );
-
-	// +++ 3D Matrix SceneNode +++
-	scene::CMatrixSceneNode* node_wav = new scene::CMatrixSceneNode(
-		scene::EPT_TRIANGLES, MeshSize, &WAV_Gradient, &mm_waveform,
-		smgr, smgr->getRootSceneNode(), -1, core::vector3df(0,0,0) );
-
-	if (!node_wav)
-	{
-		printf("Could not create CMatrixSceneNode\n");
-	}
-	else
-	{
-		node_wav->setMaterialFlag( video::EMF_LIGHTING, false );
-		// node_wav->setDebugDataVisible( scene::EDS_BBOX );
-		node_wav->setPosition( core::vector3df( -MeshSize.X, 0,0 ) );
-	}
-
-	/// +++ FrontWav +++
-	scene::SMeshBuffer FrontWav;
-	FrontWav.Vertices.reallocate( 4*(mm_waveform_cols-1) );
-	FrontWav.Indices.reallocate( 6*(mm_waveform_cols-1) );
-	FrontWav.Vertices.set_used( 0 );
-	FrontWav.Indices.set_used( 0 );
-	FrontWav.Material.MaterialType = video::EMT_SOLID;
-	FrontWav.Material.Lighting = false;
-	FrontWav.Material.Wireframe = false;
-	FrontWav.Material.FogEnable = false;
-
-
-	/// +++ 2D Matrix Container +++
-
-	// +++ FourierTransform +++
+	/// +++ FFT +++
 	core::FourierTransformRtoC Transform(2*1024);
 	const u32 FFT_Size = Transform.size();
 
-	// +++ FourierTransform IO-Buffer +++
+	/// +++ FFT IO-Buffer +++
 	core::array<s16> InputDataBuffer;
 	InputDataBuffer.reallocate( FFT_Size );
 	InputDataBuffer.set_used( FFT_Size );
 
-	// +++ FourierTransform IO-Buffer +++
 	core::array<f32> OutputDataBuffer;
 	OutputDataBuffer.reallocate( FFT_Size / MY_OUTPUTBUFFER_SCALE );
 	OutputDataBuffer.set_used( FFT_Size / MY_OUTPUTBUFFER_SCALE );
 
-	// +++ 2D Matrix Container +++
-	dbPRINT("create Matrix for Frequencies\n")
+	/// +++ FFT 2D MatrixData +++
 	core::CMatrix<f32> mm_frequencies( MY_OUTPUTBUFFER_ROWS, OutputDataBuffer.size() );
 	mm_frequencies.fill( 0 );
 
-	/// +++ 3D Matrix SceneNode +++
+	/// +++ FFT 3D MatrixSceneNode +++
 	scene::CMatrixSceneNode* node_fft = new scene::CMatrixSceneNode(
 		scene::EPT_TRIANGLES, MeshSize, &FFT_Gradient, &mm_frequencies,
 		smgr, smgr->getRootSceneNode(), -1, core::vector3df(0,0,0) );
@@ -478,7 +467,7 @@ s32 main( s32 argc, c8** argv)
 		// node_fft->setDebugDataVisible( scene::EDS_BBOX );
 	}
 
-	/// +++ FrontFFT +++
+	/// +++ FFT FrontMeshBuffer +++
 	scene::SMeshBuffer FrontFFT;
 	FrontFFT.Vertices.reallocate( 4*(OutputDataBuffer.size()-1) );
 	FrontFFT.Indices.reallocate( 6*(OutputDataBuffer.size()-1) );
@@ -490,15 +479,13 @@ s32 main( s32 argc, c8** argv)
 	FrontFFT.Material.FogEnable = false;
 
 
-
-
 //	gui::IGUIWindow* win = createWindow( env, L"Realtime-Monitor for AudioSignals",
 //		100,100, ScreenSize.Width-200,ScreenSize.Height-200);
 //
 //	gui::CGUIAudioDisplaySFML* rtmon = new gui::CGUIAudioDisplaySFML(
 //		44100, 4*1024, env, win, -1, win->getClientRect());
 //
-	/// MAIN ///
+	/// BEGIN MAIN LOOP ///
 
 	timeNow = timer->getRealTime();
 
@@ -549,44 +536,44 @@ s32 main( s32 argc, c8** argv)
 			/// if window is active ( can be minimized but still active )
 			if (device->isWindowFocused())
 			{
+				/// Waveform
+//				mm_waveform.shiftRow();
+//
+//				const f32 y_scale_wav = MeshSize.Y / 32768.0f;
+//				const f32 y_offset_wav = 0.5f*MeshSize.Y;
+//
+//				const u32 i_max_wav = core::min_<u32>( InputDataBuffer.size(), mm_waveform.getCols() );
+//
+//				for (u32 i=0; i<i_max_wav; i++)
+//				{
+//					const f32 y = y_scale_wav*(f32)InputDataBuffer[i]+y_offset_wav;
+//					mm_waveform.setElement( 0, i, y );
+//				}
+//
+//				node_wav->createMesh();
+
+				/// fill SampleBuffer for FFT
 				sfx::fillSampleBuffer<s16>( InputDataBuffer, player.getSoundBuffer(), 0, PlayPosition, InputDataBuffer.size() );
 
-				/// Waveform
-				mm_waveform.shiftRow();
-
-				const f32 y_scale_wav = MeshSize.Y / 32768.0f;
-				const f32 y_offset_wav = 0.5f*MeshSize.Y;
-
-				const u32 i_max_wav = core::min_<u32>( InputDataBuffer.size(), mm_waveform.getCols() );
-
-				for (u32 i=0; i<i_max_wav; i++)
-				{
-					const f32 y = y_scale_wav*(f32)InputDataBuffer[i]+y_offset_wav;
-					mm_waveform.setElement( 0, i, y );
-				}
-
-				node_wav->createMesh();
-
-				/// FourierTransform
+				/// do FourierTransform
 				Transform.setInputData<s16>( InputDataBuffer );
 				Transform.fft();
 				Transform.getPowerSpectrumAsDecibels<f32>( OutputDataBuffer );
 
-				/// Fill Matrix with new values from FourierTransform
-
+				/// shift Matrix
 				mm_frequencies.shiftRow();
 
+				/// fill Matrix with new values from FourierTransform
 				const u32 i_max = core::min_<u32>( OutputDataBuffer.size(), mm_frequencies.getCols() );
-
 				for (u32 i=0; i<i_max; i++)
 				{
 					mm_frequencies.setElement( 0, i, OutputDataBuffer[i] );
 				}
 
+				/// create Mesh
 				node_fft->createMesh();
 
-				/// start rendering
-
+				/// glBegin()
 				driver->beginScene( true, true, video::SColor(255,0,0,0) );
 
 //					/// draw Wallpaper
@@ -601,17 +588,17 @@ s32 main( s32 argc, c8** argv)
 					driver->setTransform( video::ETS_PROJECTION, camera->getProjectionMatrix() );
 
 					/// render FrontWav
-					sfx::createFilledPath(
-						&FrontWav,
-						core::dimension2df(MeshSize.X, MeshSize.Y),
-						InputDataBuffer,
-						&WAV_Gradient,
-						core::vector3df( -MeshSize.X,0,0),
-						mm_waveform_cols );
-
-					driver->setMaterial( FrontWav.getMaterial() );
-
-					video::drawMeshBufferEx( driver, &FrontWav, scene::EPT_TRIANGLES );
+//					sfx::createFilledPath(
+//						&FrontWav,
+//						core::dimension2df(MeshSize.X, MeshSize.Y),
+//						InputDataBuffer,
+//						&WAV_Gradient,
+//						core::vector3df( -MeshSize.X,0,0),
+//						mm_waveform_cols );
+//
+//					driver->setMaterial( FrontWav.getMaterial() );
+//
+//					video::drawMeshBufferEx( driver, &FrontWav, scene::EPT_TRIANGLES );
 
 					/// render FrontFFT
 					sfx::createFilledPath(
@@ -626,28 +613,14 @@ s32 main( s32 argc, c8** argv)
 					video::drawMeshBufferEx( driver, &FrontFFT, scene::EPT_TRIANGLES );
 
 					/// draw CoordSystems
-					//video::drawCoordSystem();
 					video::drawXMeter( core::vector3df( 0.0f,0.0f,-1.0f), 0 , core::round32(MeshSize.X) );
 					video::drawZMeter( core::vector3df( -1.0f,0.0f,0.0f), 0 , core::round32(MeshSize.Z) );
-					//video::drawXMeter( core::vector3df( 0.0f,MeshSize.Y,-1.0f), -1 , core::round32(MeshSize.X) );
-					//video::drawXMeter( core::vector3df( 0.0f,MeshSize.Y,0.5f*MeshSize.Z), 0 , core::round32(MeshSize.X) );
-					//video::drawXMeter( core::vector3df( 0.0f,MeshSize.Y,MeshSize.Z), 0 , core::round32(MeshSize.X) );
-					//
-					//const f32 factor_x = 0.1f*MeshSize.X;
-					//
-					//for ( u32 x = 0; x<=10; x++)
-					//{
-						video::drawYMeter( core::vector3df( 0.0f,0.0f,-1.0f), -1, core::round32(MeshSize.Y) );
-					//	video::drawYMeter( core::vector3df( factor_x*x,0.0f,0.5f*MeshSize.Z), 0, core::round32(MeshSize.Y) );
-					//	video::drawYMeter( core::vector3df( factor_x*x,0.0f,1.0f*MeshSize.Z), 0, core::round32(MeshSize.Y) );
-					//	video::drawZMeter( core::vector3df( factor_x*x,MeshSize.Y,-1.0f), -1, core::round32(MeshSize.Z) );
-					//}
+					video::drawYMeter( core::vector3df( 0.0f,0.0f,-1.0f), -1, core::round32(MeshSize.Y) );
 
 					/// draw GUI
-
 					env->drawAll();
 
-				/// end drawing
+				/// glEnd()
 				driver->endScene();
 
 				/// Update Window Title Text

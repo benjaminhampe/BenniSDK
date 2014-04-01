@@ -476,6 +476,62 @@ void drawText( gui::IGUIFont* font,	const core::stringw& txt,
 		color, false, false, clipRect);
 }
 
+//! @brief create a aligned static UI text-element
+gui::IGUIStaticText* createLabel( gui::IGUIEnvironment* env, gui::IGUIElement* parent,
+	const core::stringw& txt, s32 x, s32 y, s32 hAlign, s32 vAlign,
+	s32 padding, bool withBorder, bool wordWrap, bool fillBackground,
+	gui::IGUIFont* font, s32 id)
+{
+	// abort condition
+	if (!env)
+		return 0;
+
+	// choose font
+	if (!font)
+	{
+		gui::IGUISkin* skin = env->getSkin();
+		if (skin)
+		{
+			font = skin->getFont( gui::EGDF_DEFAULT );
+		}
+		else
+		{
+			font = env->getBuiltInFont();
+		}
+	}
+
+	// abort condition
+	if (!font)
+		return 0;
+
+	// get text-size
+	core::dimension2du txt_size = font->getDimension( txt.c_str() );
+
+	// add some padding value
+	txt_size.Width += 2*padding;
+	txt_size.Height += 2*padding;
+
+	// horizontal alignment
+	if (hAlign == 0) { x -= (s32)(txt_size.Width>>1); }
+	else if (hAlign > 0 ) {	x -= (s32)(txt_size.Width); }
+
+	// vertical alignment
+	if (vAlign == 0) { y -= (s32)(txt_size.Height>>1); }
+	else if (vAlign > 0 ) {	y -= (s32)(txt_size.Height); }
+
+	// create & return
+	gui::IGUIStaticText* label = env->addStaticText( txt.c_str(),
+		core::recti( core::position2di(x,y), txt_size),
+		withBorder, wordWrap, parent, id, fillBackground );
+
+	if (label)
+	{
+		label->setTextAlignment( gui::EGUIA_CENTER, gui::EGUIA_CENTER );
+	}
+
+	return label;
+}
+
 ///@brief draw backdrop-texture to current rendertarget ( screen or RTT )
 void drawBackdrop( video::IVideoDriver* driver, video::ITexture* tex )
 {

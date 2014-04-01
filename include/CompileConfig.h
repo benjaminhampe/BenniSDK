@@ -1,26 +1,6 @@
 #ifndef __IRR_EXT_COMPILE_CONFIG_H_INCLUDED__
 #define __IRR_EXT_COMPILE_CONFIG_H_INCLUDED__
 
-#include <cstdlib>
-#include <cstdio>
-#include <cstdarg>
-#include <cmath>
-
-#include <irrlicht.h>
-
-#include <../source/Irrlicht/os.h>
-#include <../source/Irrlicht/CImage.h>
-#include <../source/Irrlicht/CColorConverter.h>
-#include <../source/Irrlicht/CMeshSceneNode.h>
-#include <../source/Irrlicht/CShadowVolumeSceneNode.h>
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-
-#if defined(__GXX_EXPERIMENTAL_CXX0X) || __cplusplus >= 201103L
-	#include <functional>
-#endif
-
 /// MyDefines
 
 #ifndef _IRR_COMPILE_WITH_FFTW3_
@@ -56,6 +36,45 @@
 //#endif
 
 /// Includes
+
+// LibC
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <cstdarg>
+#include <cwchar>
+#include <ctime>
+#include <cmath>
+#include <getopt.h>
+
+// STL
+//#include <iostream>
+//#include <iomanip>
+//#include <fstream>
+//#include <sstream>
+
+// Terminal
+//#if defined (_MSC_VER)
+//	#include <conio.h>
+//#elif !defined(_IRR_WINDOWS_) && defined(__GNUC__)
+//	#include <termio.h>
+//#endif
+
+#include <irrlicht.h>
+#include <driverChoice.h>
+#include <../source/Irrlicht/os.h>
+#include <../source/Irrlicht/CImage.h>
+#include <../source/Irrlicht/CColorConverter.h>
+#include <../source/Irrlicht/CMeshSceneNode.h>
+#include <../source/Irrlicht/CShadowVolumeSceneNode.h>
+
+// OpenGL API
+#include <GL/gl.h>
+#include <GL/glu.h>
+
+#if defined(__GXX_EXPERIMENTAL_CXX0X) || __cplusplus >= 201103L
+	#include <functional>
+#endif
 
 #ifdef _IRR_COMPILE_WITH_FFTW3_
 #include <fftw3.h>

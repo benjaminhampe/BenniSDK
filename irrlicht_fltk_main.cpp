@@ -44,7 +44,7 @@ void btn_pressed(Fl_Widget*, void *data) {
 
 s32 main( s32 argc, c8** argv)
 {
-	Fl::scheme("gtk+");
+//	Fl::scheme("gtk+");
 
 	SIrrlichtCreationParameters params;
 	params.AntiAlias = video::EAAM_QUALITY;

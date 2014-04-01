@@ -21,6 +21,8 @@ namespace video
 		u32 primCount = 0;
 
 		const u32& indexCount = indices.size();
+		if (indexCount == 0)
+			return;
 
 		switch (primType)
 		{

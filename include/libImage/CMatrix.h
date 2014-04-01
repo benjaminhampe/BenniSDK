@@ -25,8 +25,86 @@ namespace core
 
 	public:
 
-	const ElementType NullValue = ElementType(0);
-	const ElementType EinsValue = ElementType(1);
+//	const ElementType NullValue = ElementType(0);
+//	const ElementType EinsValue = ElementType(1);
+
+//	static ElementType** create2DArray(u32 rows, u32 cols)
+//
+//	bool empty() const
+//
+//	void clear()
+//
+//	void fill( const ElementType& value )
+//
+//	bool resize(u32 rows, u32 cols, bool keepData = false, bool canShrink = true )
+//
+//	/// empty default contructor
+//	CMatrix()
+//
+//	/// value contructor
+//	CMatrix( u32 rows, u32 cols )
+//
+//	/// destructor
+//	~CMatrix()
+//
+//	/// copy
+//	CMatrix& assign( const CMatrix& other )
+//
+//	/// copy contructor
+//	CMatrix( const CMatrix& other )
+//
+//	/// clone
+//	CMatrix clone() const
+//
+//	typedef core::vector2d<ElementType> TVector2d;
+//
+//	TVector2d getMinMax() const
+//
+//	/// get access ( public ) to raw data
+//	ElementType** getData()
+//
+//	/// get Rows & Cols
+//	core::dimension2du getDimension() const
+//
+//	/// get Number of rows i have (y-dir)
+//	u32 getRows() const
+//
+//	/// get Number of columns i have (x-dir)
+//	u32 getCols() const
+//
+//	// /// get Product of Rows and Colums for linear memory access, its elementcount not the bytesize of allocated mem
+//	//u32 getSize() const { return Size; }
+//
+//	/// get my Name
+//	core::stringc getName() const
+//
+//	/// get my Name
+//	void setName( const core::stringc& name = "CMatrix" )
+//
+//	/// print CMatrix to String
+//	core::stringc toString() const
+//
+//	/// secure access to value ( with out-of-bounds check )
+//	ElementType getElement(u32 row, u32 col) const
+//
+//	/// secure access to value ( with out-of-bounds check )
+//	ElementType getElement(u32 index) const
+//
+//	/// secure access to value ( with out-of-bounds check )
+//	bool setElement(u32 row, u32 col, ElementType element)
+//
+//	/// secure access to value ( with out-of-bounds check )
+//	bool setElement(u32 index, ElementType element)
+//
+//	bool swapRows( u32 row_a, u32 row_b )
+//
+//	bool shiftRow()
+//
+//	bool shiftRows( s32 rows )
+//
+//	bool load( const core::stringc& filename ) const
+//
+//	bool save( const core::stringc& filename ) const
 
 	static ElementType** create2DArray(u32 rows, u32 cols)
 	{
@@ -57,12 +135,20 @@ namespace core
 		return p;
 	}
 
+	bool empty() const
+	{
+		if (!Data)
+			return true;
+		else
+			return false;
+	}
+
 	void clear()
 	{
 		dbPRINT( "CMatrix::clear()\n");
 
 		/// delete 2D Array of Floats
-		if (Data)
+		if (!empty())
 		{
 			/// loop rows
 			for (u32 i=0; i<Rows; i++)
@@ -88,14 +174,6 @@ namespace core
 		Size = 0;
 	}
 
-	bool empty() const
-	{
-		if (!Data)
-			return true;
-		else
-			return false;
-	}
-
 	void fill( const ElementType& value )
 	{
 		if (empty())
@@ -112,7 +190,6 @@ namespace core
 		}
 	}
 
-
 	bool resize(u32 rows, u32 cols, bool keepData = false, bool canShrink = true )
 	{
 		dbPRINT( "CMatrix::resize(%d,%d)\n", rows, cols );
@@ -124,11 +201,17 @@ namespace core
 		Cols = cols;
 		Size = rows*cols;
 
-		fill( NullValue );
+		fill( ElementType(0) );
 
 		return true;
 	}
 
+	/// empty default contructor
+	CMatrix()
+		: Rows(0), Cols(0), Size(0), Data(0), Name("")
+	{
+		dbPRINT( "CMatrix::CMatrix()\n")
+	}
 
 	/// value contructor
 	CMatrix( u32 rows, u32 cols )
@@ -184,8 +267,6 @@ namespace core
 	{
 		return CMatrix( *this );
 	}
-
-
 
 	typedef core::vector2d<ElementType> TVector2d;
 
@@ -352,6 +433,129 @@ namespace core
 		return false;
 	}
 
+
+	bool swapRows( u32 row_a, u32 row_b )
+	{
+		dbPRINT( "CMatrix::swapRows()\n");
+
+		if ( row_a == row_b )
+			return false;
+
+		if ( row_a >= Rows )
+			return false;
+
+		if ( row_b >= Rows )
+			return false;
+
+		/// save value at target position
+		ElementType* row = Data[row_a];
+
+		/// overwrite target position with new value
+		Data[row_a] = Data[row_b];
+
+		/// overwrite source position with save row-data
+		Data[row_b] = row;
+
+		return true;
+	}
+
+	bool shiftRow()
+	{
+//	    dbPRINT( "CMatrix::shiftRow()\n" );
+
+		u32 r = 1;
+		ElementType** b = new ElementType*[Rows];
+
+		if (!b)
+			return false;
+
+		u32 k = 0;
+		for (u32 i = r; i<Rows; i++)
+		{
+			b[i] = Data[k];
+			k++;
+		}
+
+		k = 0;
+		for (u32 i = Rows-r; i<Rows; i++)
+		{
+			b[k] = Data[i];
+			k++;
+		}
+
+		for (u32 i = 0; i<Rows; i++)
+		{
+			Data[i] = b[i];
+		}
+
+		delete [] b;
+
+		return true;
+	}
+
+
+	bool shiftRows( s32 rows )
+	{
+//		dbPRINT( "CMatrix::shiftRows( %d )\n", rows);
+
+		if (rows>0)
+		{
+			for (u32 y=0; y<Rows; y++)
+			{
+				s32 i = ( rows+(s32)y );
+
+				if (i<0) i += Rows;
+				if (i>=(s32)Rows) i -= (s32)Rows;
+				//%((s32)Rows);
+				u32 k = (u32)i;
+	//            k = Rows-1-k;
+	//            k = k % Rows;
+
+				/// save value at target position
+				ElementType* row = Data[y];
+
+				/// overwrite target position with new value
+				Data[y] = Data[k];
+
+				/// overwrite source position with save row-data
+				Data[k] = row;
+			}
+		}
+		else
+		{
+			rows = core::abs_<s32>(rows);
+
+			for (u32 y=0; y<Rows; y++)
+			{
+				u32 k = ( (u32)rows+y )%Rows ;
+
+				/// save value at target position
+				ElementType* row = Data[y];
+
+				/// overwrite target position with new value
+				Data[y] = Data[k];
+
+				/// overwrite source position with save row-data
+				Data[k] = row;
+			}
+
+		}
+
+		return true;
+	}
+
+	bool load( const core::stringc& filename )
+	{
+		dbPRINT( "CMatrix::load( %s )\n", filename.c_str() );
+		return true;
+	}
+
+	bool save( const core::stringc& filename ) const
+	{
+		dbPRINT( "CMatrix::save( %s )\n", filename.c_str() );
+		return true;
+	}
+
 	///// secure access to value ( with out-of-bounds check )
 	//const ElementType& operator() (u32 index) const
 	//{
@@ -378,19 +582,19 @@ namespace core
 	//    return Data[ (index<getSize())?index:0 ];
 	//}
 
-
-	/// copy operator overload
-	CMatrix& operator= ( const CMatrix& other )
-	{
-		#ifdef _DEBUG
-		dbPRINT( "operator= ()\n" );
-		#endif // _DEBUG
-
-		return assign(other);
-	}
-
-
-
+//
+//	/// copy operator overload
+//	CMatrix& operator= ( const CMatrix& other )
+//	{
+//		#ifdef _DEBUG
+//		dbPRINT( "operator= ()\n" );
+//		#endif // _DEBUG
+//
+//		return assign(other);
+//	}
+//
+//
+//
 
 //
 //		/// set row-data ( replace ) with array-values
@@ -468,176 +672,176 @@ namespace core
 //			return true;
 //		}
 //
-
-
-	// Compare me to another CMatrix,
-	// test for equal row- and col-count first,
-	// if true, then check element-wise for equality until false
-	bool operator==(const CMatrix& other)
-	{
-		dbPRINT( "CMatrix::operator== ()\n");
-
-		if (*this == other)
-			return false;   // !dangerous! if somebody turns this equality to true
-
-		const u32 r0 = getRows();
-		const u32 c0 = getCols();
-		const u32 r1 = other.getRows();
-		const u32 c1 = other.getCols();
-
-		// test equality for number of rows and columns first
-		if (r0!=r1) return false;
-		if (c0!=c1)	return false;
-
-		// then test for equality element-wise
-		for (u32 m=0; m<r0; m++)
-		{
-			for (u32 n=0; n<c0; n++)
-			{
-				if ( !core::equals( Data[m][n], other.getElement(m,n) ) )
-					return false;
-			}
-		}
-
-		// if really all same return true,
-		return true;
-	}
-
-	/// inequality operator
-	bool operator!=(const CMatrix& other)
-	{
-		return ( *this == other );
-	}
-
-
-	/// translation operator '+'
-	CMatrix& operator+ ( const ElementType& value )
-	{
-		for (u32 y=0; y<Rows; y++)
-		{
-			for (u32 x=0; x<Cols; x++)
-			{
-				Data[y][x] = Data[y][x] + value;
-			}
-		}
-
-		return *this;
-	}
-
-	/// '+' operator overload
-	CMatrix& operator+= ( const CMatrix& other )
-	{
-		if ( *this == other )
-			return *this;
-
-		for (u32 y=0; y<Rows; y++)
-		{
-			for (u32 x=0; x<Cols; x++)
-			{
-				Data[y][x] = Data[y][x] + other.getElement(y,x);
-			}
-		}
-
-		return *this;
-	}
-
-	/// translation operator '-'
-	CMatrix& operator- ( const ElementType& value )
-	{
-		for (u32 y=0; y<Rows; y++)
-		{
-			for (u32 x=0; x<Cols; x++)
-			{
-				Data[y][x] = Data[y][x] - value;
-			}
-		}
-		return *this;
-	}
-
-	/// '-' operator overload
-	CMatrix& operator-= ( const CMatrix& other )
-	{
-		if ( *this == other )
-			return *this;
-
-		for (u32 y=0; y<Rows; y++)
-		{
-			for (u32 x=0; x<Cols; x++)
-			{
-				Data[y][x] = Data[y][x] - other.getElement(y,x);
-			}
-		}
-
-		return *this;
-	}
-
-	/// scale operator '*'
-	CMatrix& operator* ( const ElementType& value )
-	{
-		for (u32 y=0; y<Rows; y++)
-		{
-			for (u32 x=0; x<Cols; x++)
-			{
-				Data[y][x] = Data[y][x] *value;
-			}
-		}
-		return *this;
-	}
-
-	/// scale operator '/'
-	CMatrix& operator/ ( const ElementType& value )
-	{
-		if (!core::equals( value, NullValue ))
-		{
-			const ElementType value_inv_factor = core::reciprocal( value );
-
-			for (u32 y=0; y<Rows; y++)
-			{
-				for (u32 x=0; x<Cols; x++)
-				{
-					Data[y][x] = Data[y][x] * value_inv_factor;
-				}
-			}
-		}
-
-		return *this;
-	}
-
-	/// added 11.09.2013
-	/// for use with audio-animator
-	/// @remarks should be slow, maybe this solution is insufficient
-	/// @todo compare speed with array of arrays
-	/// since there, only pointers have to be swapped/exchanged, and no data
-
-	video::IImage* createImage( ) const
-	{
-		dbPRINT( "CMatrix::createImage()\n" );
-
-		core::dimension2du img_size( Cols, Rows );
-		video::CImage* img = new video::CImage( video::ECF_A8R8G8B8, img_size);
-		if (!img)
-			return 0;
-
-		img->fill( 0xffffffff );
-
-		const core::vector2df mm = getMinMax();
-		const ElementType height = mm.Y - mm.X;
-
-		for (u32 y = 0; y < core::min_<u32>(Rows, img->getDimension().Height); y++)
-		{
-			for (u32 x = 0; x < core::min_<u32>(Cols, img->getDimension().Width); x++)
-			{
-				ElementType value = Data[y][x];
-				value -= mm.X;
-				value /= height;
-				value = core::clamp<ElementType>( value, 0.0f, 1.0f );
-				video::SColorf color( value, value, value, 1.0f );
-				img->setPixel( x, y, color.toSColor() );
-			}
-		}
-
-		return img;
-	}
+//
+//
+//	// Compare me to another CMatrix,
+//	// test for equal row- and col-count first,
+//	// if true, then check element-wise for equality until false
+//	bool operator==(const CMatrix& other)
+//	{
+//		dbPRINT( "CMatrix::operator== ()\n");
+//
+//		if (*this == other)
+//			return false;   // !dangerous! if somebody turns this equality to true
+//
+//		const u32 r0 = getRows();
+//		const u32 c0 = getCols();
+//		const u32 r1 = other.getRows();
+//		const u32 c1 = other.getCols();
+//
+//		// test equality for number of rows and columns first
+//		if (r0!=r1) return false;
+//		if (c0!=c1)	return false;
+//
+//		// then test for equality element-wise
+//		for (u32 m=0; m<r0; m++)
+//		{
+//			for (u32 n=0; n<c0; n++)
+//			{
+//				if ( !core::equals( Data[m][n], other.getElement(m,n) ) )
+//					return false;
+//			}
+//		}
+//
+//		// if really all same return true,
+//		return true;
+//	}
+//
+//	/// inequality operator
+//	bool operator!=(const CMatrix& other)
+//	{
+//		return ( *this == other );
+//	}
+//
+//
+//	/// translation operator '+'
+//	CMatrix& operator+ ( const ElementType& value )
+//	{
+//		for (u32 y=0; y<Rows; y++)
+//		{
+//			for (u32 x=0; x<Cols; x++)
+//			{
+//				Data[y][x] = Data[y][x] + value;
+//			}
+//		}
+//
+//		return *this;
+//	}
+//
+//	/// '+' operator overload
+//	CMatrix& operator+= ( const CMatrix& other )
+//	{
+//		if ( *this == other )
+//			return *this;
+//
+//		for (u32 y=0; y<Rows; y++)
+//		{
+//			for (u32 x=0; x<Cols; x++)
+//			{
+//				Data[y][x] = Data[y][x] + other.getElement(y,x);
+//			}
+//		}
+//
+//		return *this;
+//	}
+//
+//	/// translation operator '-'
+//	CMatrix& operator- ( const ElementType& value )
+//	{
+//		for (u32 y=0; y<Rows; y++)
+//		{
+//			for (u32 x=0; x<Cols; x++)
+//			{
+//				Data[y][x] = Data[y][x] - value;
+//			}
+//		}
+//		return *this;
+//	}
+//
+//	/// '-' operator overload
+//	CMatrix& operator-= ( const CMatrix& other )
+//	{
+//		if ( *this == other )
+//			return *this;
+//
+//		for (u32 y=0; y<Rows; y++)
+//		{
+//			for (u32 x=0; x<Cols; x++)
+//			{
+//				Data[y][x] = Data[y][x] - other.getElement(y,x);
+//			}
+//		}
+//
+//		return *this;
+//	}
+//
+//	/// scale operator '*'
+//	CMatrix& operator* ( const ElementType& value )
+//	{
+//		for (u32 y=0; y<Rows; y++)
+//		{
+//			for (u32 x=0; x<Cols; x++)
+//			{
+//				Data[y][x] = Data[y][x] *value;
+//			}
+//		}
+//		return *this;
+//	}
+//
+//	/// scale operator '/'
+//	CMatrix& operator/ ( const ElementType& value )
+//	{
+//		if (!core::equals( value, NullValue ))
+//		{
+//			const ElementType value_inv_factor = core::reciprocal( value );
+//
+//			for (u32 y=0; y<Rows; y++)
+//			{
+//				for (u32 x=0; x<Cols; x++)
+//				{
+//					Data[y][x] = Data[y][x] * value_inv_factor;
+//				}
+//			}
+//		}
+//
+//		return *this;
+//	}
+//
+//	/// added 11.09.2013
+//	/// for use with audio-animator
+//	/// @remarks should be slow, maybe this solution is insufficient
+//	/// @todo compare speed with array of arrays
+//	/// since there, only pointers have to be swapped/exchanged, and no data
+//
+//	video::IImage* createImage( ) const
+//	{
+//		dbPRINT( "CMatrix::createImage()\n" );
+//
+//		core::dimension2du img_size( Cols, Rows );
+//		video::CImage* img = new video::CImage( video::ECF_A8R8G8B8, img_size);
+//		if (!img)
+//			return 0;
+//
+//		img->fill( 0xffffffff );
+//
+//		const core::vector2df mm = getMinMax();
+//		const ElementType height = mm.Y - mm.X;
+//
+//		for (u32 y = 0; y < core::min_<u32>(Rows, img->getDimension().Height); y++)
+//		{
+//			for (u32 x = 0; x < core::min_<u32>(Cols, img->getDimension().Width); x++)
+//			{
+//				ElementType value = Data[y][x];
+//				value -= mm.X;
+//				value /= height;
+//				value = core::clamp<ElementType>( value, 0.0f, 1.0f );
+//				video::SColorf color( value, value, value, 1.0f );
+//				img->setPixel( x, y, color.toSColor() );
+//			}
+//		}
+//
+//		return img;
+//	}
 
 	//video::IImage* createHeightMap( ) const
 	//{
@@ -670,180 +874,59 @@ namespace core
 	//
 	//    return img;
 	//}
-
-	video::ITexture* createTexture( video::IVideoDriver* driver ) const
-	{
-		dbPRINT( "CMatrix::createTexture()\n" );
-
-		if (!driver)
-			return 0;
-
-		video::IImage* img = createImage();
-
-		video::ITexture* tex = driver->addTexture( "createTexture", img, 0 );
-
-		return tex;
-	}
+//
+//	video::ITexture* createTexture( video::IVideoDriver* driver ) const
+//	{
+//		dbPRINT( "CMatrix::createTexture()\n" );
+//
+//		if (!driver)
+//			return 0;
+//
+//		video::IImage* img = createImage();
+//
+//		video::ITexture* tex = driver->addTexture( "createTexture", img, 0 );
+//
+//		return tex;
+//	}
 
 	//
 	//		virtual ElementType det() const;
 	//		virtual ElementType subMatrix( u32 y, u32 x ) const;
 	//		virtual ElementType subDet( u32 y, u32 x ) const;
+//
+//	void fillRandom(ElementType minRandom, ElementType maxRandom)
+//	{
+//		dbPRINT( "CMatrix::fillRandom()\n");
+//
+//		const s32 diff_ = core::round32( core::abs_<s32>( maxRandom - minRandom ) );
+//
+//		for (u32 y=0; y<Rows; y++)
+//		{
+//			for (u32 x=0; x<Cols; x++)
+//			{
+//				s32 random_i_ = rand()%diff_;
+//
+//				ElementType random_f_ = minRandom + (ElementType)random_i_;
+//
+//				Data[y][x] = random_f_;
+//			}
+//		}
+//	}
+//
+//	void fillRandomNormalized()
+//	{
+//		dbPRINT( "CMatrix::fillRandomNormalized()\n");
+//
+//		for (u32 y=0; y<Rows; y++)
+//		{
+//			for (u32 x=0; x<Cols; x++)
+//			{
+//				ElementType value= core::reciprocal( (ElementType)(1+rand()) );
+//				setElement(y,x,value);
+//			}
+//		}
+//	}
 
-	void fillRandom(ElementType minRandom, ElementType maxRandom)
-	{
-		dbPRINT( "CMatrix::fillRandom()\n");
-
-		const s32 diff_ = core::round32( core::abs_<s32>( maxRandom - minRandom ) );
-
-		for (u32 y=0; y<Rows; y++)
-		{
-			for (u32 x=0; x<Cols; x++)
-			{
-				s32 random_i_ = rand()%diff_;
-
-				ElementType random_f_ = minRandom + (ElementType)random_i_;
-
-				Data[y][x] = random_f_;
-			}
-		}
-	}
-
-	void fillRandomNormalized()
-	{
-		dbPRINT( "CMatrix::fillRandomNormalized()\n");
-
-		for (u32 y=0; y<Rows; y++)
-		{
-			for (u32 x=0; x<Cols; x++)
-			{
-				ElementType value= core::reciprocal( (ElementType)(1+rand()) );
-				setElement(y,x,value);
-			}
-		}
-	}
-
-	bool swapRows( u32 row_a, u32 row_b )
-	{
-		dbPRINT( "CMatrix::swapRows()\n");
-
-		if ( row_a == row_b )
-			return false;
-
-		if ( row_a >= Rows )
-			return false;
-
-		if ( row_b >= Rows )
-			return false;
-
-		/// save value at target position
-		ElementType* row = Data[row_a];
-
-		/// overwrite target position with new value
-		Data[row_a] = Data[row_b];
-
-		/// overwrite source position with save row-data
-		Data[row_b] = row;
-
-		return true;
-	}
-
-	bool shiftRow()
-	{
-	    dbPRINT( "CMatrix::shiftRow()\n" );
-
-		u32 r = 1;
-		ElementType** b = new ElementType*[Rows];
-
-		if (!b)
-			return false;
-
-		u32 k = 0;
-		for (u32 i = r; i<Rows; i++)
-		{
-			b[i] = Data[k];
-			k++;
-		}
-
-		k = 0;
-		for (u32 i = Rows-r; i<Rows; i++)
-		{
-			b[k] = Data[i];
-			k++;
-		}
-
-		for (u32 i = 0; i<Rows; i++)
-		{
-			Data[i] = b[i];
-		}
-
-		delete [] b;
-
-		return true;
-	}
-
-
-	bool shiftRows( s32 rows )
-	{
-		dbPRINT( "CMatrix::shiftRows( %d )\n", rows);
-
-		if (rows>0)
-		{
-			for (u32 y=0; y<Rows; y++)
-			{
-				s32 i = ( rows+(s32)y );
-
-				if (i<0) i += Rows;
-				if (i>=(s32)Rows) i -= (s32)Rows;
-				//%((s32)Rows);
-				u32 k = (u32)i;
-	//            k = Rows-1-k;
-	//            k = k % Rows;
-
-				/// save value at target position
-				ElementType* row = Data[y];
-
-				/// overwrite target position with new value
-				Data[y] = Data[k];
-
-				/// overwrite source position with save row-data
-				Data[k] = row;
-			}
-		}
-		else
-		{
-			rows = core::abs_<s32>(rows);
-
-			for (u32 y=0; y<Rows; y++)
-			{
-				u32 k = ( (u32)rows+y )%Rows ;
-
-				/// save value at target position
-				ElementType* row = Data[y];
-
-				/// overwrite target position with new value
-				Data[y] = Data[k];
-
-				/// overwrite source position with save row-data
-				Data[k] = row;
-			}
-
-		}
-
-		return true;
-	}
-
-	bool load( const core::stringc& filename ) const
-	{
-		dbPRINT( "CMatrix::load( %s )\n", filename.c_str() );
-		return true;
-	}
-
-	bool save( const core::stringc& filename ) const
-	{
-		dbPRINT( "CMatrix::save( %s )\n", filename.c_str() );
-		return true;
-	}
 
 };
 

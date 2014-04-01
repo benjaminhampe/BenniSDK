@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -19,27 +19,19 @@ CMatrixSceneNode::CMatrixSceneNode(
 	const core::vector3df& rotation, const core::vector3df& scale )
 
 : ISceneNode( parent, smgr, id, position, rotation, scale)
-
 , PrimitiveType( shapeType )
-
 , ColorGradient( colorGradient )
-
 , Data( matrixData )
-
 , BoundingBox( core::aabbox3df( core::vector3df(0,0,0), shapeSize ))
 
-//, IsTextureAtlas(false), AtlasTileSize(0,0), IsBillBoard(false)
-
 {
-	#ifdef _DEBUG
-		dbPRINT( "CMatrixSceneNode()\n" );
-	#endif // _DEBUG
+	dbPRINT( "CMatrixSceneNode()\n" );
 
-	if (Data)
-		Data->grab();
-
-	if (ColorGradient)
-		ColorGradient->grab();
+//	if (Data)
+//		Data->grab();
+//
+//	if (ColorGradient)
+//		ColorGradient->grab();
 
 	createMesh();
 }
@@ -54,6 +46,10 @@ CMatrixSceneNode::~CMatrixSceneNode()
 //! create mesh by PrimtitiveType
 bool CMatrixSceneNode::createMesh()
 {
+//	dbPRINT( "CMatrixSceneNode::createMesh()\n" );
+	if (!Data || Data->empty())
+		return false;
+
 	bool result = false;
 	switch (PrimitiveType)
 	{
@@ -78,17 +74,17 @@ void CMatrixSceneNode::clear()
 	Vertices.clear();
 	Indices.clear();
 
-	if (Data)
-	{
-		Data->drop();
-		Data = 0;
-	}
-
-	if (ColorGradient)
-	{
-		ColorGradient->drop();
-		ColorGradient = 0;
-	}
+//	if (Data)
+//	{
+//		Data->drop();
+//		Data = 0;
+//	}
+//
+//	if (ColorGradient)
+//	{
+//		ColorGradient->drop();
+//		ColorGradient = 0;
+//	}
 
 }
 
@@ -96,6 +92,7 @@ void CMatrixSceneNode::clear()
 
 void CMatrixSceneNode::render()
 {
+//	dbPRINT("CMatrixSceneNode::render()\n")
 	if (!IsVisible)
 		return;
 
@@ -122,12 +119,12 @@ void CMatrixSceneNode::render()
 	}
 
 	driver->setTransform(video::ETS_WORLD, oldWorldMatrix);
+//	dbPRINT("render OK\n")
 }
 
 //! create Logarithmic Triangles Mesh
 
 bool CMatrixSceneNode :: createMeshAsLogarithmicTriangles()
-
 {
 	if (!Data)	return false;
 
@@ -216,10 +213,14 @@ bool CMatrixSceneNode :: createMeshAsLogarithmicTriangles()
 
 bool CMatrixSceneNode :: createMeshAsTriangles()
 {
-	if (!Data)	return false;
+//	dbPRINT("CMatrixSceneNode::createMeshAsTriangles()\n")
+	if (!Data)
+		return false;
+
+	if (Data->empty())
+		return false;
 
 	const u32 r = Data->getRows();
-
 	const u32 c = Data->getCols();
 
 	if ((r==0) || (c==0))
@@ -296,6 +297,7 @@ bool CMatrixSceneNode :: createMeshAsTriangles()
 			Indices.push_back( k+3 );
 		}
 	}
+//	dbPRINT("OK\n")
 	return true;
 }
 

@@ -149,17 +149,17 @@ namespace irr
 					}
 
 
-				#if _DEBUG
-					core::stringc dText("LookUpTable[");
-					dText += i;
-					dText += "], t=";
-					dText += t;
-					dText += ", t_index=";
-					dText += greater_t_index;
-					dText += ", color=";
-					dText += video::toString( LookUpTable[i].toSColor() );
-					printf( "%s\n", dText.c_str() );
-				#endif // _DEBUG
+//				#if _DEBUG
+//					core::stringc dText("LookUpTable[");
+//					dText += i;
+//					dText += "], t=";
+//					dText += t;
+//					dText += ", t_index=";
+//					dText += greater_t_index;
+//					dText += ", color=";
+//					dText += video::toString( LookUpTable[i].toSColor() );
+//					printf( "%s\n", dText.c_str() );
+//				#endif // _DEBUG
 
 				}
 			}
