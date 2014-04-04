@@ -98,7 +98,7 @@ IrrlichtDevice* createSilentNullDevice()
 }
 
 ///@brief create a hardware accelerated IrrlichtDevice, when possible
-IrrlichtDevice* createIrrlichtDevice( s32 w, s32 h, s32 bpp, bool fullscreen, bool aa )
+IrrlichtDevice* createOpenGlDevice( s32 w, s32 h, s32 bpp, bool fullscreen, bool aa )
 {
 	/// user choice
 	//if (bUserChoice
@@ -113,7 +113,9 @@ IrrlichtDevice* createIrrlichtDevice( s32 w, s32 h, s32 bpp, bool fullscreen, bo
 	params.HighPrecisionFPU = true;
 	params.Doublebuffer = true;
 	params.Vsync = false;
+	params.DriverMultithreaded = true;
 	params.Fullscreen = fullscreen;
+	params.UsePerformanceTimer = false;
 	//params.ZBufferBits = 32;
 	//params.Stencilbuffer = true;
 	//params.WithAlphaChannel = false;
@@ -753,8 +755,6 @@ u32 getRefreshRate( IrrlichtDevice* device )
 	return refreshRate;
 }
 
-} // end namespace irr
-
 /// SetWindowLong( hWnd, GWL_STYLE, LONG dwNewLong );
 //GWL_EXSTYLE -20 Sets a new extended window style.
 //GWL_HINSTANCE -6 Sets a new application instance handle.
@@ -789,3 +789,16 @@ u32 getRefreshRate( IrrlichtDevice* device )
 //WS_TILEDWINDOW (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)	The window is an overlapped window. Same as the WS_OVERLAPPEDWINDOW style.
 //WS_VISIBLE 0x10000000L	The window is initially visible. This style can be turned on and off by using the ShowWindow or SetWindowPos function.
 //WS_VSCROLL 0x00200000L The window has a vertical scroll bar.
+
+///@brief Set skin transparency 0..255
+void setSkinTransparency(u32 alpha, gui::IGUISkin * skin)
+{
+	for (s32 i=0; i<gui::EGDC_COUNT ; ++i)
+	{
+		video::SColor col = skin->getColor((gui::EGUI_DEFAULT_COLOR)i);
+		col.setAlpha(alpha);
+		skin->setColor((gui::EGUI_DEFAULT_COLOR)i, col);
+	}
+}
+
+} // end namespace irr

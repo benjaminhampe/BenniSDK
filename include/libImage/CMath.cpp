@@ -5,6 +5,29 @@ namespace irr
 namespace core
 {
 
+s32 Math::Pow( s32 base, u32 exponent )
+{
+	s32 result = 1;
+
+	for (u32 i=0; i<exponent; i++)
+	{
+		result *= base;
+	}
+
+	return result;
+}
+
+//s32 Math::Log2( s32 value )
+//{
+//
+//	for (u32 i=0; i<exponent; i++)
+//	{
+//		result *= base;
+//	}
+//
+//	return result;
+//}
+
 void Math::Randomize()
 {
 	srand((u32)time(0));

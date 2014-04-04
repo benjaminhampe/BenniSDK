@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -45,6 +45,10 @@ namespace core
 class Math
 {
 public:
+	//! @brief Int to the power of another (non negative) int
+	//! @return integer
+	static s32 Pow( s32 base, u32 exponent );
+
 	//! @brief Init class wide used randomizer
 	//! @return nothing
 	static void Randomize();
@@ -52,8 +56,6 @@ public:
 	//! @brief getRandomNumber(u32 max_random_number)
 	//! @return random unsigned 32bit number
 	static u32 Random(u32 seed);
-
-
 
 	//! @brief abs<T>(T value)
 	//! @return Absolute of a value of type |T|

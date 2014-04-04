@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -8,7 +8,7 @@
 namespace irr
 {
 	///@class IFunction
-	///@brief This class is a functor or callable object, 
+	///@brief This class is a functor or callable object,
 	/// because it overloads the "function call" operator.
 	/// It has no states, only interface.
 

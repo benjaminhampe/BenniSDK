@@ -1,36 +1,27 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __IRR_EXTENSION_INTERFACE_I_COLOR_GRADIENT_H__
-#define __IRR_EXTENSION_INTERFACE_I_COLOR_GRADIENT_H__
+#ifndef __IRR_EXT_ICOLOR_GRADIENT_H__
+#define __IRR_EXT_ICOLOR_GRADIENT_H__
 
-#include <irrlicht.h>
+#include <irrTypes.h>
+#include <irrMath.h>
+#include <irrArray.h>
+#include <irrString.h>
+#include <IReferenceCounted.h>
 
+#include <SColor.h>
+#include <IImage.h>
 #include <../source/Irrlicht/CImage.h>
 
-#ifdef _DEBUG
-#include <../source/Irrlicht/os.h>
-#endif // _DEBUG
+#include <debugPrint.h>
 
 namespace irr
 {
 namespace video
 {
-	/// @function convert SColor to formatted string
-	//core::stringc toString( const SColor& color );
-
-	/// @function convert SColorf to formatted string
-	//core::stringc toString( const SColorf& color );
-
-
-	/// /// /// /// /// /// /// /// /// /// /// ///
-
-	/// format SColor to string
-
-	/// /// /// /// /// /// /// /// /// /// /// ///
-
-
+	/// @brief convert SColor to formatted string
 	REALINLINE core::stringc toString( const SColor& color )
 	{
 		core::stringc s("SColor(");
@@ -45,6 +36,7 @@ namespace video
 		return s;
 	}
 
+	/// @brief convert SColorf to formatted string
 	REALINLINE core::stringc toString( const SColorf& color )
 	{
 		core::stringc s("SColorf(");
@@ -64,84 +56,51 @@ namespace video
 	{
 	public:
 
-		/// @class MyColorStruct { f32 t; scolorf128 color }
+		/// @class MyColorStruct
 		struct MyColorStruct
 		{
-			core::stringc Name;
-			SColorf Color;
-			f32 Position;			// in range 0..1
+			SColorf Color;	// 128-bit color for better interplation quality
+			f32 Position;	// in range 0..1
 
 			/// @brief default constructor
 			MyColorStruct( )
-				: Name("SColorf(0,0,0,0),f32(0.0f)")
-				, Color(SColorf(0,0,0,0))
-				, Position(0)
-			{ }
+				: Color(SColorf(0,0,0,0)), Position(0)
+			{}
 
 			/// @brief value constructor
 			MyColorStruct( const SColor& color, f32 t )
-				: Name("SColor(")
-				, Color(SColorf(color))
-				, Position(t)
-			{
-				// Name = "SColor(";
-				Name += Color.getAlpha();
-				Name += ",";
-				Name += Color.getRed();
-				Name += ",";
-				Name += Color.getGreen();
-				Name += ",";
-				Name += Color.getBlue();
-				Name += "),f32(";
-				Name += Position;
-				Name += ")";
-			}
+				: Color(SColorf(color)), Position(t)
+			{}
 
 			/// @brief value constructor
 			MyColorStruct( const SColorf& color, f32 t )
-				: Name("SColorf(")
-				, Color(color)
-				, Position(t)
-			{
-				// Name = "SColorf(";
-				Name += Color.getAlpha();
-				Name += ",";
-				Name += Color.getRed();
-				Name += ",";
-				Name += Color.getGreen();
-				Name += ",";
-				Name += Color.getBlue();
-				Name += "),f32(";
-				Name += Position;
-				Name += ")";
-			}
+				: Color(color), Position(t)
+			{}
 
 			/// @brief copy constructor
 			MyColorStruct( const MyColorStruct& other)
-				: Name(""), Color(SColorf(0,0,0,0)), Position(0.0f)
+				: Color(SColorf(0,0,0,0)), Position(0.0f)
 			{
 				if ( this != &other )
 				{
-					Name = (other.Name);
 					Color = (other.Color);
 					Position = (other.Position);
 				}
 			}
 
 			/// @brief copy operator
-			MyColorStruct&	operator= ( const MyColorStruct& other )
+			MyColorStruct& operator= ( const MyColorStruct& other )
 			{
 				if ( this == &other )
 					return *this;
 
-				Name = (other.Name);
 				Color = (other.Color);
 				Position = (other.Position);
 				return *this;
 			}
 
 			/// @brief multiplies color times t in range 0..1
-			virtual MyColorStruct&	operator* 	( f32 value )
+			virtual MyColorStruct& operator* ( f32 value )
 			{
 				value = core::clamp<f32>( value, 0.0f, 1.0f );
 				Color.set(
@@ -153,72 +112,28 @@ namespace video
 			}
 
 			/// @brief lower than operator, only operating on t
-			virtual bool operator< 	( const MyColorStruct& other ) const
+			virtual bool operator< ( const MyColorStruct& other ) const
 			{
 				if ( this == &other )
 					return false;
-				if ((this->Position) < other.Position)
+
+				if ( Position < other.Position )
 					return true;
 				else
 					return false;
 			}
 
 			/// @brief greater than operator, only operating on t
-			virtual bool operator> 	( const MyColorStruct& other ) const
+			virtual bool operator> ( const MyColorStruct& other ) const
 			{
 				if ( this == &other )
 					return false;
-				if ((this->Position) < other.Position)
+
+				if ( Position < other.Position )
 					return true;
 				else
 					return false;
 			}
-//
-//			/// @brief equality operator, operating on both t and color
-//			virtual bool operator==	( const MyColorStruct& other ) const
-//			{
-//				if ( *this == other )
-//					return false;
-//
-//				if ( core::equals(*this.Position, other.Position)
-//						&& (this->Name, other.Name)
-//						&& (this->Color, other.Color) )
-//				{
-//					return true;
-//				}
-//				else
-//				{
-//					return false;
-//				}
-//			}
-//
-//			/// @brief inequality operator
-//			virtual bool operator!=	( const MyColorStruct& other ) const
-//			{
-//				if ( *this == other )
-//					return false;
-//				else
-//					return true;
-//			}
-//
-//			/// @brief lower or equal than operator
-//			virtual bool operator<=	( const MyColorStruct& other ) const
-//			{
-//				if ( ( *this == other ) || ( *this < other ) )
-//					return true;
-//				else
-//					return false;
-//			}
-//
-//			/// @brief greater or equal than operator
-//			virtual bool operator>=	( const MyColorStruct& other ) const
-//			{
-//				if ( ( *this == other ) || ( *this > other ) )
-//					return true;
-//				else
-//					return false;
-//			}
-
 		};
 
 	protected:
@@ -228,7 +143,7 @@ namespace video
 
 	public:
 		/// @brief get formatted self-decription ( text as stringc )
-		virtual core::stringc toString( ) const = 0;
+		virtual core::stringc toString() const = 0;
 
 		/// return interpolated color t in range [0,1]
 		virtual SColor getColor( f32 t ) const = 0;
@@ -242,18 +157,25 @@ namespace video
 		/// @brief save to xml file-stream
 		virtual bool write ( io::IXMLWriter* pWriter ) const = 0;
 
-
 		/// @brief value constructor ( default )
 		explicit IColorGradient( core::stringc name = "", u32 color_count = 0 )
 			: Name(name)
 		{
-			setColorCount( color_count, true );
+			Colors.reallocate( color_count );
+			Colors.set_used( 0 );
+
+			const MyColorStruct zeroColor( SColorf(0,0,0,0), 0.0f );
+
+			for (u32 i=0; i<color_count; i++)
+			{
+				Colors.push_back( zeroColor );
+			}
 		}
 
 		/// @brief value destructor, erases used memory for stop-color-array
 		virtual ~IColorGradient()
 		{
-			clear();
+			Colors.clear();
 		}
 
 		/// @brief set basename of color-gradient
@@ -289,14 +211,12 @@ namespace video
 //			/// erase content without reallocation
 //			if (bFillZero && color)
 //			{
-				const SColorf zeroColor(0,0,0,0);
-				const f32 zeroPosition(0.0f);
-				const MyColorStruct myColor( zeroColor, zeroPosition );
+			const MyColorStruct zeroColor( SColorf(0,0,0,0), 0.0f );
 
-				for (u32 i=0; i<color_count; i++)
-				{
-					Colors.push_back( myColor );
-				}
+			for (u32 i=0; i<color_count; i++)
+			{
+				Colors.push_back( zeroColor );
+			}
 //			}
 		}
 
@@ -371,24 +291,18 @@ namespace video
 			u32 h,
 			bool bVertical = false ) const
 		{
-			#if _DEBUG
-			os::Printer::log( "createImage()", ELL_INFORMATION );
-			#endif // _DEBUG
+			dbPRINT( "IColorGradient::createImage()\n" )
 
 			if (w==0 || h==0)
 			{
-				#if _DEBUG
-				os::Printer::log( "Can't create Image of size zero.", ELL_ERROR );
-				#endif // _DEBUG
+				dbERROR( "Can't create Image of size zero.\n" )
 				return 0;
 			}
 
 			IImage* img = (IImage*)new CImage( this->getColorFormat(), core::dimension2du(w,h) );
 			if (!img)
 			{
-				#if _DEBUG
-				os::Printer::log( "Could not create CImage", ELL_ERROR );
-				#endif // _DEBUG
+				dbERROR( "Could not create CImage\n" )
 				return 0;
 			}
 
@@ -437,32 +351,24 @@ namespace video
 			bool bVertical = false,
 			const io::path& name = "" ) const
 		{
-			#if _DEBUG
-			os::Printer::log( "createTexture()", ELL_INFORMATION );
-			#endif // _DEBUG
+			dbPRINT( "createTexture()\n" );
 
 			if (!driver)
 			{
-				#if _DEBUG
-				os::Printer::log( "Can't create Texture without IVideoDriver (invalid pointer).", ELL_ERROR );
-				#endif // _DEBUG
+				dbERROR( "Can't create Texture without IVideoDriver (invalid pointer)\n" )
 				return 0;
 			}
 
 			if (w==0 || h==0)
 			{
-				#if _DEBUG
-				os::Printer::log( "Can't create Texture of size zero.", ELL_ERROR );
-				#endif // _DEBUG
+				dbERROR( "Can't create Texture of size zero\n" )
 				return 0;
 			}
 
 			IImage* img = createImage(w,h,bVertical);
 			if (!img)
 			{
-				#if _DEBUG
-				os::Printer::log( "Could not create Image", ELL_ERROR );
-				#endif // _DEBUG
+				dbERROR( "Could not create Image\n")
 				return 0;
 			}
 
@@ -489,9 +395,7 @@ namespace video
 
 			if (!tex)
 			{
-				#if _DEBUG
-				os::Printer::log( "Could not create Texture", ELL_ERROR );
-				#endif // _DEBUG
+				dbERROR( "Could not create Texture\n")
 				return 0;
 			}
 
@@ -506,20 +410,20 @@ namespace video
 		{
 			if (!driver)
 			{
-				printf("Invalid pointer to IVieoDriver\n");
+				dbERROR( "Invalid pointer to IVieoDriver\n")
 				return false;
 			}
 
 			IImage* img = createImage( w, h, bVertical );
 			if (!img)
 			{
-				printf("Could not create image from ColorGradient\n");
+				dbERROR( "Could not create image from ColorGradient\n")
 				return false;
 			}
 
 			if (!driver || !driver->writeImageToFile(img, filename ) )
 			{
-				printf("Could not save image from ColorGradient to file\n");
+				dbERROR( "Could not save image from ColorGradient to file\n")
 				return false;
 			}
 

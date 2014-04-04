@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe <BenjaminHampe@gmx.de>
+// Copyright (C) 2002-2014 Benjamin Hampe <BenjaminHampe@gmx.de>
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 

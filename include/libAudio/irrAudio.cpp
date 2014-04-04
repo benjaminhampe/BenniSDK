@@ -357,12 +357,10 @@ bool createFilledPath(
 		pointCount = core::min_<u32>( max_points, pointCount );
 	}
 
-	const f32 step_x = size.Width*core::reciprocal( (f32)(pointCount-1) );
+	const f32 x_scale = size.Width * core::reciprocal( (f32)(pointCount-1) );
+	const f32 y_scale = size.Height;
 
 	const video::E_MATERIAL_TYPE matType = (gradient)?gradient->getMaterialType():video::EMT_SOLID;
-
-	/// !!! User defined constant for maximum dB value
-	const f32 diff_y_inv = core::reciprocal( 160.0f );
 
 	buffer->Vertices.reallocate( 4*(pointCount-1) );
 	buffer->Vertices.set_used( 0 );
@@ -382,8 +380,6 @@ bool createFilledPath(
 
 	const video::SColor bgColor = gradient->getColor( 0.0f );
 
-	const f32 scale_y = size.Height * diff_y_inv;
-
 	for (u32 i=0; i<pointCount-1; i++)
 	{
 		f32 y1 = 0.f;
@@ -396,10 +392,8 @@ bool createFilledPath(
 		video::SColor color2 = 0xffffffff;
 		if (gradient)
 		{
-			f32 t1 = core::abs_<f32>(y1)*diff_y_inv;
-			f32 t2 = core::abs_<f32>(y2)*diff_y_inv;
-			color1 = gradient->getColor( t1 );
-			color2 = gradient->getColor( t2 );
+			color1 = gradient->getColor( y1 );
+			color2 = gradient->getColor( y2 );
 		}
 
 		/// @todo: reuse vertices to avoid flickering due to rounding errors
@@ -407,19 +401,19 @@ bool createFilledPath(
 		/// @todo: set material AA
 
 		video::S3DVertex A,B,C,D;
-		A.Pos = offset+core::vector3df((f32)i*step_x,0.f,0.f);
+		A.Pos = offset+core::vector3df( x_scale*(f32)i, 0.f,0.f);
 		A.Normal = core::vector3df( 0,0,-1);
 		A.Color = bgColor;
 		A.TCoords = core::vector2df(0,0);
-		B.Pos = offset+core::vector3df((f32)i*step_x,scale_y*y1,0.f);
+		B.Pos = offset+core::vector3df( x_scale*(f32)i, y_scale*y1,0.f);
 		B.Normal = core::vector3df(0,0,-1);
 		B.Color = color1;
 		B.TCoords = core::vector2df(0,0);
-		C.Pos = offset+core::vector3df((f32)(i+1)*step_x,scale_y*y2,0.f);
+		C.Pos = offset+core::vector3df( x_scale*(f32)(i+1), y_scale*y2,0.f);
 		C.Normal = core::vector3df(0,0,-1);
 		C.Color = color2;
 		C.TCoords = core::vector2df(0,0);
-		D.Pos = offset+core::vector3df((f32)(i+1)*step_x,0.f,0.f);
+		D.Pos = offset+core::vector3df( x_scale*(f32)(i+1),0.f,0.f);
 		D.Normal = core::vector3df(0,0,-1);
 		D.Color = bgColor;
 		D.TCoords = core::vector2df(0,0);

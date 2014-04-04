@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -291,19 +291,12 @@ IImage*	Tool::createImageFromText(
 #ifdef _IRR_COMPILE_WITH_FREETYPE2_
 
 	void Tool::drawBitmapFT(
-
 		IImage* dst,
-
 		FT_Bitmap* bitmap,
-
 		s32 x,
-
 		s32 y,
-
 		const SColor& txt_color )
-
 	{
-
 		if (!dst)
 			return;
 
@@ -345,33 +338,22 @@ IImage*	Tool::createImageFromText(
 		}
 	}
 
-
 	//! create image from text ( always centered ) with minimal size for text
-
 	//! uses IGUIEnvironment and its IVideoDriver
-
 	//! can be used in combination with IGUITTFont to load truetype-fonts of any size
 
 	IImage*
-
         createImageFromText(
-
 			SFont* font,
-
 			const core::stringw& txt,
-
 			const SColor& txt_color,
-
 			const SColor& background_color )
-
 	{
-		#ifdef _DEBUG
-		os::Printer::log("createImageFromTextFT()", ELL_INFORMATION);
-		#endif // _DEBUG
+		dbPRINT("createImageFromTextFT()\n");
 
 		if (!font)
 		{
-			os::Printer::log( "Invalid pointer to SFont", ELL_ERROR );
+			dbERROR("Invalid pointer to SFont\n");
 			return 0;
 		}
 
@@ -405,16 +387,10 @@ IImage*	Tool::createImageFromText(
 
 		for ( n = 0; n < num_chars; n++ )
 		{
-			// set transformation
-			// FT_Set_Transform( face, &matrix, &pen );
-
 			// load glyph image into the slot (erase previous one)
 			error = FT_Load_Char( face, (s32)txt[n], FT_LOAD_RENDER );
 			if ( error )
 				continue;                 /* ignore errors */
-
-			// now, draw to our target surface (convert position)
-			//drawBitmapFT( dst, &slot->bitmap, slot->bitmap_left, h - slot->bitmap_top );
 
 			// increment pen position
 			pen.x += slot->advance.x;
@@ -426,17 +402,15 @@ IImage*	Tool::createImageFromText(
 		const core::dimension2du img_size( (u32)pen.x, (u32)pen.y);
 
 		IImage* img = new CImage( ECF_A8R8G8B8, img_size );
-
 		if (!img)
 		{
-			os::Printer::log( "Could not create image of txt_size", ELL_ERROR);
+			dbERROR("Could not create image of txt_size\n");
 			return 0;
 		}
 
 		img->fill( background_color );
 
 		const s32 w = (s32)img_size.Width;
-
 		const s32 h = (s32)img_size.Height;
 
 		/// draw text to image
@@ -462,7 +436,7 @@ IImage*	Tool::createImageFromText(
 				continue;                 /* ignore errors */
 
 			// now, draw to our target surface (convert position)
-			drawBitmapFT( img, &slot->bitmap, pen.x, h - pen.y );
+			Tool::drawBitmapFT( img, &(slot->bitmap), pen.x, h - pen.y );
 			// drawBitmapFT( img, &slot->bitmap, slot->bitmap_left, h - slot->bitmap_top );
 
 			// increment pen position
@@ -470,69 +444,14 @@ IImage*	Tool::createImageFromText(
 			pen.y += slot->advance.y;
 		}
 
-
 		/// drop freetype2
-
 		FT_Done_Face    ( face );
 		FT_Done_FreeType( library );
-
-//
-//		const core::dimension2du& txt_size = img->getDimension();
-//
-//		core::position2di offset(0,0);
-//		if (hAlign == 0)
-//		{
-//			offset.X = -(s32)(txt_size.Width>>1);
-//		}
-//		else if (hAlign > 0 )
-//		{
-//			offset.X = -(s32)(txt_size.Width);
-//		}
-//
-//		if (vAlign == 0)
-//		{
-//			offset.Y = -(s32)(txt_size.Height>>1);
-//		}
-//		else if (vAlign > 0 )
-//		{
-//			offset.Y = -(s32)(txt_size.Height);
-//		}
-//
-//		x+=offset.X;
-//		y+=offset.Y;
-//
-//		/// debug-drawing
-//		#ifdef _DEBUG
-//		drawRect( dst, core::recti( core::position2di(x,y), txt_size ), SColor(255,255,0,0), 1, false);
-//		#endif // _DEBUG
-//
-//		/// actual text-drawing
-//		// loop all pixels of text-image, skip operation when outside dst-bound
-//		// or skip when txt-pixel is 0 == SColor(0,0,0,0)
-//		for (u32 j=0; j<txt_size.Height; j++)
-//		{
-//			for (u32 i=0; i<txt_size.Width; i++)
-//			{
-//				const SColor& pixel = img->getPixel(i,j);
-//				if (pixel.color != 0)
-//				{
-//					s32 dx = x+(s32)i;
-//					s32 dy = y+(s32)j;
-//					if (dx>=0 && dy>=0 && dx<(s32)img_size.Width && dy<(s32)img_size.Height)
-//					{
-//						dst->setPixel( dx,dy, pixel, blend );
-//					}
-//				}
-//			}
-//		}
-
 		return img;
 	}
 
 //! draw text to existing software image
-
 //! using only software freetype2 library and no irrlicht-device
-
 //! text is aligned at borders ( -1=left/top, 0=center/middle, 1=right/bottom )
 
 bool
@@ -550,19 +469,17 @@ bool
 			bool blend)
 
 	{
-		#ifdef _DEBUG
-		os::Printer::log("drawTextFT()", ELL_INFORMATION);
-		#endif // _DEBUG
+		dbPRINT("drawTextFT()\n");
 
 		if (!dst)
 		{
-			os::Printer::log( "drawText() - Invalid pointer to IImage", ELL_ERROR );
+			dbERROR("drawText() - Invalid pointer to IImage\n");
 			return false;
 		}
 
 		if (!font)
 		{
-			os::Printer::log( "drawText() - Invalid pointer to IGUIFont", ELL_ERROR );
+			dbERROR("drawText() - Invalid pointer to IGUIFont\n");
 			return false;
 		}
 
@@ -570,21 +487,20 @@ bool
 
 		if (x>=(s32)dst_size.Width)
 		{
-			os::Printer::log( "drawText() - Cant draw outside destination Image ( x coord too big )", ELL_ERROR );
+			dbERROR("drawText() - Cant draw outside destination Image ( x coord too big )\n");
 			return false;
 		}
 
 		if (y>=(s32)dst_size.Height)
 		{
-			os::Printer::log( "drawText() - Cant draw outside destination Image ( y coord too big )", ELL_ERROR );
+			dbERROR("drawText() - Cant draw outside destination Image ( y coord too big )\n");
 			return false;
 		}
 
 		IImage* img = createImageFromText(font, txt, txt_color, background_color);
-
 		if (!img)
 		{
-			os::Printer::log( "drawText() - Could not create image from text", ELL_ERROR );
+			dbERROR("drawText() - Could not create image from text\n");
 			return false;
 		}
 
@@ -614,7 +530,7 @@ bool
 
 		/// debug-drawing
 		#ifdef _DEBUG
-		//drawRect( dst, core::recti( core::position2di(x,y), txt_size ), SColor(255,255,0,0), 1, false);
+		// drawRect( dst, core::recti( core::position2di(x,y), txt_size ), SColor(255,255,0,0), 1, false);
 		#endif // _DEBUG
 
 		/// actual text-drawing

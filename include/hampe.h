@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -9,10 +9,12 @@
 
 // extensions
 #include <core.h>
+#include <libImage/SRange.h>
 #include <libImage/drawLoadingScreen.h>
 #include <libImage/UString.h>
 #include <libImage/IGUITTFont.h>
 #include <libImage/CGUITTFont.h>
+#include <libImage/CMath.h>
 #include <libImage/CMatrix.h>
 #include <libImage/sinCosTable.h>
 #include <libImage/ColorConstants.h>

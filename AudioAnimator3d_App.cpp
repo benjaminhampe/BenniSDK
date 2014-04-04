@@ -10,17 +10,27 @@ namespace irr
 Application::Application( IrrlichtDevice* Device )
 : Device(Device)
 , AppTitle(L"AudioPlayer with 3d animated FFT-PowerSpectrum (c) 2013 by BenjaminHampe@gmx.de")
-, DefaultAudioFilename("../../media/music/razor.ogg")
+//, DefaultAudioFilename("../../media/music/razor.ogg")
+, DefaultAudioFilename("../../media/music/benni_amelie_half.ogg")
+//, DefaultAudioFilename("../../media/music/benni_coldplay_science_test.ogg")
+//, DefaultAudioFilename("../../media/music/benni_klassik_test_001.ogg")
+//, DefaultAudioFilename("../../media/music/benni_requiem_test.ogg")
+//, DefaultAudioFilename("../../media/music/benni_coldplay_clocks_test.ogg")
+//, DefaultAudioFilename("../../media/music/benni_entertainer_test.ogg")
+//, DefaultAudioFilename("../../media/music/benni_madworld_test.ogg")
+//, DefaultAudioFilename("../../media/music/benni_tonleiter.ogg")
 , DefaultSkydomeTexture("../../media/skydome/iras.jpg")
 , DefaultIntroTexture("../../media/background/loadscreen.jpg")
 , ScreenSize(0,0)
 , ScreenRect(0,0,0,0)
 , Wallpaper(0)
-, FFT_Size(2*1024)
-, FFT_MatrixRows(50)
-, FFT_MatrixCols(100)
+, FFT_Size(8*1024)
+, FFT_MatrixRows(64)
+, FFT_MatrixCols(256)
 , MeshSize(1024,256,1024)
 , Transform( FFT_Size )
+, FFT_Range(0,130)
+, FFT_Threshold(50)
 //, FFT_Matrix( FFT_MatrixRows, FFT_MatrixCols )
 , FFT_SceneNode(0)
 , WireframeButton(0)
@@ -43,6 +53,8 @@ Application::~Application()
 
 bool Application::setup()
 {
+	dbPRINT( "Application::setup()\n" )
+
 	if (!Device)
 		return false;
 
@@ -110,14 +122,15 @@ bool Application::setup()
 
 	/// +++ FFT ColorGradient +++
 	FFT_Gradient.addColor( video::SColor(255,0,0,0), 0.00f );
-	FFT_Gradient.addColor( video::SColor(255,25,25,25), 0.10f );
-	FFT_Gradient.addColor( video::SColor(255,50,50,50), 0.20f );
-	FFT_Gradient.addColor( video::SColor(255,75,75,75), 0.30f );
+//	FFT_Gradient.addColor( video::SColor(255,25,25,25), 0.10f );
+//	FFT_Gradient.addColor( video::SColor(255,50,50,50), 0.20f );
+//	FFT_Gradient.addColor( video::SColor(255,75,75,75), 0.30f );
 	FFT_Gradient.addColor( video::SColor(255,100,100,100), 0.40f );
 	FFT_Gradient.addColor( video::SColor(255,125,125,125), 0.45f );
-	FFT_Gradient.addColor( video::SColor(255,0,0,255), 0.50f );
-	FFT_Gradient.addColor( video::SColor(255,0,200,0), .60f );
-	FFT_Gradient.addColor( video::SColor(255,255,255,0), .80f );
+	FFT_Gradient.addColor( video::SColor(255,0,0,255), 0.70f );
+	FFT_Gradient.addColor( video::SColor(255,0,200,0), .80f );
+	FFT_Gradient.addColor( video::SColor(255,255,255,255), .90f );
+	FFT_Gradient.addColor( video::SColor(255,255,255,0), .95f );
 	FFT_Gradient.addColor( video::SColor(255,255,0,0), 1.0f );
 	FFT_Gradient.setTableSize( 1024 );
 	FFT_Gradient.updateTable();
@@ -153,13 +166,22 @@ bool Application::setup()
 	FFT_FrontMesh.Material.Lighting = false;
 	FFT_FrontMesh.Material.Wireframe = false;
 	FFT_FrontMesh.Material.FogEnable = false;
-	dbPRINT("setup() OK\n")
 
+	// disable camera moving on start
+	{
+		scene::ICameraSceneNode* camera = smgr->getActiveCamera();
+		if (camera)
+		{
+			camera->setInputReceiverEnabled( false );
+		}
+	}
 	return true;
 }
 
 bool Application::setupGUI()
 {
+	dbPRINT( "Application::setupGUI()\n" )
+
 //	gui::IGUIWindow* win = createWindow( env, L"Realtime-Monitor for AudioSignals",
 //		100,100, ScreenSize.Width-200,ScreenSize.Height-200);
 //
@@ -206,6 +228,21 @@ bool Application::setupGUI()
 	label->setBackgroundColor( bgColor );
 	y += dy;
 
+	label = createLabel( env, env->getRootGUIElement(), L"Decibel Min", x,y, 1,-1,5);
+	label->setOverrideColor( fgColor );
+	label->setBackgroundColor( bgColor );
+	y += dy;
+
+	label = createLabel( env, env->getRootGUIElement(), L"Decibel Max", x,y, 1,-1,5);
+	label->setOverrideColor( fgColor );
+	label->setBackgroundColor( bgColor );
+	y += dy;
+
+	label = createLabel( env, env->getRootGUIElement(), L"Decibel Threshold", x,y, 1,-1,5);
+	label->setOverrideColor( fgColor );
+	label->setBackgroundColor( bgColor );
+	y += dy;
+
 	label = createLabel( env, env->getRootGUIElement(), L"FFT Size", x,y, 1,-1,5);
 	label->setOverrideColor( fgColor );
 	label->setBackgroundColor( bgColor );
@@ -219,35 +256,56 @@ bool Application::setupGUI()
 	ui_MeshSizeX->setDecimalPlaces( 0 );
 	ui_MeshSizeX->setStepSize( 1 );
 	ui_MeshSizeX->setRange( 2, 65536 );
-	ui_MeshSizeX->setValue( Transform.size() );
+	ui_MeshSizeX->setValue( MeshSize.X );
 	y += dy;
 
 	ui_MeshSizeY = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MeshSizeY->setDecimalPlaces( 0 );
 	ui_MeshSizeY->setStepSize( 1 );
 	ui_MeshSizeY->setRange( 2, 65536 );
-	ui_MeshSizeY->setValue( Transform.size() );
+	ui_MeshSizeY->setValue( MeshSize.Y );
 	y += dy;
 
 	ui_MeshSizeZ = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MeshSizeZ->setDecimalPlaces( 0 );
 	ui_MeshSizeZ->setStepSize( 1 );
 	ui_MeshSizeZ->setRange( 2, 65536 );
-	ui_MeshSizeZ->setValue( Transform.size() );
+	ui_MeshSizeZ->setValue( MeshSize.Z );
 	y += dy;
 
 	ui_MatrixCols = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MatrixCols->setDecimalPlaces( 0 );
 	ui_MatrixCols->setStepSize( 1 );
 	ui_MatrixCols->setRange( 2, 65536 );
-	ui_MatrixCols->setValue( Transform.size() );
+	ui_MatrixCols->setValue( FFT_MatrixCols );
 	y += dy;
 
 	ui_MatrixRows = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MatrixRows->setDecimalPlaces( 0 );
 	ui_MatrixRows->setStepSize( 1 );
-	ui_MatrixRows->setRange( 2, Transform.size() );
-	ui_MatrixRows->setValue( FFT_Output.size() );
+	ui_MatrixRows->setRange( 2, FFT_Size );
+	ui_MatrixRows->setValue( FFT_MatrixRows );
+	y += dy;
+
+	ui_DecibelMin = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
+	ui_DecibelMin->setDecimalPlaces( 0 );
+	ui_DecibelMin->setStepSize( 1 );
+	ui_DecibelMin->setRange( 0, 80 );
+	ui_DecibelMin->setValue( FFT_Range.Min );
+	y += dy;
+
+	ui_DecibelMax = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
+	ui_DecibelMax->setDecimalPlaces( 0 );
+	ui_DecibelMax->setStepSize( 1 );
+	ui_DecibelMax->setRange( 80, 160 );
+	ui_DecibelMax->setValue( FFT_Range.Max );
+	y += dy;
+
+	ui_DecibelThreshold = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
+	ui_DecibelThreshold->setDecimalPlaces( 0 );
+	ui_DecibelThreshold->setStepSize( 1 );
+	ui_DecibelThreshold->setRange( FFT_Range.Min, FFT_Range.Max );
+	ui_DecibelThreshold->setValue( FFT_Threshold );
 	y += dy;
 
 	ui_FFT_Size = env->addComboBox( core::recti(x,y,x+dx-1, y+dy-1), env->getRootGUIElement(), -1);
@@ -268,7 +326,7 @@ bool Application::setupGUI()
 	ui_FFT_Size->addItem(L"16384");
 	ui_FFT_Size->addItem(L"32768");
 	ui_FFT_Size->addItem(L"65536");
-	ui_FFT_Size->setSelected(11);
+	ui_FFT_Size->setSelected(13);
 	y += dy;
 
 	gui::IGUIWindow* playerWindow = env->addWindow(
@@ -281,7 +339,7 @@ bool Application::setupGUI()
 	player.loadFile( DefaultAudioFilename );
 
 	player.play();
-	dbPRINT("setupGUI() OK\n")
+
 	return true;
 }
 
@@ -289,6 +347,8 @@ bool Application::setupGUI()
 
 bool Application::run()
 {
+	dbPRINT( "Application::run()\n" )
+
 	if (!Device)
 		return false;
 
@@ -357,14 +417,16 @@ bool Application::run()
 //				}
 //
 //				node_wav->createMesh();
-
+				if (player.isPlaying())
+				{
 				/// fill SampleBuffer for FFT
 				sfx::fillSampleBuffer<s16>( FFT_Input, player.getSoundBuffer(), 0, PlayPosition, FFT_Input.size() );
 
 				/// do FourierTransform
 				Transform.setInputData<s16>( FFT_Input );
 				Transform.fft();
-				Transform.getPowerSpectrumAsDecibels<f32>( FFT_Output );
+				//Transform.getPowerSpectrumAsDecibels<f32>( FFT_Output );
+				Transform.getScaledPowerSpectrumAsDecibelsThresholdFast<f32>( FFT_Output, FFT_Range.Min, FFT_Range.Max, FFT_Threshold );
 
 				/// shift Matrix
 				FFT_Matrix.shiftRow();
@@ -379,6 +441,8 @@ bool Application::run()
 				/// create Mesh
 				if (FFT_SceneNode)
 					FFT_SceneNode->createMesh();
+
+				}
 
 				/// glBegin()
 				driver->beginScene( true, true, video::SColor(255,0,0,0) );
@@ -487,6 +551,7 @@ bool Application::OnEvent(const SEvent &event)
 {
 	if (event.EventType == EET_GUI_EVENT)
 	{
+		// OnButtonClicked()
 		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED)
 		{
 			gui::IGUIElement* caller = event.GUIEvent.Caller;
@@ -509,6 +574,76 @@ bool Application::OnEvent(const SEvent &event)
 							}
 						}
 						it++;
+					}
+					return true;
+				}
+			}
+		}
+
+		// OnComboBoxChanged()
+		if ( event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED )
+		{
+			gui::IGUIElement* caller = event.GUIEvent.Caller;
+			if (caller == ui_FFT_Size)
+			{
+				s32 selected = ui_FFT_Size->getSelected();
+				if (selected >= 0)
+				{
+					u32 value = core::Math::Pow( 2, selected + 1 );
+					FFT_Size = value;
+
+					if (FFT_MatrixCols > FFT_Size)
+						FFT_MatrixCols = FFT_Size;
+
+					Transform.resize( FFT_Size );
+					dbPRINT("Changed FFT-Size to %d\n", Transform.size() )
+//					FFT_Size = value;
+//
+//					FFT_Input.reallocate( Transform.size() );
+//					FFT_Input.set_used( Transform.size() );
+//					if (FFT_Output.size() > FFT_Input.size())
+//					{
+//						FFT_Output.reallocate( Transform.size() );
+//						FFT_Output.set_used( )
+
+					return true;
+				}
+			}
+		}
+		// OnSpinBoxChanged()
+		if ( event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED )
+		{
+			gui::IGUISpinBox* caller = (gui::IGUISpinBox*)event.GUIEvent.Caller;
+			const f32 value = caller->getValue();
+			if (value >= 0.0f)
+			{
+				if (caller == ui_MeshSizeX)
+				{
+					if ( FFT_SceneNode )
+					{
+						core::vector3df s = FFT_SceneNode->getMeshSize();
+						s.X = value;
+						FFT_SceneNode->setMeshSize( s );
+					}
+					return true;
+				}
+				if (caller == ui_MeshSizeY)
+				{
+					if ( FFT_SceneNode )
+					{
+						core::vector3df s = FFT_SceneNode->getMeshSize();
+						s.Y = value;
+						FFT_SceneNode->setMeshSize( s );
+					}
+					return true;
+				}
+				if (caller == ui_MeshSizeZ)
+				{
+					if ( FFT_SceneNode )
+					{
+						core::vector3df s = FFT_SceneNode->getMeshSize();
+						s.Z = value;
+						FFT_SceneNode->setMeshSize( s );
 					}
 					return true;
 				}
@@ -537,7 +672,7 @@ bool Application::OnEvent(const SEvent &event)
 					if (screenshot)
 					{
 						/// create filename
-						io::path name = "./screenshot_render_audio_spectrum_";
+						io::path name = "./AudioAnimator3d_screen_";
 						name += currentDateTimeString( timer );
 						name += ".png";
 

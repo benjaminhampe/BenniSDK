@@ -1,7 +1,15 @@
+// Copyright (C) 2002-2014 Benjamin Hampe
+// This file is part of the "irrlicht-engine"
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+
 #ifndef __IRR_EXT_COMPILE_CONFIG_H_INCLUDED__
 #define __IRR_EXT_COMPILE_CONFIG_H_INCLUDED__
 
 /// MyDefines
+
+//#ifndef _IRR_COMPILE_WITH_FLTK_
+//#define _IRR_COMPILE_WITH_FLTK_
+//#endif
 
 #ifndef _IRR_COMPILE_WITH_FFTW3_
 #define _IRR_COMPILE_WITH_FFTW3_
@@ -25,7 +33,7 @@
 
 #ifndef _IRR_COMPILE_WITH_XPM_WRITER_
 #define _IRR_COMPILE_WITH_XPM_WRITER_
-#endif // _IRR_COMPILE_WITH_XPM_WRITER_
+#endif
 
 //#ifndef _IRR_COMPILE_WITH_XPM_LOADER_DEBUG_OUTPUT_
 //#define _IRR_COMPILE_WITH_XPM_LOADER_DEBUG_OUTPUT_
@@ -46,6 +54,8 @@
 #include <ctime>
 #include <cmath>
 #include <getopt.h>
+
+#include <debugPrint.h>
 
 // STL
 //#include <iostream>
@@ -111,15 +121,6 @@
 	#include <wx/sizer.h>
 #endif
 
-/// IT_PRINT & IT_ERROR - variadic print macros
-#if defined(_DEBUG) || defined(DEBUG)
-	#define dbPRINT( args... ) { printf( args ); fflush(stdout); }
-	#define dbERROR( args... ) { fprintf( stderr, args ); fflush(stderr); fprintf( stdout, args ); fflush(stdout); }
-#else
-	#define dbPRINT( args... )
-	#define dbERROR( args... ) { fprintf( stdout, args ); fflush(stdout); }
-#endif
-
 //#ifndef __IRR_EXT_INCLUDE_SOURCE_FILES__
 //#define __IRR_EXT_INCLUDE_SOURCE_FILES__
 //	#include <../source/Irrlicht/os.cpp>
@@ -128,8 +129,6 @@
 //	#include <../source/Irrlicht/CMeshSceneNode.cpp>
 //	#include <../source/Irrlicht/CShadowVolumeSceneNode.cpp>
 //#endif // __IRR_EXT_INCLUDE_SOURCE_FILES__
-
-
 
 inline void PRINT_INFO()
 {

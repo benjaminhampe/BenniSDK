@@ -29,37 +29,26 @@ namespace irr
 namespace scene
 {
 
-// This SceneNode holds only vertices, primitivetype, materials etc.
-// needed for rendering
-
 class CMatrixSceneNode : public ISceneNode
 {
-/* Fields */
 private:
-	/// Matrix3D
 	E_PRIMITIVE_TYPE PrimitiveType;
-	core::vector3df Size3D;
+	core::vector3df MeshSize;
 	video::IColorGradient* ColorGradient;
-	core::CMatrix<f32>* Data;
-
-	/// ISceneNode
+	core::CMatrix<f32>* Data; // Data should be normalized
+	//core::vector2df DataMinMax;
 	core::aabbox3df BoundingBox;
-	video::SMaterial Material; // TextureAtlas at maximum
+	video::SMaterial Material;
 	core::array<video::S3DVertex> Vertices;
 	core::array<s32> Indices;
 
-//
-//	bool IsTextureAtlas;
-//	core::dimension2du AtlasTileSize;
-//	bool IsBillBoard; // needed to update rotation to camera space
-
-/* constructor */
 public:
+	///@brief constructor
 	/**
 	**/
 	CMatrixSceneNode(
-		E_PRIMITIVE_TYPE shapeType, /* = EPT_TRIANGLES */
-		const core::vector3df& shapeSize,
+		E_PRIMITIVE_TYPE shapeType, /* default = EPT_TRIANGLES */
+		const core::vector3df& meshSize,
 		video::IColorGradient* colorGradient,
 		core::CMatrix<f32>* matrixData,
 		ISceneManager* smgr, ISceneNode* parent = 0, s32 id=-1,
@@ -67,90 +56,120 @@ public:
 		const core::vector3df& rotation = core::vector3df(0,0,0),
 		const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f) );
 
-/* destructor */
+	///@brief destructor
 	virtual ~CMatrixSceneNode();
 
-/* fresh state */
-	void clear();
+//	///@brief
+//	void clear();
 
-/* create mesh depending on PrimitiveType */
+	///@brief create mesh
 	bool createMesh();
-	bool createMeshAsLogarithmicTriangles();
-	bool createMeshAsPointCloud();
-	bool createMeshAsLines();
-	bool createMeshAsLineStrips();
-	bool createMeshAsTexturedBillboards( f32 billboard_width = core::PI );
 	bool createMeshAsTriangles();
-	bool createMeshAsTrianglesWithTextureAtlas( const core::dimension2du& tiles_size = core::dimension2du(64,64) );
+	bool createMeshAsLogarithmicTriangles();
+	bool createMeshAsLineStrips();
+//	bool createMeshAsPointCloud();
+//	bool createMeshAsLines();
+//	bool createMeshAsTexturedBillboards( f32 billboard_width = core::PI );
+//	bool createMeshAsTrianglesWithTextureAtlas( const core::dimension2du& tiles_size = core::dimension2du(64,64) );
 
-/* ISceneNode Interface */
+	virtual core::stringc getInfoString() const
+	{
+		core::stringc s = "DataMinMax = ( 0,0 )\n";
+		s += "MeshSize = ( ";
+		s += MeshSize.X; s+=",";
+		s += MeshSize.Y; s+=",";
+		s += MeshSize.Z; s+=")\n";
+		return s;
+	}
+
+	///@brief implement interface ISceneNode
 	virtual void render();
 
-	virtual const core::aabbox3d<f32>& getBoundingBox() const	{ return BoundingBox; } // inline
+	///@brief implement interface ISceneNode
+	virtual const core::aabbox3d<f32>& getBoundingBox() const
+	{
+		return BoundingBox;
+	}
 
-	virtual u32 getMaterialCount() const { return 1; } // inline
+	///@brief implement interface ISceneNode
+	virtual u32 getMaterialCount() const
+	{
+		return 1;
+	}
 
-	virtual video::SMaterial& getMaterial(u32 num) { return Material; } // inline
+	///@brief implement interface ISceneNode
+	virtual video::SMaterial& getMaterial(u32 num)
+	{
+		return Material;
+	}
 
-	virtual void OnRegisterSceneNode() // inline
+	///@brief implement interface ISceneNode
+	virtual void OnRegisterSceneNode()
 	{
 		if (IsVisible)
 			SceneManager->registerNodeForRendering(this);
 		ISceneNode::OnRegisterSceneNode();
 	}
 
-/* Matrix3D Interface */
+	///@brief Get MeshSize
+	virtual core::vector3df getMeshSize( ) const
+	{
+		return MeshSize;
+	}
 
-	virtual E_PRIMITIVE_TYPE getPrimitiveType( ) const  // inline
+	virtual void setMeshSize( const core::vector3df& size )  // inline
+	{
+		if ((size.X > 0.0f) && (size.Y > 0.0f) && (size.Z > 0.0f))
+		{
+			MeshSize = size;
+		}
+	}
+	virtual video::IColorGradient* getColorGradient( )
+	{
+		return ColorGradient;
+	}
+
+	virtual void setColorGradient( video::IColorGradient* gradient )
+	{
+		// if (ColorGradient)
+		//	ColorGradient->drop();
+
+		ColorGradient = gradient;
+
+		//if (ColorGradient)
+		//	ColorGradient->grab();
+	}
+
+	virtual u32 getRows() const
+	{
+		if (!Data)
+			return 0;
+		else
+			return Data->getRows();
+	}
+
+	virtual u32 getCols() const
+	{
+		if (!Data)
+			return 0;
+		else
+			return Data->getCols();
+	}
+
+	virtual E_PRIMITIVE_TYPE getPrimitiveType( ) const
 	{
 		return PrimitiveType;
 	}
 
-	virtual core::vector3df getMeshSize3D( ) const  // inline
+	virtual void setPrimitiveType( E_PRIMITIVE_TYPE primType )
 	{
-		return Size3D;
-	}
-
-	virtual video::IColorGradient* getColorGradient( ) const  // inline
-	{
-		return ColorGradient;
+		PrimitiveType = primType;
 	}
 
 	virtual core::CMatrix<f32>* getData()
 	{
 		return Data;
 	}
-
-	virtual u32 getRows() const  // inline
-	{
-		_IRR_DEBUG_BREAK_IF( !Data );
-		return Data->getRows();
-	}
-
-	virtual u32 getCols() const  // inline
-	{
-		_IRR_DEBUG_BREAK_IF( !Data )
-		return Data->getCols();
-	}
-
-
-	//! manipulate internal attributes:
-
-//	virtual bool setColorGradient( video::IColorGradient* gradient ) // inline
-//	{
-//		if (ColorGradient)
-//			ColorGradient->drop();
-//
-//		ColorGradient = gradient;
-//
-//		if (ColorGradient)
-//			ColorGradient->grab();
-//
-//		return true;
-//	}
-
-//	virtual bool setPrimitiveType( E_PRIMITIVE_TYPE primType ) { PrimitiveType = primType; return true; } // inline
-
 
 	virtual bool setData( core::CMatrix<f32>* mat )
 	{

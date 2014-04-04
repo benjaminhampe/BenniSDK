@@ -92,17 +92,15 @@
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
 					<Add option="-DNDEBUG" />
-					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-DSFML_STATIC" />
-					<Add directory="../BenniSDK" />
+					<Add option="-D_IRR_STATIC_LIB_" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="Irrlicht" />
 					<Add library="sfml-audio" />
 					<Add library="sfml-system" />
+					<Add library="Irrlicht" />
 					<Add library="fftw3" />
-					<Add library="freetype" />
 					<Add library="winmm" />
 					<Add library="glu32" />
 					<Add library="opengl32" />
@@ -110,10 +108,9 @@
 					<Add library="gdi32" />
 					<Add library="user32" />
 					<Add library="kernel32" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
 					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
-					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
-					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
 				</Linker>
 			</Target>
 			<Target title="Win64_Debug_static">
@@ -129,17 +126,19 @@
 					<Add option="-DDEBUG" />
 					<Add option="-D_IRR_STATIC_LIB_" />
 					<Add option="-DSFML_STATIC" />
-					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
-					<Add library="Irrlicht" />
 					<Add library="sfml-audio" />
 					<Add library="sfml-system" />
+					<Add library="Irrlicht" />
 					<Add library="fftw3" />
 					<Add library="freetype" />
 					<Add library="winmm" />
 					<Add library="glu32" />
 					<Add library="opengl32" />
+					<Add library="comdlg32" />
+					<Add library="comctl32" />
+					<Add library="uuid" />
 					<Add library="advapi32" />
 					<Add library="gdi32" />
 					<Add library="user32" />
@@ -160,7 +159,6 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DNDEBUG" />
-					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -176,7 +174,6 @@
 					<Add library="advapi32" />
 					<Add library="opengl32" />
 					<Add library="glu32" />
-					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
 					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
 					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
@@ -192,7 +189,6 @@
 				<Compiler>
 					<Add option="-D_DEBUG" />
 					<Add option="-DDEBUG" />
-					<Add directory="../BenniSDK" />
 				</Compiler>
 				<Linker>
 					<Add library="bin\Win64-gcc\Irrlicht.dll" />
@@ -207,7 +203,6 @@
 					<Add library="advapi32" />
 					<Add library="opengl32" />
 					<Add library="glu32" />
-					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
 					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
 					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
@@ -296,6 +291,7 @@
 		<Unit filename="include/libImage/IColorGradient.h" />
 		<Unit filename="include/libImage/IFunction.h" />
 		<Unit filename="include/libImage/IGUITTFont.h" />
+		<Unit filename="include/libImage/SRange.h" />
 		<Unit filename="include/libImage/UString.h" />
 		<Unit filename="include/libImage/draw3DCircle.cpp" />
 		<Unit filename="include/libImage/draw3DCircle.h" />

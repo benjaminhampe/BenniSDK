@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -29,7 +29,7 @@ namespace irr
 	IrrlichtDevice* createSilentNullDevice();
 
 	///@brief create a hardware accelerated IrrlichtDevice, when possible
-	IrrlichtDevice* createIrrlichtDevice( s32 w = -200, s32 h = -100, s32 bpp = 0, bool fullscreen = false, bool aa = false );
+	IrrlichtDevice* createOpenGlDevice( s32 w = -200, s32 h = -100, s32 bpp = 0, bool fullscreen = false, bool aa = false );
 
 	///@brief collect some device infos and return as string
 	core::stringw getInfoString( IrrlichtDevice* device, const core::stringw& user_text );
@@ -120,6 +120,9 @@ namespace irr
 
 	///@brief Get refresh rate of ( primary? ) monitor
 	u32 getRefreshRate( IrrlichtDevice* device );
+
+	///@brief Set skin transparency 0..255
+	void setSkinTransparency(u32 alpha, gui::IGUISkin * skin);
 
 } // end namespace irr
 

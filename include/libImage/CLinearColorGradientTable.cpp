@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -19,17 +19,13 @@ namespace video
 CLinearColorGradientTable :: CLinearColorGradientTable( u32 color_count, u32 table_size )
 : IColorGradient("", color_count), InvLookUpTableSize(0.0f)
 {
-	#if _DEBUG
-		os::Printer::log( "CLinearColorGradientTable::ctr()", ELL_INFORMATION );
-	#endif // _DEBUG
+	dbPRINT( "CLinearColorGradientTable::CLinearColorGradientTable()\n")
     setTableSize( table_size, true );
 }
 
 CLinearColorGradientTable::~CLinearColorGradientTable()
 {
-	#if _DEBUG
-		os::Printer::log( "CLinearColorGradientTable::dtr()", ELL_INFORMATION );
-	#endif // _DEBUG
+	dbPRINT( "CLinearColorGradientTable::~CLinearColorGradientTable()\n")
 	clear();
 }
 

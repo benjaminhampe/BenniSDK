@@ -31,6 +31,8 @@ private:
 	u32 FFT_MatrixCols;
 	core::vector3df MeshSize;
 	core::FourierTransformRtoC Transform;
+	core::SRangef FFT_Range;
+	f32 FFT_Threshold;
 	core::array<s16> FFT_Input; //! depends on FFT_Size
 	core::array<f32> FFT_Output; //! depends on FFT_MatrixCols
 	core::CMatrix<f32> FFT_Matrix; //! depends on FFT_MatrixCols and FFT_MatrixRows
@@ -40,12 +42,15 @@ private:
 	/// +++ create UI controls +++
 	gui::IGUIButton* WireframeButton;
 
-	gui::IGUIComboBox* ui_FFT_Size;
 	gui::IGUISpinBox* ui_MeshSizeX;
 	gui::IGUISpinBox* ui_MeshSizeY;
 	gui::IGUISpinBox* ui_MeshSizeZ;
 	gui::IGUISpinBox* ui_MatrixCols;
 	gui::IGUISpinBox* ui_MatrixRows;
+	gui::IGUISpinBox* ui_DecibelMin;
+	gui::IGUISpinBox* ui_DecibelMax;
+	gui::IGUISpinBox* ui_DecibelThreshold;
+	gui::IGUIComboBox* ui_FFT_Size;
 
 public:
 

@@ -52,7 +52,7 @@
  * - build piano-tuner using microphone
  */
 
-#include <AudioAnimator3d_App.h>
+#include "AudioAnimator3d_App.h"
 
 #include <../source/Irrlicht/os.cpp>
 #include <../source/Irrlicht/CImage.cpp>
@@ -64,11 +64,12 @@ using namespace irr;
 
 s32 main( s32 argc, c8** argv)
 {
-	video::E_DRIVER_TYPE driverType = driverChoiceConsole(true);
-	IrrlichtDevice* device = createDevice( driverType );
+	//video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;//driverChoiceConsole(true);
+
+	IrrlichtDevice* device = createOpenGlDevice( -100, -200, 16, false, false );
 	if (!device)
 	{
-		printf("Could not create Irrlicht-Device\n");
+		dbPRINT("Could not create Irrlicht-Device\n")
 		exit(-2);
 	}
 

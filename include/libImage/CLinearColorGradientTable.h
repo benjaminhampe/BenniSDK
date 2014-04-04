@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -50,7 +50,7 @@ namespace irr
 			}
 
 			/// @brief management of lookup-table
-			virtual void setTableSize( u32 table_size = 1024,	bool bFillZero = false )
+			virtual void setTableSize( u32 table_size = 1024, bool bFillZero = false )
 			{
 				LookUpTable.reallocate( table_size );
 				LookUpTable.set_used( table_size );
@@ -80,22 +80,14 @@ namespace irr
 			/// @brief calculate new lookup-table-colors from stop-color-array
 			virtual void updateTable()
 			{
-				#if _DEBUG
-					printf( "CLinearColorGradientTable::updateTable()\n" );
-				#endif // _DEBUG
+				dbPRINT( "CLinearColorGradientTable::updateTable()\n" )
 
 				const u32 lut_count = LookUpTable.size();
 
-				if (lut_count == 0)
+				if (lut_count < 2)
 				{
 					return;
 				}
-
-				if (lut_count == 1)
-				{
-					return;
-				}
-
 
 				/// loop lookup-table
 				for (u32 i=0; i<lut_count; i++)
@@ -179,6 +171,9 @@ namespace irr
 
 				if (table_size==0)
 					return SColor(0,0,0,0);
+
+				if ( t<0.001f )
+					return SColor(255,0,0,0);
 
 				// modulo count/number of colors to be in array-index-bounds [0,count-1]
 				const u32 index = ((u32)core::round32( t*(f32)table_size )) % table_size;

@@ -9,6 +9,4 @@ using irrlicht-engine with OpenGL hardware acceleration to improve render-qualit
 
 https://github.com/benjaminhampe/AudioAnimator3d_gui/
 
-![Alt screenshot](media/background/load_2.jpg?raw=true)
-
-![Alt screenshot](screens/screen_001.jpg?raw=true)
+![Alt screenshot](AudioAnimator3d.png?raw=true)

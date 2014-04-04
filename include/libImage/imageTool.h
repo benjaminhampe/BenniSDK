@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2013 Benjamin Hampe
+// Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -472,7 +472,7 @@ static bool drawText( IImage* dst, gui::IGUIEnvironment* env, gui::IGUIFont* fon
 #ifdef _IRR_COMPILE_WITH_FREETYPE2_
 
 //! draw Glyph to image
-static void drawBitmapFT(	IImage* dst,	FT_Bitmap* bitmap,	s32 x, s32 y, const video::SColor& txt_color = 0xffffffff );
+static void drawBitmapFT( IImage* dst, FT_Bitmap* bitmap, s32 x, s32 y, const video::SColor& txt_color = 0xffffffff );
 
 //! create image from text ( always centered ) with minimal size for text
 //! using freetype2 library and no irrlicht-device
@@ -551,9 +551,7 @@ static IImage* scaleBicubic( IImage* src, const core::vector2df& scaleXY, E_COLO
 }; // end class Tool
 
 } // end namespace video
+
 } // end namespace irr
-
-
-
 
 #endif // __IRR_EXT_IMAGE_TOOL_H__
