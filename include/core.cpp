@@ -107,8 +107,10 @@ IrrlichtDevice* createOpenGlDevice( s32 w, s32 h, s32 bpp, bool fullscreen, bool
 	/// set default CreationParameters
 	SIrrlichtCreationParameters params;
 	params.LoggingLevel = ELL_INFORMATION;
+	params.WindowSize.set(640,480);
+	params.Bits = 16;
 	params.DriverType = video::EDT_OPENGL;
-	params.AntiAlias = (aa)?(video::EAAM_ALPHA_TO_COVERAGE):(video::EAAM_OFF);
+	params.AntiAlias = (aa)?(video::EAAM_QUALITY):(video::EAAM_OFF);
 	params.EventReceiver = 0;
 	params.HighPrecisionFPU = true;
 	params.Doublebuffer = true;

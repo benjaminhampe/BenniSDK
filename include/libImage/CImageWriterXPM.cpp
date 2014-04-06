@@ -60,7 +60,7 @@ core::stringc CImageWriterXPM::colorIndexToChars( u32 index, u32 bytesPerColor )
 
 	while (byteIndex < bytesPerColor)
 	{
-		i = index / core::Math::s32_pow( valid_chars.size(), bytesPerColor - byteIndex );
+		i = index / core::Math::pow( valid_chars.size(), bytesPerColor - byteIndex );
 		buf[ bytesPerColor - byteIndex - 1 ] = valid_chars[ i%valid_chars.size() ];
 		byteIndex++;
 	}

@@ -42,6 +42,12 @@ private:
 	core::array<video::S3DVertex> Vertices;
 	core::array<s32> Indices;
 
+	scene::SMeshBuffer FrontBuffer;
+
+	core::array<f32>* XAxis;
+	//core::array<video::S3DVertex> FrontVertices;
+	//core::array<s16> FrontIndices;
+
 public:
 	///@brief constructor
 	/**
@@ -65,12 +71,14 @@ public:
 	///@brief create mesh
 	bool createMesh();
 	bool createMeshAsTriangles();
-	bool createMeshAsLogarithmicTriangles();
+//	bool createMeshAsLogarithmicTriangles();
 	bool createMeshAsLineStrips();
 //	bool createMeshAsPointCloud();
 //	bool createMeshAsLines();
 //	bool createMeshAsTexturedBillboards( f32 billboard_width = core::PI );
 //	bool createMeshAsTrianglesWithTextureAtlas( const core::dimension2du& tiles_size = core::dimension2du(64,64) );
+
+	void createFrontBuffer();
 
 	virtual core::stringc getInfoString() const
 	{
@@ -115,6 +123,11 @@ public:
 	virtual core::vector3df getMeshSize( ) const
 	{
 		return MeshSize;
+	}
+
+	virtual void setUserXAxisValues( core::array<f32>* x_axis )
+	{
+		XAxis = x_axis;
 	}
 
 	virtual void setMeshSize( const core::vector3df& size )  // inline

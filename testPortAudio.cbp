@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="testPortAudio" />
+		<Option pch_mode="0" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Linux">
+				<Option platforms="Unix;" />
+				<Option output="bin/Linux/testPortAudio" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="bin/Linux" />
+				<Option object_output="obj/Linux" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+				</Compiler>
+				<Linker>
+					<Add library="Xxf86vm" />
+					<Add library="Xcursor" />
+					<Add library="GL" />
+					<Add directory="../../lib/Linux" />
+				</Linker>
+			</Target>
+			<Target title="Win32_Release">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win32-gcc/testPortAudio" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win32-gcc/" />
+				<Option object_output="obj/Win32-gcc_Release_static" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-m32" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-m32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add directory="../../SDK/irrlicht-svn4716/lib/Win32-gcc" />
+				</Linker>
+			</Target>
+			<Target title="Win32_Debug">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win32-gcc/testPortAudio" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win32-gcc/" />
+				<Option object_output="obj/Win32-gcc_Debug_static" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-m32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-DSFML_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-m32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add directory="../../SDK/irrlicht-svn4716/lib/Win32-gcc" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Release_static">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/testPortAudio" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc/" />
+				<Option object_output="obj/Win64-gcc_Release_static" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-DNDEBUG" />
+					<Add directory="lib/libPortAudio-1922svn/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="portaudio_static_x86" />
+					<Add library="sfml-audio" />
+					<Add library="sfml-system" />
+					<Add library="Irrlicht" />
+					<Add library="fftw3" />
+					<Add library="glu32" />
+					<Add library="opengl32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="gdi32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+					<Add directory="lib/libPortAudio-1922svn/lib" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Debug_static">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/testPortAudio" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc/" />
+				<Option object_output="obj/Win64-gcc_Debug_static" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+					<Add option="-D_WIN32" />
+					<Add option="-DWIN32" />
+					<Add directory="lib/libPortAudio-1922svn/include" />
+				</Compiler>
+				<Linker>
+					<Add library="portaudio_static_x86" />
+					<Add library="sfml-audio" />
+					<Add library="sfml-system" />
+					<Add library="Irrlicht" />
+					<Add library="fftw3" />
+					<Add library="glu32" />
+					<Add library="opengl32" />
+					<Add library="winmm" />
+					<Add library="advapi32" />
+					<Add library="gdi32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="uuid" />
+					<Add library="comctl32" />
+					<Add library="comdlg32" />
+					<Add library="ole32" />
+					<Add library="setupapi" />
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+					<Add directory="lib/libPortAudio-1922svn/lib" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Release_shared">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/testPortAudio" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc" />
+				<Option object_output="obj/Win64-gcc_Release_shared" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-DNDEBUG" />
+					<Add directory="lib/libPortAudio-1891-win/include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="bin\Win64-gcc\portaudio_x64_1891_release_mindep.dll" />
+					<Add library="bin\Win64-gcc\Irrlicht.dll" />
+					<Add library="winmm" />
+					<Add library="freetype" />
+					<Add library="fftw3" />
+					<Add library="glu32" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="gdi32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+				</Linker>
+			</Target>
+			<Target title="Win64_Debug_shared">
+				<Option platforms="Windows;" />
+				<Option output="bin/Win64-gcc/testPortAudio" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="bin/Win64-gcc" />
+				<Option object_output="obj/Win64-gcc_Debug_shared" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-D_DEBUG" />
+					<Add option="-DDEBUG" />
+					<Add option="-DWIN64" />
+					<Add directory="lib/libPortAudio-1891-win/include" />
+				</Compiler>
+				<Linker>
+					<Add library="bin\Win64-gcc\portaudio_x64_1891_release_mindep.dll" />
+					<Add library="bin\Win64-gcc\Irrlicht.dll" />
+					<Add library="winmm" />
+					<Add library="freetype" />
+					<Add library="fftw3" />
+					<Add library="glu32" />
+					<Add library="advapi32" />
+					<Add library="opengl32" />
+					<Add library="gdi32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add directory="lib/libIrrlicht-svn4716/lib/Win32-gcc" />
+					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
+					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
+					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="Win64_Release_static;Linux;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-std=c++11" />
+			<Add option="-g" />
+			<Add directory="lib/libIrrlicht-svn4716/include" />
+			<Add directory="lib/libfftw-3.3.3/api" />
+			<Add directory="lib/libfreetype-2.5.2/include" />
+			<Add directory="lib/libSFML-2.1/include" />
+			<Add directory="include" />
+		</Compiler>
+		<Unit filename="include/core.cpp" />
+		<Unit filename="include/core.h" />
+		<Unit filename="include/debugPrint.h" />
+		<Unit filename="include/libImage/UString.h" />
+		<Unit filename="include/resources.h" />
+		<Unit filename="include/resources.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="testPortAudio.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

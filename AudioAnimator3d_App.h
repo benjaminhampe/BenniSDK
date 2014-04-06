@@ -37,11 +37,11 @@ private:
 	core::array<f32> FFT_Output; //! depends on FFT_MatrixCols
 	core::CMatrix<f32> FFT_Matrix; //! depends on FFT_MatrixCols and FFT_MatrixRows
 	scene::CMatrixSceneNode* FFT_SceneNode;
-	scene::SMeshBuffer FFT_FrontMesh;
+	core::array<f32> XAxis;
 
 	/// +++ create UI controls +++
-	gui::IGUIButton* WireframeButton;
-
+	gui::IGUIButton* ui_WireframeButton;
+	gui::IGUIComboBox* ui_AxisMode;
 	gui::IGUISpinBox* ui_MeshSizeX;
 	gui::IGUISpinBox* ui_MeshSizeY;
 	gui::IGUISpinBox* ui_MeshSizeZ;
@@ -60,11 +60,98 @@ public:
 
 	virtual bool OnEvent (const SEvent &event) _IRR_OVERRIDE_;
 
+	virtual void OnKeyUp_Espace();
+	virtual void OnKeyUp_Space();
+	virtual void OnKeyUp_Print();
+	virtual void OnButton_Wireframe();
+	virtual void OnChangedSpinBox_MeshSizeX( f32 value );
+	virtual void OnChangedSpinBox_MeshSizeY( f32 value );
+	virtual void OnChangedSpinBox_MeshSizeZ( f32 value );
+	virtual void OnChangedSpinBox_MatrixCols( f32 value );
+	virtual void OnChangedSpinBox_MatrixRows( f32 value );
+	virtual void OnChangedSpinBox_DecibelMin( f32 value );
+	virtual void OnChangedSpinBox_DecibelMax( f32 value );
+	virtual void OnChangedSpinBox_DecibelThreshold( f32 value );
+	virtual void OnChangedComboBox_FFTSize( s32 selected );
+	virtual void OnChangedComboBox_AxisMode( s32 selected );
+
 	bool setup();
 
 	bool setupGUI();
 
 	bool run();
+
+	bool createLinearAxis( core::array<f32>& out, u32 nPoints )
+	{
+		if (nPoints < 2)
+		{
+			dbERROR( "createLinearScale() - Invalid param: nPoints %d", nPoints )
+			return false;
+		}
+
+		// prepare array
+		out.reallocate( nPoints );
+		out.set_used( 0 );
+
+		// calculate min and max frequency
+		const f32 x_step = core::reciprocal( (f32)(nPoints-1) );
+		f32 x = 0.0f;
+
+		for (u32 i=0; i<nPoints; i++)
+		{
+			out.push_back( core::clamp<f32>(x, 0.0f, 1.0f) );
+			x += x_step;
+		}
+
+		// exit
+	}
+
+	bool createLogarithmicAxis( core::array<f32>& out, u32 nPoints, u32 logBase = 10, u32 sampleRate = 44100, u32 fftSize = 1024 )
+	{
+		if (fftSize < 4)
+		{
+			dbERROR( "createLogarithmicScale() - Invalid param: fftSize %d", fftSize )
+			return false;
+		}
+
+		if (nPoints < 2)
+		{
+			dbERROR( "createLogarithmicScale() - Invalid param: nPoints %d", nPoints )
+			return false;
+		}
+
+		if (sampleRate < 2*fftSize) // Nyquist Kriterium
+		{
+			dbERROR( "createLogarithmicScale() - Invalid param: sampleRate %d", sampleRate )
+			return false;
+		}
+
+		// prepare array
+		out.reallocate( nPoints );
+		out.set_used( 0 );
+
+		// calculate min and max frequency
+		const f32 f_min = (f32)sampleRate/(f32)fftSize;
+		const f32 f_max = f_min * (f32)nPoints;
+		const f32 f_step = f_min;
+
+		// calculate min and max frequency in logarithmic scale
+		const f32 l_base = (f32)logBase;
+		const f32 l_min = core::Math::log( f_min, l_base );
+		const f32 l_max = core::Math::log( f_max, l_base );
+		const f32 l_range_inv = core::reciprocal( l_max - l_min );
+
+		f32 freq = f_min;
+		f32 v;
+
+		for (u32 i=0; i<nPoints; i++)
+		{
+			v = core::Math::log( freq, l_base ) - l_min;
+			v *= l_range_inv;
+			out.push_back( core::clamp<f32>(v, 0.0f, 1.0f) );
+			freq += f_min;
+		}
+	}
 };
 
 } // end namespace irr

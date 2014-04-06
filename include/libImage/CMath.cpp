@@ -5,7 +5,81 @@ namespace irr
 namespace core
 {
 
-s32 Math::Pow( s32 base, u32 exponent )
+u32 Math::_next_power_of_2( u32 value )
+{
+	u32 pos = 1;
+	while( (u32)(1<<pos) < value )
+	{
+		pos++;
+	}
+	return (1<<(pos+1));
+}
+
+u32 Math::_nextPow2_loop( u32 n )
+{
+	u32 x = 1;
+	while(x < n)
+	{
+		x <<= 1;
+	}
+	return x;
+}
+
+
+
+//u32 Math::_nextPow2( u32 x )
+//{
+//    --x;
+//    x |= x >> 1;
+//    x |= x >> 2;
+//    x |= x >> 4;
+//    x |= x >> 8;
+//    x |= x >> 16;
+//    return ++x;
+//}
+//
+//u32 Math::_nextPow2_IEEE( u32 n )
+//{
+//	const u32 MantissaMask = (1<<23) - 1;
+//
+//	(*(f32*)&n) = (f32) n;
+//	n = n + MantissaMask & ~MantissaMask;
+//	n = (u32) (*(f32*)&n);
+//
+//	return n;
+//}
+
+f32 Math::log( f32 value, f32 base )
+{
+	return ::log10f( value ) / ::log10f( base );
+}
+
+f64 Math::log( f64 value, f64 base )
+{
+	return ::log10( value ) / ::log10( base );
+}
+
+f32 Math::lg( f32 value )
+{
+	return ::log10f( value );
+}
+
+f64 Math::lg( f64 value )
+{
+	return ::log10( value );
+}
+
+f32 Math::ln( f32 value )
+{
+	return ::logf( value );
+}
+
+f64 Math::ln( f64 value )
+{
+	return ::log( value );
+}
+
+s32 Math::pow( s32 base, u32 exponent )
 {
 	s32 result = 1;
 
@@ -28,12 +102,12 @@ s32 Math::Pow( s32 base, u32 exponent )
 //	return result;
 //}
 
-void Math::Randomize()
+void Math::randomize()
 {
 	srand((u32)time(0));
 }
 
-u32 Math::Random(u32 seed)
+u32 Math::rnd(u32 seed)
 {
 	return rand()%seed;
 }
@@ -60,19 +134,19 @@ s32 Math::sign( f64 value )
 
 // Rundet gesammten Nachkommateil,
 // "dirty version" durch einfachen Cast auf __int32
-f32 Math::Round(f32 zahl)
+f32 Math::round(f32 zahl)
 {
 	return (f32)(s32)((zahl<0.0f)?zahl-0.5f:zahl+0.5f);
 }
 
-f64 Math::Round(f64 zahl)
+f64 Math::round(f64 zahl)
 {
 	return (f64)(s32)((zahl<0.0)?zahl-0.5:zahl+0.5);
 }
 
 // Rundet auf Anzahl Stellen nach dem Komma
 //-> Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
-f32 Math::Round(f32 zahl, s32 stellen)
+f32 Math::round(f32 zahl, s32 stellen)
 {
 	f32 v[] = { 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8 };
 	return (f32)floor32(zahl * v[stellen] + 0.5) / v[stellen];
@@ -80,19 +154,10 @@ f32 Math::Round(f32 zahl, s32 stellen)
 
 // Rundet auf Anzahl Stellen nach dem Komma
 //-> Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
-f64 Math::Round(f64 zahl, s32 stellen)
+f64 Math::round(f64 zahl, s32 stellen)
 {
 	f64 v[] = { 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8 };
 	return (f64)floor(zahl * v[stellen] + 0.5) / v[stellen];
-}
-
-
-s32 Math::s32_pow(s32 x, s32 p)
-{
-	s32 result = 1;
-	for (s32 j = 1; j < p; j++)
-		result *= x;
-	return result;
 }
 
 //#ifdef USE_32BIT_FLOATS
@@ -107,47 +172,7 @@ s32 Math::s32_pow(s32 x, s32 p)
 //	}
 //#endif
 
-u32 Math::_nextPow2_loop( u32 n )
-{
-	u32 x = 1;
-	while(x < n)
-	{
-		x <<= 1;
-	}
-	return x;
-}
 
-u32 Math::_next_power_of_2( u32 value )
-{
-	u32 pos = 1;
-	while( (u32)(1<<pos) < value )
-	{
-		pos++;
-	}
-	return (1<<(pos+1));
-}
-
-//u32 Math::_nextPow2( u32 x )
-//{
-//    --x;
-//    x |= x >> 1;
-//    x |= x >> 2;
-//    x |= x >> 4;
-//    x |= x >> 8;
-//    x |= x >> 16;
-//    return ++x;
-//}
-//
-//u32 Math::_nextPow2_IEEE( u32 n )
-//{
-//	const u32 MantissaMask = (1<<23) - 1;
-//
-//	(*(f32*)&n) = (f32) n;
-//	n = n + MantissaMask & ~MantissaMask;
-//	n = (u32) (*(f32*)&n);
-//
-//	return n;
-//}
 
 
 //vector2d<s32> Math::transformPoint2di(

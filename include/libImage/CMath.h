@@ -45,124 +45,6 @@ namespace core
 class Math
 {
 public:
-	//! @brief Int to the power of another (non negative) int
-	//! @return integer
-	static s32 Pow( s32 base, u32 exponent );
-
-	//! @brief Init class wide used randomizer
-	//! @return nothing
-	static void Randomize();
-
-	//! @brief getRandomNumber(u32 max_random_number)
-	//! @return random unsigned 32bit number
-	static u32 Random(u32 seed);
-
-	//! @brief abs<T>(T value)
-	//! @return Absolute of a value of type |T|
-	template <class T> T abs(T value)
-	{
-		if (value < T(0))
-			return T(-1)*value;
-		else
-			return value;
-	}
-
-	//! @brief WrapAngle<T>(T value)
-	//! @return Normalized angle in degrees in range [0,360]
-	template<class T> static T WrapAngle(T x)
-	{
-		while (x < (T)0)
-			x += (T)360;
-		while (x > (T)360 || equals( x, (T)360) )
-			x -= (T)360;
-
-		//	x = fmod( (f64)x, 360.0);
-		//	if (sizeof(x)<8)
-		//	{
-		//		x = fmodf(x,360);
-		//	}
-		//	else
-		//	{
-		//		x = fmod(x,360);
-		//	}
-
-		return x;
-	}
-
-	//! @brief WrapAngle180<T>(T value)
-	//! @return Normalized angle in degrees in range [0,360]
-	template<class T> static T WrapAngle180(T x)
-	{
-		while (x < -(T)180)
-		{
-			x += (T)360;
-		}
-
-		while (x > (T)180 || equals( x, (T)180))
-		{
-			x -= (T)360;
-		}
-
-		//		x = fmod(x + (T)180,(T)360);
-		//		if (x < (T)0)
-		//			x += (T)360;
-		//
-		return x;
-	}
-
-	//! @brief IntPart<T>( T realNumber ) == simple and safe cast to integer ( loosing the after comma part of realnumber )
-	//! @return integer-part of a real-number
-	template<class T> static s32 IntPart( T realNumber )
-	{
-		return static_cast<s32>(realNumber);
-	}
-
-	//! @brief FloatPart<T>( T realNumber ) == difference of original number with integer-part so rest is 0.f32-part
-	//! @return f32ingpoint-part of a realnumber
-	template<class T> static T FloatPart( T realNumber )
-	{
-		return realNumber-(T)IntPart(realNumber);
-	}
-
-	//! @brief RoundMedian( f32 realNumber )
-	//! @return Round = int( f32 realnumber + 0.5f ) -> "dirty round" = einfacher cast auf s32 ( long signed integer ) bei vorheriger Addition von 0.5
-	static f32 Round(f32 zahl);
-
-	//! @brief RoundMedian( f64 realNumber )
-	//! @return Round = int( f64 realnumber + 0.5 ) -> "dirty round" = einfacher cast auf s32 ( long signed integer ) bei vorheriger Addition von 0.5
-	static f64 Round(f64 zahl);
-
-	//! @brief Round( f32 realNumber, s32 stellen ) -> Rundet auf Anzahl Stellen nach dem Komma, Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
-	//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
-	static f32 Round(f32 zahl, s32 stellen);
-
-	//! @brief Round( f64 realnumber, s32 stellen )  -> Rundet auf Anzahl Stellen nach dem Komma, Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
-	//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
-	static f64 Round(f64 zahl, s32 stellen);
-
-	//! @brief Split<FloatType,IntType>( FloatType realNumber, FloatType& f_part, IntType& i_part )
-	//! @return Split<FloatType,IntType>( FloatType realNumber, FloatType& f_part, IntType& i_part )
-	template<class FloatType,class IntType> static void Split( const FloatType& realNumber, FloatType& f_part, IntType& i_part )
-	{
-		f_part = (FloatType)abs( modf( realNumber, *i_part ) );
-	}
-
-	//#ifdef USE_32BIT_FLOATS
-	//	void Math::Split( f32 r, f32* i, f32* f)
-	//	{
-	//		*f = fabs( fmodf( r,*i ) );
-	//	}
-	//#else
-	//	void Math::Split( f64 r, f64* i, f64* f)
-	//	{
-	//		*f = Math::abs<f64>( modf( r,i ) );
-	//	}
-	//#endif
-
-	//! @brief integer exponential number
-	//! @return integer exponential number
-	static s32 s32_pow(s32 x, s32 p);
-
 	//! @brief get the signum/vorzeichen of a realnumber
 	//! @return get the signum/vorzeichen of a realnumber
 	static s32 sign( f32 realnumber );
@@ -186,6 +68,150 @@ public:
 	//! @brief get next nearest power of two [1]
 	//! @return get next nearest power of two [1]
 	//u32 _nextPow2_IEEE( u32 n );
+
+	//! @brief Calculate logarithm of value to a given base in single precision
+	//! @return Logarithm of value to a given base
+	static f32 log( f32 value, f32 base );
+
+	//! @brief Calculate logarithm of value to a given base in double precision
+	//! @return Logarithm of value to a given base
+	static f64 log( f64 value, f64 base );
+
+	//! @brief Calculate decadic logarithm of value in single precision
+	//! @return Decadic logarithm of value
+	static f32 lg( f32 value );
+
+	//! @brief Calculate decadic logarithm of value in double precision
+	//! @return Decadic logarithm of value
+	static f64 lg( f64 value );
+
+	//! @brief Calculate natural logarithm of value in single precision
+	//! @return Natural logarithm of value
+	static f32 ln( f32 value );
+
+	//! @brief Calculate natural logarithm of value in double precision
+	//! @return Natural logarithm of value
+	static f64 ln( f64 value );
+
+	//! @brief Int to the power of another (non negative) int
+	//! @return integer
+	static s32 pow( s32 base, u32 exponent );
+
+	//! @brief Init class wide used randomizer
+	//! @return nothing
+	static void randomize();
+
+	//! @brief getRandomNumber(u32 max_random_number)
+	//! @return random unsigned 32bit number
+	static u32 rnd(u32 seed);
+
+	//! @brief abs<T>(T value)
+	//! @return Absolute of a value of type |T|
+	template <class T>
+	T abs(T value)
+	{
+		if (value < T(0))
+			return T(-1)*value;
+		else
+			return value;
+	}
+
+	//! @brief WrapAngle<T>(T value)
+	//! @return Normalized angle in degrees in range [0,360]
+	template<class T>
+	static T wrapAngle(T x)
+	{
+		while (x < (T)0)
+			x += (T)360;
+		while (x > (T)360 || equals( x, (T)360) )
+			x -= (T)360;
+
+		//	x = fmod( (f64)x, 360.0);
+		//	if (sizeof(x)<8)
+		//	{
+		//		x = fmodf(x,360);
+		//	}
+		//	else
+		//	{
+		//		x = fmod(x,360);
+		//	}
+
+		return x;
+	}
+
+	//! @brief WrapAngle180<T>(T value)
+	//! @return Normalized angle in degrees in range [0,360]
+	template<class T>
+	static T wrapAngle180(T x)
+	{
+		while (x < -(T)180)
+		{
+			x += (T)360;
+		}
+
+		while (x > (T)180 || equals( x, (T)180))
+		{
+			x -= (T)360;
+		}
+
+		//		x = fmod(x + (T)180,(T)360);
+		//		if (x < (T)0)
+		//			x += (T)360;
+		//
+		return x;
+	}
+
+	//! @brief IntPart<T>( T realNumber ) == simple and safe cast to integer ( loosing the after comma part of realnumber )
+	//! @return integer-part of a real-number
+	template<class T>
+	static s32 intPart( T realNumber )
+	{
+		return static_cast<s32>(realNumber);
+	}
+
+	//! @brief FloatPart<T>( T realNumber ) == difference of original number with integer-part so rest is 0.f32-part
+	//! @return f32ingpoint-part of a realnumber
+	template<class T>
+	static T floatPart( T realNumber )
+	{
+		return realNumber-(T)intPart(realNumber);
+	}
+
+	//! @brief RoundMedian( f32 realNumber )
+	//! @return Round = int( f32 realnumber + 0.5f ) -> "dirty round" = einfacher cast auf s32 ( long signed integer ) bei vorheriger Addition von 0.5
+	static f32 round(f32 zahl);
+
+	//! @brief RoundMedian( f64 realNumber )
+	//! @return Round = int( f64 realnumber + 0.5 ) -> "dirty round" = einfacher cast auf s32 ( long signed integer ) bei vorheriger Addition von 0.5
+	static f64 round(f64 zahl);
+
+	//! @brief Round( f32 realNumber, s32 stellen ) -> Rundet auf Anzahl Stellen nach dem Komma, Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
+	//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
+	static f32 round(f32 zahl, s32 stellen);
+
+	//! @brief Round( f64 realnumber, s32 stellen )  -> Rundet auf Anzahl Stellen nach dem Komma, Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
+	//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
+	static f64 round(f64 zahl, s32 stellen);
+
+	//! @brief Split<FloatType,IntType>( FloatType realNumber, FloatType& f_part, IntType& i_part )
+	//! @return Split<FloatType,IntType>( FloatType realNumber, FloatType& f_part, IntType& i_part )
+	template<class FloatType,class IntType>
+	static void split( const FloatType& realNumber, FloatType& f_part, IntType& i_part )
+	{
+		f_part = (FloatType)abs( modf( realNumber, *i_part ) );
+	}
+
+	//#ifdef USE_32BIT_FLOATS
+	//	void Math::Split( f32 r, f32* i, f32* f)
+	//	{
+	//		*f = fabs( fmodf( r,*i ) );
+	//	}
+	//#else
+	//	void Math::Split( f64 r, f64* i, f64* f)
+	//	{
+	//		*f = Math::abs<f64>( modf( r,i ) );
+	//	}
+	//#endif
 
 	//! @brief get minimum and maximum value inside array container per reference
 	//! @return get next nearest power of two [1]
@@ -217,7 +243,8 @@ public:
 
 	//! @brief ggT<T>(T a, T b)
 	//! @return greatest common divisor gcd(a,b)
-	template <class T> static T ggT( T a, T b)
+	template <class T>
+	static T ggT( T a, T b)
 	{
 		T tmp;
 		while (b!=0)
@@ -232,7 +259,8 @@ public:
 
 	//! @brief ggT2<T>(T a, T b)
 	//! @return greatest common divisor gcd(a,b)
-	template <class T> static T ggT2( T a,T b)
+	template <class T>
+	static T ggT2( T a,T b )
 	{
 		for(;;)
 		{
@@ -440,7 +468,8 @@ public:
 
 	/// @brief Statistics - analyzeData<T>( array<T> ) --> Test given data-set with all known functions
 	/// @return Statistics - analyzeData<T>( array<T> ) --> Analyze Data and print to string
-	template <class T>  stringc analyzeData( const array<T>& data, bool bPrintDataToo = false ) const
+	template <class T>
+	stringc analyzeData( const array<T>& data, bool bPrintDataToo = false ) const
 	{
 		stringc txt("Statistical Analysis of LinearData (array) with ");
 
@@ -491,181 +520,5 @@ public:
 
 } // end namespace core
 } // end namespace irr
-
-
-	// /// @brief Statistics - Arithmetic Average
-	// /// @return Arithmetic Average ( Arithmetisches Mittel )
-	// template <class T>  T x_arithm( const T* data, u32 count ) const
-	// {
-		// T result = (T)0;
-
-		// if (count == 0) return result;
-
-		// const T t_inv = (T)reciprocal( (f64)count );
-
-		// for (u32 i=0; i<count; i++)
-		// {
-			// result += data[i];
-		// }
-
-		// result *= t_inv; // factor 1/N
-
-		// return result;
-	// }
-
-	// /// @brief Statistics - Geometric Average
-	// /// @return Geometric Average ( geometrisches Mittel )
-	// template <class T>  T x_geom( const T* data, u32 count ) const
-	// {
-		// f64 result = 0.0;
-
-		// if (count == 0) return (T)result;
-
-		// // Produkt aller Elemente
-		// for (u32 i=0; i<count; i++)
-		// {
-			// result *= (f64)data[i];
-		// }
-
-		// // n-te Wurzel
-		// result = std::pow( result, 1.0/(f64)count );
-
-		// return (T)result;
-	// }
-
-
-	// /// <!-- Harmonic Average ( harmonisches Mittel ) -->
-	// template <class T>  T x_harm( const T* data, u32 count ) const
-	// {
-		// f64 result = 0.0;
-
-		// if (count == 0) return (T)result;
-
-		// for (u32 i=0; i<count; i++)
-		// {
-			// result += 1.0/(f64)data[i];
-		// }
-
-		// result = (f64)count / result;
-
-		// return (T)result;
-	// }
-
-
-	// /// <!-- Quadratic Average ( quadratisches Mittel ) -->
-	// template <class T>  T x_quad( const T* data, u32 count ) const
-	// {
-		// f64 result = 0.0;
-
-		// if (count == 0) return (T)result;
-
-		// for (u32 i=0; i<count; i++)
-		// {
-			// result += (f64)(data[i]*data[i]);
-		// }
-
-		// result /= (f64)count;
-
-		// result = std::sqrt( result );
-
-		// return (T)result;
-	// }
-
-
-	// /// <!-- Cubic Average ( kubisches Mittel ) -->
-	// template <class T>  T x_cubic( const T* data, u32 count ) const
-	// {
-		// f64 result = 0.0;
-
-		// if (count == 0) return (T)result;
-
-		// for (u32 i=0; i<count; i++)
-		// {
-			// T value = data[i];
-			// value *= (value*value);
-			// result += value;
-		// }
-
-		// result /= (f64)count;
-
-		// result = std::pow( result, 1.0/3.0 );
-
-		// return (T)result;
-	// }
-
-	// /// <!-- MEDIAN ( Mittelwert einer Funktion ) -->
-	// template <class T>  T getMedian( const T* data, u32 count ) const
-	// {
-		// T result = (T)0;
-		// if (count == 0) return result;
-
-		// T t_min = (T)DBL_MAX;
-		// T t_max = (T)DBL_MIN;
-
-		// for (u32 i=0; i<count; i++)
-		// {
-			// T value = data[i];
-			// if (t_min > value)
-			// {	t_min = value;
-			// }
-			// if (t_max < value)
-			// {	t_max = value;
-			// }
-		// }
-
-		// const T t_range = t_max - t_min;
-		// const T t_range_inv = (T)reciprocal( (f64)(t_range) );
-		// const T t_delta = t_range / count;
-
-		// for (u32 i=0; i<count; i++)
-		// {
-			// T value = data[i] * t_delta;
-			// result += value;
-		// }
-
-		// result *= t_range_inv;
-
-		// return result;
-	// }
-
-	// /// <!-- Standard Deviation ( Standardabweichung ) -->
-	// template <class T>  T getStdDeviation( const T* data, u32 count ) const
-	// {
-		// f64 result = 0.0;
-
-		// if (count == 0) return (T)result;
-
-		// f64 average = (f64)x_arithm( data );
-
-		// for (u32 i=0; i<count; i++)
-		// {
-			// f64 value = (f64)data[i];
-			// value -= average;
-			// value *= value;
-			// result += value;
-		// }
-
-		// if (count>1)
-			// result /= (f64)(count-1);
-
-		// result = std::sqrt( result );
-
-		// return (T)result;
-	// }
-
-	// /// <!-- Average quadratic error ( mittlerer quadrat. Fehler == Breite der Streuung des Mittelwertes ) -->
-	// template <class T>  T getStdError( const T* data, u32 count ) const
-	// {
-		// f64 result = 0.0;
-
-		// if (count == 0) return (T)result;
-
-		// result = getStdDeviation( data, count );
-
-		// result /= std::sqrt( (f64)count );
-
-		// return (T)result;
-	// }
-
 
 #endif // __IRR_EXT_MATH_H__
