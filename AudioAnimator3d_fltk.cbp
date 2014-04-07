@@ -303,6 +303,8 @@
 		<Unit filename="include/resources.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Unit filename="include/sprintf.cpp" />
+		<Unit filename="include/sprintf.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

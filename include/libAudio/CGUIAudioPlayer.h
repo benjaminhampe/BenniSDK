@@ -27,12 +27,9 @@ protected:
 private:
 	gui::IGUIFont* Font;	// big font for drawing filename
 	IAudioPlayer* Player;
-
 	IGUIStaticText* TrackName;
 	IGUIStaticText* TrackInfo;
-
 	IGUIButton* LoadButton;		// Load File
-	IGUIButton* CloseButton;	// Close current File
 	IGUIButton* PlayButton;		// press play
 	IGUIButton* PauseButton;		// press pause
 	IGUIButton* StopButton;		// press stop
@@ -41,22 +38,14 @@ private:
 	IGUIButton* PrevButton;		// press previous track
 	IGUIButton* NextButton;		// press next track
 	// IGUIButton* RecordButton;
-
 	IGUISpinBox* MasterVolume;	// MasterVolume ( Loudness ) 0.0f ... 1.0f
 	IGUISpinBox* MasterPan;		// MasterPan ( Centered Sound at 0.0f, -1.0f ... 1.0f
 	IGUISpinBox* MasterPitch;		// MasterPitch ( PlaySpeed ) -100.0f ... 100.0f
-
-	//IGUICheckBox* ChkMute;			// Mute ( MasterVolume = 0, panic button )
-	//IGUICheckBox* ChkLoopMode;		// LoopMode	( playlist )
-	//IGUICheckBox* ChkShuffleMode;	// ShuffleMode ( playlist )
-	//
-	//IGUIComboBox* AudioInDeviceList;	// list of audio input devices
-	//IGUIComboBox* AudioOutDeviceList;	// list of audio output devices
-	//
-	//IGUIListBox* TrackList; // Playlist
-	//IGUIButton* AddTrack;
-	//IGUIButton* DelTrack;
-
+	IGUICheckBox* ChkMute;			// Mute ( MasterVolume = 0, panic button )
+	IGUICheckBox* ChkLoopMode;		// LoopMode	( playlist )
+	IGUICheckBox* ChkShuffleMode;	// ShuffleMode ( playlist )
+	core::recti PlayPositionRect;
+	video::ITexture* PlayPositionTexture;
 public:
 
 	//! value constructor
@@ -77,42 +66,122 @@ public:
 		return Player;
 	}
 
-	virtual bool loadFile( const core::stringc& filename = "" )
+	core::stringw getTrackInfo()
 	{
+		core::stringw txt = L"";
 		if (!Player)
-			return false;
-
-		if ( filename.size() == 0 )
 		{
-			#ifdef _IRR_COMPILE_WITH_FLTK_
-			Fl_Native_File_Chooser dlg;
-			dlg.title("Load an audio-file");
-			dlg.type(Fl_Native_File_Chooser::BROWSE_FILE);
-			dlg.filter("AudioFile\t*.{ogg,wav,mp3,flac}\nAll Files\t*.*");
-			dlg.directory("../../media/music");
-			 // Show native chooser
-			//Fl::check();
-			switch ( dlg.show() )
-			{
-				case -1:
-					break; // ERROR
+			txt += L"No player set.";
+			return txt;
+		}
 
-				case 1:
-					break; // CANCEL
+		switch (Player->getStatus())
+		{
+			case EAPS_PLAYING: txt += L"(playing)"; break;
+			case EAPS_PAUSED: txt += L"(paused)"; break;
+			case EAPS_STOPPED: txt += L"(stopped)"; break;
+			default:
+				txt += L"(invalid/error)"; break;
+		}
+		txt += L"\n";
+		txt += Player->getSampleRate();	txt += L" Hz\n";
+		txt += Player->getChannelCount(); txt += L" Channel";
+		if (Player->getChannelCount()>1)
+			txt += L"(s)";
+		txt += L"\n";
+		txt += Player->getPosition(); txt += L" ms\n";
+		txt += Player->getDuration(); txt += L" ms";
+		return txt;
+	}
 
-				default:
-					fl_alert( dlg.filename() );
-					return Player->loadFile( core::stringc( dlg.filename() ) ); // FILE CHOSEN
-					break;
-			}
-			#else
-				return false;
-			#endif
+	void setPlayer( IAudioPlayer* player )
+	{
+		Player = player;
+
+		if (!player)
+		{
+			if (TrackName)
+				TrackName->setText( L"Pointer to IAudioPlayer is zero\n");
 		}
 		else
 		{
-			return Player->loadFile( filename );
+			if (TrackName)
+			{
+				TrackName->setText( core::stringw(
+					Player->getFileName() ).c_str() );
+			}
+			if (TrackInfo)
+			{
+				TrackInfo->setText( getTrackInfo().c_str() );
+			}
+			if (MasterVolume)
+			{
+				MasterVolume->setValue( Player->getVolume() );
+			}
+			if (MasterPitch)
+			{
+				MasterPitch->setValue( Player->getPitch() );
+			}
+			if (MasterPan)
+			{
+				MasterPan->setValue( Player->getPan() );
+			}
 		}
+	}
+	virtual bool loadFile( const core::stringc& filename = "" )
+	{
+		core::stringc myFilename = filename;
+
+		if ( myFilename.size() == 0 )
+		{
+		#ifdef _IRR_COMPILE_WITH_FLTK_
+			Fl_Native_File_Chooser dlg;
+			dlg.title("Load an audio-file");
+			dlg.type(Fl_Native_File_Chooser::BROWSE_FILE);
+			dlg.filter("Audio-Files\t*.{ogg,wav,mp3,flac}");
+			dlg.directory("../../media/music");
+			switch ( dlg.show() )
+			{
+				case -1: break; // ERROR
+				case 1:	break; // CANCEL
+				default: // FILE CHOSEN
+					myFilename = dlg.filename();
+					break;
+			}
+		#else
+			return false;
+		#endif
+		}
+
+		if (!Player)
+		{
+			dbERROR("Invalid pointer to Player\n")
+			return false;
+		}
+
+		if (!Player->loadFile( myFilename ))
+		{
+		#ifdef _IRR_COMPILE_WITH_FLTK_
+			core::stringc txt = "Error, could not open file ";
+			txt += myFilename;
+			txt += ".\nMaybe the file is broken or the extension is not supported.";
+			fl_alert( txt.c_str() );
+		#endif
+			return false;
+		}
+
+		/// all success
+		if (TrackName)
+		{
+			TrackName->setText( core::stringw(
+				Player->getFileName() ).c_str() );
+		}
+		if (TrackInfo)
+		{
+			TrackInfo->setText( getTrackInfo().c_str() );
+		}
+
+		return true;
 	}
 
 	virtual bool closeFile()
@@ -120,7 +189,7 @@ public:
 		if (!Player)
 			return false;
 
-		return Player->closeFile();
+		Player->stop();
 	}
 
 //	//! Writes attributes of the element.

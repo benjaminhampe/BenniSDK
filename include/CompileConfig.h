@@ -15,9 +15,9 @@
 #define _IRR_COMPILE_WITH_FFTW3_
 #endif
 
-#ifndef _IRR_COMPILE_WITH_SFML_AUDIO_
+//#ifndef _IRR_COMPILE_WITH_SFML_AUDIO_
 #define _IRR_COMPILE_WITH_SFML_AUDIO_
-#endif
+//#endif
 
 //#ifndef _IRR_COMPILE_WITH_RTAUDIO_
 //#define _IRR_COMPILE_WITH_RTAUDIO_

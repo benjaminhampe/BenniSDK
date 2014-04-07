@@ -13,7 +13,7 @@ namespace gui
 CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	IGUIEnvironment* env, IGUIElement* parent, s32 id, core::rect<s32> rectangle )
 : IGUIElement(EGUIET_ELEMENT, env, parent, id, rectangle)
-, Font(0), Player(player)
+, Font(0), Player(0), PlayPositionTexture(0)
 {
 	setName("CGUIAudioPlayer");
 	setTabStop(true);
@@ -43,13 +43,8 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	LoadButton = env->addButton( core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"Load");
 	x += dx;
 
-	// close
-	dx = 24;
-	CloseButton = env->addButton( core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"X");
-	x += dx;
-
 	// track-name
-	dx = 10*24;
+	dx = 15*24;
 	TrackName = env->addStaticText( L"TrackName", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
 	TrackName->setTextAlignment( EGUIA_UPPERLEFT, EGUIA_CENTER );
 	TrackName->setOverrideColor( fgColor );
@@ -74,67 +69,64 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	label->setBackgroundColor( bgColor );
 	x+=dx;
 
-	dx = 3*24;
 	MasterVolume = env->addSpinBox( L"0.10", core::recti(x,y,x+dx-1,y+dy-1), true, this, -1);
 	if (MasterVolume)
 	{
 		MasterVolume->setDecimalPlaces(2);
 		MasterVolume->setRange(0,1);
 		MasterVolume->setStepSize(0.1f);
-		MasterVolume->setValue( Player->getVolume() );
+		MasterVolume->setValue( 0.0f );
 	}
 	x+=dx;
 
 	/// Speed / Pitch
-	dx = 2*24;
 	label = env->addStaticText( L"Speed", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
 	label->setTextAlignment( EGUIA_CENTER, EGUIA_CENTER );
 	label->setOverrideColor( fgColor );
 	label->setBackgroundColor( bgColor );
 	x+=dx;
 
-	dx = 3*24;
 	MasterPitch = env->addSpinBox( L"1.00", core::recti(x,y,x+dx-1,y+dy-1), true, this, -1);
 	if (MasterPitch)
 	{
 		MasterPitch->setDecimalPlaces(3);
-		MasterPitch->setRange(0,1);
+		MasterPitch->setRange(0,10);
 		MasterPitch->setStepSize(0.05f);
-		MasterPitch->setValue( Player->getPitch() );
+		MasterPitch->setValue( 1.0f );
 	}
 	x+=dx;
 
 	/// Pan
-	dx = 2*24;
 	label = env->addStaticText( L"Pan", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
 	label->setTextAlignment( EGUIA_CENTER, EGUIA_CENTER );
 	label->setOverrideColor( fgColor );
 	label->setBackgroundColor( bgColor );
 	x+=dx;
 
-	dx = 3*24;
 	MasterPan = env->addSpinBox( L"0.00", core::recti(x,y,x+dx-1,y+dy-1), true, this, -1);
 	if (MasterPan)
 	{
 		MasterPan->setDecimalPlaces(2);
 		MasterPan->setRange(-1.f,1.f);
 		MasterPan->setStepSize(.05f);
-		MasterPan->setValue( Player->getPan() );
+		MasterPan->setValue( 1.0f );
 	}
 	x+=dx; // y+=dy;
-
 
 	/// track-info
 	y += dy;
 	x = Border;
 	dx = 100;
-	dy = 3*24;
+	dy = AbsoluteClippingRect.getHeight()-y;
 	TrackInfo = env->addStaticText( L"TrackInfo", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
-	TrackInfo->setTextAlignment( EGUIA_UPPERLEFT, EGUIA_CENTER );
+	TrackInfo->setTextAlignment( EGUIA_CENTER, EGUIA_CENTER );
 	TrackInfo->setOverrideColor( 0xffffffff );
 	TrackInfo->setBackgroundColor( video::SColor(200,0,0,0) );
 	x += dx;
 
+	dx = AbsoluteClippingRect.getWidth()-x;
+	dy = AbsoluteClippingRect.getHeight()-y;
+	PlayPositionRect = core::recti(x,y, x+dx-1, y+dy-1);
 
 	/// Mute
 	//	ChkMute = Environment->addCheckBox( false, core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"Mute"); y+=dy;
@@ -148,6 +140,7 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	//	dx = txt_size.Width;
 	//	Environment->addStaticText( txt.c_str(), core::recti(core::position2di(x,y+ey), txt_size), false, false, this, -1);
 	//	y+=dy;
+	//setPlayer( player );
 }
 
 //! destructor
@@ -161,6 +154,30 @@ void CGUIAudioPlayer::draw()
 {
 	if (!IsVisible)
 		return;
+
+	/// update here player when playing
+	/// position
+	/// scrollbar position
+	if (TrackInfo)
+		TrackInfo->setText( getTrackInfo().c_str() );
+
+	video::IVideoDriver* driver = Environment->getVideoDriver();
+
+	const core::recti r = PlayPositionRect + AbsoluteClippingRect.UpperLeftCorner;
+
+	driver->draw2DRectangle( video::SColor(255,255,255,255), r);
+
+	driver->draw2DRectangleOutline( r, video::SColor(255,255,0,0) );
+
+	if (Player && Player->getStatus() > EAPS_STOPPED )
+	{
+		const s32 x = core::round32( (f32)r.getWidth() * (f32)Player->getPosition() / (f32)Player->getDuration() );
+
+		driver->draw2DLine(
+			core::position2di( r.UpperLeftCorner.X+x,r.UpperLeftCorner.Y),
+			core::position2di( r.UpperLeftCorner.X+x,r.LowerRightCorner.Y),
+			video::SColor(255,0,0,0) );
+	}
 
 	IGUIElement::draw();
 }
@@ -184,28 +201,28 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 			if ( !this->isMyChild(caller) )
 				break;
 
-			if ( !Player )
-				break;
-
 			if ( event.GUIEvent.EventType == EGET_SPINBOX_CHANGED )
 			{
 				const f32& value = ((IGUISpinBox*)caller)->getValue();
 
 				if (caller == MasterVolume)
 				{
-					Player->setVolume( value );
+					if (Player)
+						Player->setVolume( value );
 					return true;
 				}
 
 				if (caller == MasterPan)
 				{
-					Player->setPan( value );
+					if (Player)
+						Player->setPan( value );
 					return true;
 				}
 
 				if (caller == MasterPitch)
 				{
-					Player->setPitch( value );
+					if (Player)
+						Player->setPitch( value );
 					return true;
 				}
 			}
@@ -218,51 +235,52 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 					return true;
 				}
 
-				if (caller == CloseButton)
-				{
-					closeFile();
-					return true;
-				}
-
 				if (caller == PlayButton)
 				{
-					Player->play();
+					if (Player)
+						Player->play();
 					return true;
 				}
 
 				else if (caller == PauseButton)
 				{
-					Player->pause();
+					if (Player)
+						Player->pause();
 					return true;
 				}
 
 				else if (caller == StopButton)
 				{
-					Player->stop();
+					if (Player)
+						Player->stop();
 					return true;
 				}
 
 				else if (caller == RewindButton)
 				{
-					Player->rewind();
+//					if (Player)
+//						Player->rewind();
 					return true;
 				}
 
 				else if (caller == ForwardButton)
 				{
-					Player->forward();
+//					if (Player)
+//						Player->forward();
 					return true;
 				}
 
 				else if (caller == PrevButton)
 				{
-					Player->prev();
+//					if (Player)
+//						Player->prev();
 					return true;
 				}
 
 				else if (caller == NextButton)
 				{
-					Player->next();
+//					if (Player)
+//						Player->next();
 					return true;
 				}
 
@@ -300,26 +318,6 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 
 		case EET_MOUSE_INPUT_EVENT:
 		{
-//			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-//			{
-//				if (Environment->hasFocus(this) && !AbsoluteClippingRect.isPointInside(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
-//				{
-//					Environment->removeFocus(this);
-//					return false;
-//				}
-//				Environment->setFocus(this);
-//				return true;
-//			}
-//			else
-//			if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-//			{
-//				if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ) ) )
-//				{
-//					return true;
-//				}
-//
-//				return true;
-//			}
 		} break;
 	default:
 		break;

@@ -117,12 +117,12 @@ void CGUIAudioEQGraph::draw()
 	}
 
 	/// draw TrackName
-	txt = Player->getTrackName();
+	txt = Player->getFileName();
 	drawText( font, txt, pos, LineColor, -1, -1, 0);
 	pos.Y += getTextHeight( font, txt );
 
 	/// draw TrackInfo
-	txt = Player->getTrackInfo();
+	txt = L"TrackInfo";
 	drawText( font, txt, pos, LineColor, -1, -1, 0);
 	pos.Y += getTextHeight( font, txt );
 

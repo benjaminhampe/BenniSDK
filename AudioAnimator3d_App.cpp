@@ -378,12 +378,11 @@ bool Application::setupGUI()
 		false, L"GUI AudioPlayer (SFML API)", env->getRootGUIElement(), -1);
 
 	gui::CGUIAudioPlayer* playerPanel = new gui::CGUIAudioPlayer(
-		&player, env, playerWindow, -1, playerWindow->getClientRect() );
+		0, env, playerWindow, -1, playerWindow->getClientRect() );
 
 	player.loadFile( DefaultAudioFilename );
 
-	player.play();
-
+	playerPanel->setPlayer( &player );
 	return true;
 }
 
