@@ -7,9 +7,9 @@
 
 /// MyDefines
 
-//#ifndef _IRR_COMPILE_WITH_FLTK_
-//#define _IRR_COMPILE_WITH_FLTK_
-//#endif
+#ifndef _IRR_COMPILE_WITH_FLTK_
+#define _IRR_COMPILE_WITH_FLTK_
+#endif
 
 #ifndef _IRR_COMPILE_WITH_FFTW3_
 #define _IRR_COMPILE_WITH_FFTW3_
@@ -19,6 +19,14 @@
 #define _IRR_COMPILE_WITH_SFML_AUDIO_
 #endif
 
+//#ifndef _IRR_COMPILE_WITH_RTAUDIO_
+//#define _IRR_COMPILE_WITH_RTAUDIO_
+//#endif
+//
+//#ifndef _IRR_COMPILE_WITH_PORTAUDIO_
+//#define _IRR_COMPILE_WITH_PORTAUDIO_
+//#endif
+//
 //#ifndef _IRR_COMPILE_WITH_PORTMIDI_
 //#define _IRR_COMPILE_WITH_PORTMIDI_
 //#endif
@@ -27,13 +35,13 @@
 //#define _IRR_COMPILE_WITH_FREETYPE2_
 //#endif
 
-#ifndef _IRR_COMPILE_WITH_XPM_LOADER_
-#define _IRR_COMPILE_WITH_XPM_LOADER_
-#endif
-
-#ifndef _IRR_COMPILE_WITH_XPM_WRITER_
-#define _IRR_COMPILE_WITH_XPM_WRITER_
-#endif
+//#ifndef _IRR_COMPILE_WITH_XPM_LOADER_
+//#define _IRR_COMPILE_WITH_XPM_LOADER_
+//#endif
+//
+//#ifndef _IRR_COMPILE_WITH_XPM_WRITER_
+//#define _IRR_COMPILE_WITH_XPM_WRITER_
+//#endif
 
 //#ifndef _IRR_COMPILE_WITH_XPM_LOADER_DEBUG_OUTPUT_
 //#define _IRR_COMPILE_WITH_XPM_LOADER_DEBUG_OUTPUT_
@@ -89,6 +97,16 @@
 #ifdef _IRR_COMPILE_WITH_FFTW3_
 #include <fftw3.h>
 #endif // _IRR_COMPILE_WITH_FFTW3_
+
+#ifdef _IRR_COMPILE_WITH_FLTK_
+#include <FL/Fl.H>
+#include <FL/Fl_Native_File_Chooser.H>
+#include <FL/Fl_Window.H>
+#include <FL/Fl_Button.H>
+#include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Box.H>
+#include <FL/fl_ask.H>
+#endif // _IRR_COMPILE_WITH_FLTK_
 
 #ifdef _IRR_COMPILE_WITH_SFML_AUDIO_
 #include <SFML/Audio.hpp>

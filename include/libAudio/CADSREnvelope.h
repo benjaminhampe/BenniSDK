@@ -1,6 +1,3 @@
-#ifndef HEADER_29620677C5FD619F
-#define HEADER_29620677C5FD619F
-
 // Copyright (C) 2002-2014 Benjamin Hampe
 // This file is part of the "irrlicht-engine"
 // For conditions of distribution and use, see copyright notice in irrlicht.h
@@ -229,5 +226,3 @@ namespace irr
 } // end namespace irr
 
 #endif // __IRR_C_ADSR_ENVELOPE_H__
-
-#endif // header guard

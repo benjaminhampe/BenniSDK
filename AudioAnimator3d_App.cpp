@@ -291,56 +291,56 @@ bool Application::setupGUI()
 	dy = 22;
 	ui_MeshSizeX = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MeshSizeX->setDecimalPlaces( 0 );
-	ui_MeshSizeX->setStepSize( 1 );
+	ui_MeshSizeX->setStepSize( 10 );
 	ui_MeshSizeX->setRange( 2, 65536 );
 	ui_MeshSizeX->setValue( MeshSize.X );
 	y += dy;
 
 	ui_MeshSizeY = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MeshSizeY->setDecimalPlaces( 0 );
-	ui_MeshSizeY->setStepSize( 1 );
+	ui_MeshSizeY->setStepSize( 10 );
 	ui_MeshSizeY->setRange( 2, 65536 );
 	ui_MeshSizeY->setValue( MeshSize.Y );
 	y += dy;
 
 	ui_MeshSizeZ = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MeshSizeZ->setDecimalPlaces( 0 );
-	ui_MeshSizeZ->setStepSize( 1 );
+	ui_MeshSizeZ->setStepSize( 10 );
 	ui_MeshSizeZ->setRange( 2, 65536 );
 	ui_MeshSizeZ->setValue( MeshSize.Z );
 	y += dy;
 
 	ui_MatrixCols = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MatrixCols->setDecimalPlaces( 0 );
-	ui_MatrixCols->setStepSize( 1 );
+	ui_MatrixCols->setStepSize( 10 );
 	ui_MatrixCols->setRange( 2, 65536 );
 	ui_MatrixCols->setValue( FFT_MatrixCols );
 	y += dy;
 
 	ui_MatrixRows = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_MatrixRows->setDecimalPlaces( 0 );
-	ui_MatrixRows->setStepSize( 1 );
-	ui_MatrixRows->setRange( 2, FFT_Size );
+	ui_MatrixRows->setStepSize( 16 );
+	ui_MatrixRows->setRange( 1, 10000 );
 	ui_MatrixRows->setValue( FFT_MatrixRows );
 	y += dy;
 
 	ui_DecibelMin = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_DecibelMin->setDecimalPlaces( 0 );
-	ui_DecibelMin->setStepSize( 1 );
+	ui_DecibelMin->setStepSize( 10 );
 	ui_DecibelMin->setRange( 0, 80 );
 	ui_DecibelMin->setValue( FFT_Range.Min );
 	y += dy;
 
 	ui_DecibelMax = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_DecibelMax->setDecimalPlaces( 0 );
-	ui_DecibelMax->setStepSize( 1 );
-	ui_DecibelMax->setRange( 80, 160 );
+	ui_DecibelMax->setStepSize( 10 );
+	ui_DecibelMax->setRange( 1, 10000 );
 	ui_DecibelMax->setValue( FFT_Range.Max );
 	y += dy;
 
 	ui_DecibelThreshold = env->addSpinBox( L"", core::recti(x,y,x+dx-1, y+dy-1), true, env->getRootGUIElement(), -1);
 	ui_DecibelThreshold->setDecimalPlaces( 0 );
-	ui_DecibelThreshold->setStepSize( 1 );
+	ui_DecibelThreshold->setStepSize( 10 );
 	ui_DecibelThreshold->setRange( FFT_Range.Min, FFT_Range.Max );
 	ui_DecibelThreshold->setValue( FFT_Threshold );
 	y += dy;
@@ -407,6 +407,9 @@ bool Application::run()
 
     while (Device->run())
     {
+//	#ifdef _IRR_COMPILE_WITH_FLTK_
+//		Fl::check();
+//	#endif // _IRR_COMPILE_WITH_FLTK_
 
 		/// Update Timer
 		renderTime = timer->getRealTime() - timeNow;
@@ -797,7 +800,7 @@ void Application::OnChangedSpinBox_DecibelMin( f32 value )
 /// event-handler
 void Application::OnChangedSpinBox_DecibelMax( f32 value )
 {
-	FFT_Range.Max = core::clamp<f32>( value, FFT_Range.Min, 200.0f );
+	FFT_Range.Max = core::clamp<f32>( value, FFT_Range.Min, 1000.0f );
 	FFT_Threshold = core::clamp<f32>( FFT_Threshold, FFT_Range.Min, FFT_Range.Max );
 
 	if (ui_DecibelMax)
@@ -948,7 +951,19 @@ bool Application::OnEvent(const SEvent &event)
 	/// handle GUI events
 	if (event.EventType == EET_GUI_EVENT)
 	{
+		gui::IGUIEnvironment* env = Device->getGUIEnvironment();
+
 		gui::IGUIElement* caller = event.GUIEvent.Caller;
+
+		/// window
+
+		if (event.GUIEvent.EventType == gui::EGET_ELEMENT_CLOSED)
+		{
+			if (caller == env->getRootGUIElement())
+			{
+				return true;
+			}
+		}
 
 		/// buttons
 		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED)

@@ -131,9 +131,9 @@ public:
 		out.set_used( 0 );
 
 		// calculate min and max frequency
-		const f32 f_min = (f32)sampleRate/(f32)fftSize;
-		const f32 f_max = f_min * (f32)nPoints;
-		const f32 f_step = f_min;
+		const f32 f_min = 10.0f; // (f32)sampleRate/(f32)fftSize
+		const f32 f_max = ((f32)sampleRate*(f32)nPoints)/(f32)fftSize;
+		const f32 f_step = (f32)sampleRate/(f32)fftSize;
 
 		// calculate min and max frequency in logarithmic scale
 		const f32 l_base = (f32)logBase;
@@ -149,7 +149,7 @@ public:
 			v = core::Math::log( freq, l_base ) - l_min;
 			v *= l_range_inv;
 			out.push_back( core::clamp<f32>(v, 0.0f, 1.0f) );
-			freq += f_min;
+			freq += f_step;
 		}
 	}
 };

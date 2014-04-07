@@ -23,15 +23,41 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	const s32 h = AbsoluteRect.getHeight();
     const s32 Border = 2;
 
+	video::SColor fgColor(255,255,255,255);
+	video::SColor bgColor(200,0,0,0);
+
 	video::IVideoDriver* driver = env->getVideoDriver();
 	Font = env->getBuiltInFont();
+	gui::IGUIStaticText* label;
 
 	/// Buttons
-	s32 dx = 24;
-	s32 dy = dx;
-	s32 x = Border;
-	s32 y = Border;
+	s32 dx,dy,x,y;
 
+	/// Buttons
+	dy = 24;
+	x = Border;
+	y = Border;
+
+	// load
+	dx = 48;
+	LoadButton = env->addButton( core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"Load");
+	x += dx;
+
+	// close
+	dx = 24;
+	CloseButton = env->addButton( core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"X");
+	x += dx;
+
+	// track-name
+	dx = 10*24;
+	TrackName = env->addStaticText( L"TrackName", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
+	TrackName->setTextAlignment( EGUIA_UPPERLEFT, EGUIA_CENTER );
+	TrackName->setOverrideColor( fgColor );
+	TrackName->setBackgroundColor( bgColor );
+	x += dx;
+
+	/// Buttons
+	dx = 24;
 	PlayButton = env->addButton( core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"|>"); x+=dx;
 	PauseButton = env->addButton( core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"||"); x+=dx;
     StopButton = env->addButton( core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"[]"); x+=dx;
@@ -41,11 +67,12 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	NextButton = env->addButton( core::recti(x,y,x+dx-1,y+dy-1), this, -1, L">"); x+=dx;
 
 	/// Volume
-	//	txt = L"Volume"; txt_size = font->getDimension( txt.c_str() );
-	//    ey = (dy-(s32)txt_size.Height)/2;
-	//	dx = txt_size.Width;
-	//	Environment->addStaticText( txt.c_str(), core::recti(core::position2di(x+ex,y+ey), txt_size), false, false, this, -1);
-	//	y+=dy;
+	dx = 2*24;
+	label = env->addStaticText( L"Volume", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
+	label->setTextAlignment( EGUIA_CENTER, EGUIA_CENTER );
+	label->setOverrideColor( fgColor );
+	label->setBackgroundColor( bgColor );
+	x+=dx;
 
 	dx = 3*24;
 	MasterVolume = env->addSpinBox( L"0.10", core::recti(x,y,x+dx-1,y+dy-1), true, this, -1);
@@ -53,35 +80,39 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	{
 		MasterVolume->setDecimalPlaces(2);
 		MasterVolume->setRange(0,1);
-		MasterVolume->setStepSize(0.01f);
+		MasterVolume->setStepSize(0.1f);
 		MasterVolume->setValue( Player->getVolume() );
 	}
 	x+=dx;
 
 	/// Speed / Pitch
-	//    txt = L"Speed"; txt_size = font->getDimension( txt.c_str() );
-	//    ey = (dy-(s32)txt_size.Height)/2;
-	//	dx = txt_size.Width;
-	//    Environment->addStaticText( txt.c_str(), core::recti(core::position2di(x+ex,y+ey), txt_size), false, false, this, -1);
-	//	y+=dy;
+	dx = 2*24;
+	label = env->addStaticText( L"Speed", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
+	label->setTextAlignment( EGUIA_CENTER, EGUIA_CENTER );
+	label->setOverrideColor( fgColor );
+	label->setBackgroundColor( bgColor );
+	x+=dx;
 
+	dx = 3*24;
 	MasterPitch = env->addSpinBox( L"1.00", core::recti(x,y,x+dx-1,y+dy-1), true, this, -1);
 	if (MasterPitch)
 	{
 		MasterPitch->setDecimalPlaces(3);
-		MasterPitch->setRange(0.001f,1000.0f);
-		MasterPitch->setStepSize(0.1f);
+		MasterPitch->setRange(0,1);
+		MasterPitch->setStepSize(0.05f);
 		MasterPitch->setValue( Player->getPitch() );
 	}
-	x+=dx; // y+=dy;
+	x+=dx;
 
 	/// Pan
-	// txt = L"Panning"; txt_size = font->getDimension( txt.c_str() );
-	//    ey = (dy-(s32)txt_size.Height)/2;
-	//	dx = txt_size.Width;
-	//	Environment->addStaticText( txt.c_str(), core::recti(core::position2di(x+ex,y+ey), txt_size), false, false, this, -1);
-	//	y+=dy;
+	dx = 2*24;
+	label = env->addStaticText( L"Pan", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
+	label->setTextAlignment( EGUIA_CENTER, EGUIA_CENTER );
+	label->setOverrideColor( fgColor );
+	label->setBackgroundColor( bgColor );
+	x+=dx;
 
+	dx = 3*24;
 	MasterPan = env->addSpinBox( L"0.00", core::recti(x,y,x+dx-1,y+dy-1), true, this, -1);
 	if (MasterPan)
 	{
@@ -93,6 +124,17 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	x+=dx; // y+=dy;
 
 
+	/// track-info
+	y += dy;
+	x = Border;
+	dx = 100;
+	dy = 3*24;
+	TrackInfo = env->addStaticText( L"TrackInfo", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
+	TrackInfo->setTextAlignment( EGUIA_UPPERLEFT, EGUIA_CENTER );
+	TrackInfo->setOverrideColor( 0xffffffff );
+	TrackInfo->setBackgroundColor( video::SColor(200,0,0,0) );
+	x += dx;
+
 
 	/// Mute
 	//	ChkMute = Environment->addCheckBox( false, core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"Mute"); y+=dy;
@@ -100,41 +142,12 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	//	ChkShuffleMode = Environment->addCheckBox( false, core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"Shuffle"); y+=dy;
 	/// LoopMode
 	//	ChkLoopMode = Environment->addCheckBox( true, core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"Loop"); y+=dy;
-
-	/// TrackInfo
-	//	TrackName = Environment->addStaticText( txt.c_str(), core::recti(core::position2di(x,y+ey), txt_size), false, false, this, -1);
-	//  ChannelList = Environment->addComboBox( core::recti(x,y,x+dx-1,y+dy-1), this, -1 ); y+=dy;
-
-	// STATIC LABEL - Audio Information Text
-	//	txt = getSoundInfoText();
-	//
-	//	txt_size = arial->getDimension( txt.c_str() );
-	//	txt_size = font->getDimension( txt.c_str() );
-	//
-	//	x = w - txt_size.Width - Border;
-	//	y = h - txt_size.Height - Border;
-	//
-	//	TrackInfo = Environment->addStaticText( txt.c_str(), core::recti( core::position2di(x,y), txt_size), true, false, this, -1, false );
-	//
-	//	if (TrackInfo)
-	//	{
-	//		TrackInfo->setOverrideFont( font );
-	//		TrackInfo->setOverrideColor( video::SColor(255,255,255,255) );
-	//	}
-
 	/// AudioDevices
 	//    txt = L"ChannelList"; txt_size = font->getDimension( txt.c_str() );
 	//    ey = (dy-(s32)txt_size.Height)/2;
 	//	dx = txt_size.Width;
 	//	Environment->addStaticText( txt.c_str(), core::recti(core::position2di(x,y+ey), txt_size), false, false, this, -1);
 	//	y+=dy;
-
-	//COLUMN 2
-	//	y = Border;
-	//	x = 200;
-	//	dx = 200;
-	//
-
 }
 
 //! destructor
@@ -199,6 +212,18 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 
 			if ( event.GUIEvent.EventType == EGET_BUTTON_CLICKED )
 			{
+				if (caller == LoadButton)
+				{
+					loadFile();
+					return true;
+				}
+
+				if (caller == CloseButton)
+				{
+					closeFile();
+					return true;
+				}
+
 				if (caller == PlayButton)
 				{
 					Player->play();

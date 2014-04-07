@@ -1,137 +1,81 @@
-/// Copyright (C) 2002-2013 Benjamin Hampe
-/// This file is part of the "irrlicht-engine"
-/// For conditions of distribution and use, see copyright notice in irrlicht.h
+/**
+ * Copyright (C) 2002-2014 by Benjamin Hampe <benjaminhampe@gmx.de>
+ *
+ * @page AudioAnimator3d
+ *
+ * @brief This program creates an animated 3d power-spectrum from audio-files
+ *
+ * For conditions of distribution and use, see copyright notice in irrlicht.h
+ * idea found at http://www.youtube.com/watch?v=gbuZVcw3ZiM
+ * no copyright infringement intended i just like working with audio-data
+ *
+ * to compile this program u need fftw3, SFML2.1, freetype and Irrlicht
+ *
+ * tested on Windows7 32-bit Professional
+ * tested on Windows7 64-bit Home Premium
+ *
+ * test system 1: Core2Duo E6600 2x 2,4 GHz, 2GiB RAM, Ati HD5450 512MiByte VRAM
+ * test system 2: Core i5 2x 2,53 GHz, 4GiB RAM, Geforce 310M 1024MiByte VRAM + Intel Graphics Hybrid
+ */
 
-#include <cstdint>	// intptr_t, uintptr_t
-#include <cstdio>	// printf
-#include <cstdlib>	// exit,malloc
-#include <cstring>	// strerror
-#include <cerrno>	// errno
+#include "AudioAnimator3d_App.h"
 
-#include <irrlicht.h>
-
-#include <../source/Irrlicht/CColorConverter.cpp>
-#include <../source/Irrlicht/CImage.cpp>
 #include <../source/Irrlicht/os.cpp>
+#include <../source/Irrlicht/CImage.cpp>
+#include <../source/Irrlicht/CColorConverter.cpp>
 #include <../source/Irrlicht/CMeshSceneNode.cpp>
 #include <../source/Irrlicht/CShadowVolumeSceneNode.cpp>
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Menu_Bar.H>
-#include <FL/Fl_Native_File_Chooser.H>
-#include <FL/Fl_Box.H>
-#include <FL/fl_ask.H>
-
 using namespace irr;
-//using namespace core;
-//using namespace scene;
-//using namespace video;
 
-
-
-
-
-void btn_pressed(Fl_Widget*, void *data)
-{
-   scene::ICameraSceneNode* ptr = (scene::ICameraSceneNode *) data;
-
-   core::vector3df pos = ptr->getPosition();
-   pos.Y++;
-   ptr->setPosition(pos);
-}
+//void btn_pressed(Fl_Widget*, void *data)
+//{
+//   scene::ICameraSceneNode* ptr = (scene::ICameraSceneNode *) data;
+//
+//   core::vector3df pos = ptr->getPosition();
+//   pos.Y++;
+//   ptr->setPosition(pos);
+//}
 
 s32 main( s32 argc, c8** argv)
 {
+#ifdef _IRR_COMPILE_WITH_FLTK_
 	Fl::scheme("gtk+");
+#endif // _IRR_COMPILE_WITH_FLTK_
 
-	SIrrlichtCreationParameters params;
-	params.AntiAlias = video::EAAM_QUALITY;
-	params.DriverType = video::EDT_OPENGL;
-	params.HighPrecisionFPU = true;
-	params.WindowSize = core::dimension2du(800,600);
-	params.UsePerformanceTimer = true;
-	params.Doublebuffer = true;
-	params.WindowPosition = core::position2di(100,100);
-	params.Fullscreen = false;
-	params.Bits = 32;
-	params.Vsync = false;
-	params.WithAlphaChannel = true;
-
-	IrrlichtDevice* device = createDeviceEx( params );
-
+	IrrlichtDevice* device = createOpenGlDevice( -100, -200, 16, false, true );
 	if (!device)
-	  return 1;
-
-	video::IVideoDriver *driver = device->getVideoDriver();
-	scene::ISceneManager *smgr = device->getSceneManager();
-	ITimer *timer = device->getTimer();
-
-	scene::IAnimatedMesh* mesh = smgr->getMesh("../../media/sydney.md2");
-	if (!mesh)
 	{
-		device->drop();
-		return 1;
+		dbPRINT("Could not create Irrlicht-Device\n")
+		exit(-2);
 	}
 
-	scene::IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode( mesh );
+	gui::IGUIEnvironment* env = device->getGUIEnvironment();
+	gui::IGUISkin* skin = env->createSkin( gui::EGST_WINDOWS_CLASSIC );
+	//gui::IGUISkin* skin = env->createSkin( gui::EGST_WINDOWS_METALLIC );
+	//gui::IGUISkin* skin = env->createSkin( gui::EGST_BURNING_SKIN );
+	env->setSkin( skin );
 
-	if (node) {
-		node->setMaterialFlag(video::EMF_LIGHTING, false);
-		node->setMD2Animation(scene::EMAT_STAND);
-		node->setMaterialTexture( 0, driver->getTexture("../../media/sydney.png") );
-	}
+	dbPRINT( "chosen skin-type = %d\n", env->getSkin()->getType() )
 
-	scene::ISceneNode *cam = smgr->addCameraSceneNode( 0,
-		core::vector3df(0,30,-40), core::vector3df(0,5,0));
+	Application app( device );
+
+#ifdef _IRR_COMPILE_WITH_FLTK_
 
 	int width, a;
 	Fl::screen_xywh(a,a,width,a);
 	// Yes, we could get screen width via Irrlicht too.
 
-	Fl_Window *window = new Fl_Window(width-300,0,300,180,"Edit properties");
-	Fl_Button *btn = new Fl_Button(20,40,260,100,"Go higher!");
-	btn->user_data(cam);
-	btn->callback(btn_pressed);
-	window->end();
-	window->show();
+//	Fl_Window *window = new Fl_Window(width-300,0,300,180,"Edit properties");
+//	Fl_Button *btn = new Fl_Button(20,40,260,100,"Go higher!");
+//	btn->user_data(0);
+//	btn->callback(btn_pressed);
+//	window->end();
+//	window->show();
 
-	int fps=-1, lastfps= -1;
-	long long time, lasttime = timer->getTime(), timediff;
-	wchar_t cfps[7];
+#endif // _IRR_COMPILE_WITH_FLTK_
 
-	while(device->run())
-	{
-		driver->beginScene(true, true, video::SColor(255,100,101,140));
-		smgr->drawAll();
-		driver->endScene();
-
-		fps = driver->getFPS();
-		if (fps != lastfps)
-		{
-			swprintf(cfps,7,L"%d",fps);
-			cfps[6] = L'\0';
-			// Why this and not stringw + whatever?
-			// Think of it the next time you meditate.
-			device->setWindowCaption(cfps);
-			lastfps = fps;
-		}
-
-		Fl::check(); // This keeps our FLTK windows interactive.
-
-		time = timer->getTime();
-		timediff = 16-(time-lasttime);
-		if (timediff > 0)
-			device->sleep(timediff);
-		// Yes, this is unrelated to FLTK.
-		// I just prefer all my projects to be efficient.
-
-		lasttime = timer->getTime();
-	}
-
-	device->drop();
-
+	app.run();
 	return 0;
 }
 

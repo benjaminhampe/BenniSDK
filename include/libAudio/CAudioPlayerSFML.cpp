@@ -27,7 +27,6 @@ CAudioPlayerSFML::~CAudioPlayerSFML()
 {
 	dbPRINT( "CAudioPlayerSFML::~CAudioPlayerSFML()\n" );
 
-	stop();
 	closeFile();
 	clearPlayList();
 
@@ -50,6 +49,9 @@ bool CAudioPlayerSFML::loadFile( const core::stringc& filename )
 	if ( !Buffer.loadFromFile( filename.c_str()) )
 	# endif
 	{
+#ifdef _IRR_COMPILE_WITH_FLTK_
+		fl_alert( "Could not open audio-file!" );
+#endif
 		dbERROR( "Cant open audio-file\n" );
 		return false;
 	}
@@ -60,10 +62,12 @@ bool CAudioPlayerSFML::loadFile( const core::stringc& filename )
 	PlayList.push_back( FileName );
 	CurrentTrackIndex = PlayList.size()-1;
 
+	closeFile();
+
 	#if ( SFML_VERSION_MAJOR < 2 )
-	Sound.SetBuffer( Buffer);
+	Sound.SetBuffer( Buffer );
 	# else
-	Sound.setBuffer( Buffer);
+	Sound.setBuffer( Buffer );
 	# endif
     return true;
 }
@@ -77,6 +81,8 @@ bool CAudioPlayerSFML::saveFile( const core::stringc& filename )
 bool CAudioPlayerSFML::closeFile()
 {
 	dbPRINT( "CAudioPlayerSFML::closeFile()\n" );
+	Sound.stop();
+	Sound.resetBuffer();
     return true;
 }
 
