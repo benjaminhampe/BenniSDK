@@ -5,17 +5,47 @@
 #ifndef __IRR_EXT_DEBUG_PRINT_H__
 #define __IRR_EXT_DEBUG_PRINT_H__
 
-//#include <cstdlib>
 #include <cstdio>
 #include <cstdarg>
 
 /// debugPrint
 #if defined(_DEBUG) || defined(DEBUG)
-	#define dbPRINT( args... ) { printf( args ); fflush(stdout); }
-	#define dbERROR( args... ) { fprintf( stderr, args ); fflush(stderr); fprintf( stdout, args ); fflush(stdout); }
+	#ifdef _IRR_COMPILE_WITH_FLTK_
+		#define dbPRINT( args... ) \
+		{ \
+			fprintf( stdout, args ); \
+			fflush( stdout ); \
+		}
+
+		#define dbERROR( args... ) \
+		{ \
+			fprintf( stderr, args ); \
+			fflush( stderr ); \
+			fl_alert( args ); \
+		}
+	#else
+		#define dbPRINT( args... ) \
+		{ \
+			fprintf( stdout, args ); \
+			fflush( stdout ); \
+		}
+
+		#define dbERROR( args... ) \
+		{ \
+			fprintf( stderr, args ); \
+			fflush( stderr ); \
+		}
+	#endif // _IRR_COMPILE_WITH_FLTK_
 #else
 	#define dbPRINT( args... )
-	#define dbERROR( args... ) { fprintf( stdout, args ); fflush(stdout); }
+	#ifdef _IRR_COMPILE_WITH_FLTK_
+		#define dbERROR( args... ) \
+		{ \
+			fl_alert( args ); \
+		}
+	#else
+		#define dbERROR( args... )
+	#endif // _IRR_COMPILE_WITH_FLTK_
 #endif
 
 #endif // __IRR_EXT_DEBUG_PRINT_H__

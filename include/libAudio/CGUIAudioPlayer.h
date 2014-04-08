@@ -21,9 +21,7 @@ namespace gui
 
 class CGUIAudioPlayer : public IGUIElement
 {
-
 protected:
-
 private:
 	gui::IGUIFont* Font;	// big font for drawing filename
 	IAudioPlayer* Player;
@@ -44,9 +42,14 @@ private:
 	IGUICheckBox* ChkMute;			// Mute ( MasterVolume = 0, panic button )
 	IGUICheckBox* ChkLoopMode;		// LoopMode	( playlist )
 	IGUICheckBox* ChkShuffleMode;	// ShuffleMode ( playlist )
-	core::recti PlayPositionRect;
-	video::ITexture* PlayPositionTexture;
+	core::recti PreviewRect;
+	//video::ITexture* PreviewTexture;
+
+	bool isMouseOver;
+	io::path PreviewTexName;
+
 public:
+	bool createPreviewTexture();
 
 	//! value constructor
 	CGUIAudioPlayer( IAudioPlayer* player, IGUIEnvironment* env,
@@ -61,136 +64,16 @@ public:
 	//! draws the element and its children
 	virtual void draw();
 
-	virtual IAudioPlayer* getAudioPlayer()
-	{
-		return Player;
-	}
+	virtual IAudioPlayer* getAudioPlayer();
 
-	core::stringw getTrackInfo()
-	{
-		core::stringw txt = L"";
-		if (!Player)
-		{
-			txt += L"No player set.";
-			return txt;
-		}
+	core::stringw getTrackInfo();
 
-		switch (Player->getStatus())
-		{
-			case EAPS_PLAYING: txt += L"(playing)"; break;
-			case EAPS_PAUSED: txt += L"(paused)"; break;
-			case EAPS_STOPPED: txt += L"(stopped)"; break;
-			default:
-				txt += L"(invalid/error)"; break;
-		}
-		txt += L"\n";
-		txt += Player->getSampleRate();	txt += L" Hz\n";
-		txt += Player->getChannelCount(); txt += L" Channel";
-		if (Player->getChannelCount()>1)
-			txt += L"(s)";
-		txt += L"\n";
-		txt += Player->getPosition(); txt += L" ms\n";
-		txt += Player->getDuration(); txt += L" ms";
-		return txt;
-	}
+	void setPlayer( IAudioPlayer* player );
 
-	void setPlayer( IAudioPlayer* player )
-	{
-		Player = player;
+	bool loadFile( const core::stringc& filename = "" );
 
-		if (!player)
-		{
-			if (TrackName)
-				TrackName->setText( L"Pointer to IAudioPlayer is zero\n");
-		}
-		else
-		{
-			if (TrackName)
-			{
-				TrackName->setText( core::stringw(
-					Player->getFileName() ).c_str() );
-			}
-			if (TrackInfo)
-			{
-				TrackInfo->setText( getTrackInfo().c_str() );
-			}
-			if (MasterVolume)
-			{
-				MasterVolume->setValue( Player->getVolume() );
-			}
-			if (MasterPitch)
-			{
-				MasterPitch->setValue( Player->getPitch() );
-			}
-			if (MasterPan)
-			{
-				MasterPan->setValue( Player->getPan() );
-			}
-		}
-	}
-	virtual bool loadFile( const core::stringc& filename = "" )
-	{
-		core::stringc myFilename = filename;
+	bool closeFile();
 
-		if ( myFilename.size() == 0 )
-		{
-		#ifdef _IRR_COMPILE_WITH_FLTK_
-			Fl_Native_File_Chooser dlg;
-			dlg.title("Load an audio-file");
-			dlg.type(Fl_Native_File_Chooser::BROWSE_FILE);
-			dlg.filter("Audio-Files\t*.{ogg,wav,mp3,flac}");
-			dlg.directory("../../media/music");
-			switch ( dlg.show() )
-			{
-				case -1: break; // ERROR
-				case 1:	break; // CANCEL
-				default: // FILE CHOSEN
-					myFilename = dlg.filename();
-					break;
-			}
-		#else
-			return false;
-		#endif
-		}
-
-		if (!Player)
-		{
-			dbERROR("Invalid pointer to Player\n")
-			return false;
-		}
-
-		if (!Player->loadFile( myFilename ))
-		{
-		#ifdef _IRR_COMPILE_WITH_FLTK_
-			core::stringc txt = "Error, could not open file ";
-			txt += myFilename;
-			txt += ".\nMaybe the file is broken or the extension is not supported.";
-			fl_alert( txt.c_str() );
-		#endif
-			return false;
-		}
-
-		/// all success
-		if (TrackName)
-		{
-			TrackName->setText( core::stringw(
-				Player->getFileName() ).c_str() );
-		}
-		if (TrackInfo)
-		{
-			TrackInfo->setText( getTrackInfo().c_str() );
-		}
-
-		return true;
-	}
-
-	virtual bool closeFile()
-	{
-		if (!Player)
-			return false;
-
-		Player->stop();
-	}
 
 //	//! Writes attributes of the element.
 //	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;

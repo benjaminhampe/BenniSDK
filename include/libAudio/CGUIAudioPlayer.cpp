@@ -4,6 +4,8 @@
 
 #include "CGUIAudioPlayer.h"
 
+#include <libAudio/irrAudio.h>
+
 namespace irr
 {
 namespace gui
@@ -13,7 +15,7 @@ namespace gui
 CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	IGUIEnvironment* env, IGUIElement* parent, s32 id, core::rect<s32> rectangle )
 : IGUIElement(EGUIET_ELEMENT, env, parent, id, rectangle)
-, Font(0), Player(0), PlayPositionTexture(0)
+, Font(0), Player(0), PreviewTexName(_IRR_TEXT("CGUIAudioPlayer_PreviewTexture.png"))
 {
 	setName("CGUIAudioPlayer");
 	setTabStop(true);
@@ -28,7 +30,6 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 
 	video::IVideoDriver* driver = env->getVideoDriver();
 	Font = env->getBuiltInFont();
-	gui::IGUIStaticText* label;
 
 	/// Buttons
 	s32 dx,dy,x,y;
@@ -63,6 +64,7 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 
 	/// Volume
 	dx = 2*24;
+	gui::IGUIStaticText* label;
 	label = env->addStaticText( L"Volume", core::recti(x,y,x+dx-1,y+dy-1), false, false, this, -1, true );
 	label->setTextAlignment( EGUIA_CENTER, EGUIA_CENTER );
 	label->setOverrideColor( fgColor );
@@ -124,9 +126,10 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	TrackInfo->setBackgroundColor( video::SColor(200,0,0,0) );
 	x += dx;
 
+	/// PreviewTexture
 	dx = AbsoluteClippingRect.getWidth()-x;
 	dy = AbsoluteClippingRect.getHeight()-y;
-	PlayPositionRect = core::recti(x,y, x+dx-1, y+dy-1);
+	PreviewRect = core::recti(x,y, x+dx-1, y+dy-1);
 
 	/// Mute
 	//	ChkMute = Environment->addCheckBox( false, core::recti(x,y,x+dx-1,y+dy-1), this, -1, L"Mute"); y+=dy;
@@ -140,7 +143,12 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	//	dx = txt_size.Width;
 	//	Environment->addStaticText( txt.c_str(), core::recti(core::position2di(x,y+ey), txt_size), false, false, this, -1);
 	//	y+=dy;
-	//setPlayer( player );
+	setPlayer( player );
+	//createPreviewTexture();
+//	if (Player)
+//	{
+//		loadFile( Player->getFileName() );
+//	}
 }
 
 //! destructor
@@ -163,11 +171,27 @@ void CGUIAudioPlayer::draw()
 
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
-	const core::recti r = PlayPositionRect + AbsoluteClippingRect.UpperLeftCorner;
+	const core::recti r = PreviewRect + AbsoluteRect.UpperLeftCorner;
 
-	driver->draw2DRectangle( video::SColor(255,255,255,255), r);
+	// driver->draw2DRectangleOutline( r, video::SColor(255,255,0,0) );
+	video::ITexture* tex = driver->getTexture( PreviewTexName );
 
-	driver->draw2DRectangleOutline( r, video::SColor(255,255,0,0) );
+	if (tex)
+	{
+		driver->draw2DImage(
+			tex,
+			AbsoluteRect.UpperLeftCorner + PreviewRect.UpperLeftCorner,
+			core::recti( core::position2di(0,0), tex->getOriginalSize() ),
+			&AbsoluteClippingRect, video::SColor(255,255,255,255), true);
+	}
+	else
+	{
+		driver->draw2DRectangle( video::SColor(255,0,0,0), r, &AbsoluteClippingRect);
+
+		if (Font)
+			Font->draw( L"No PreviewTexture available, try reloading a file.",
+				PreviewRect, 0xffffffff, true,true);
+	}
 
 	if (Player && Player->getStatus() > EAPS_STOPPED )
 	{
@@ -176,7 +200,7 @@ void CGUIAudioPlayer::draw()
 		driver->draw2DLine(
 			core::position2di( r.UpperLeftCorner.X+x,r.UpperLeftCorner.Y),
 			core::position2di( r.UpperLeftCorner.X+x,r.LowerRightCorner.Y),
-			video::SColor(255,0,0,0) );
+			video::SColor(255,255,255,0) );
 	}
 
 	IGUIElement::draw();
@@ -324,6 +348,257 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 	}
 
 	return IGUIElement::OnEvent(event);
+}
+
+IAudioPlayer* CGUIAudioPlayer::getAudioPlayer()
+{
+	return Player;
+}
+
+core::stringw CGUIAudioPlayer::getTrackInfo()
+{
+	core::stringw txt = L"";
+	if (!Player)
+	{
+		txt += L"No player set.";
+		return txt;
+	}
+
+	switch (Player->getStatus())
+	{
+		case EAPS_PLAYING: txt += L"(playing)"; break;
+		case EAPS_PAUSED: txt += L"(paused)"; break;
+		case EAPS_STOPPED: txt += L"(stopped)"; break;
+		default:
+			txt += L"(invalid/error)"; break;
+	}
+	txt += L"\n";
+	txt += Player->getSampleRate();	txt += L" Hz\n";
+	txt += Player->getChannelCount(); txt += L" Channel";
+	if (Player->getChannelCount()>1)
+		txt += L"(s)";
+	txt += L"\n";
+	txt += Player->getPosition(); txt += L" ms\n";
+	txt += Player->getDuration(); txt += L" ms";
+	return txt;
+}
+
+void CGUIAudioPlayer::setPlayer( IAudioPlayer* player )
+{
+	Player = player;
+
+	if (!Player)
+	{
+		if (TrackName)
+			TrackName->setText( L"Pointer to IAudioPlayer is zero\n");
+		return;
+	}
+
+	if (TrackName)
+	{
+		TrackName->setText( core::stringw(
+			Player->getFileName() ).c_str() );
+	}
+	if (TrackInfo)
+	{
+		TrackInfo->setText( getTrackInfo().c_str() );
+	}
+	if (MasterVolume)
+	{
+		MasterVolume->setValue( Player->getVolume() );
+	}
+	if (MasterPitch)
+	{
+		MasterPitch->setValue( Player->getPitch() );
+	}
+	if (MasterPan)
+	{
+		MasterPan->setValue( Player->getPan() );
+	}
+
+	//createPreviewTexture();
+}
+
+bool CGUIAudioPlayer::loadFile( const core::stringc& filename )
+{
+	if (!Player)
+	{
+		dbERROR("CGUIAudioPlayer::loadFile() - Invalid pointer to IAudioPlayer\n")
+		return false;
+	}
+
+	core::stringc myFilename = filename;
+
+	if ( myFilename.size() == 0 )
+	{
+	#ifdef _IRR_COMPILE_WITH_FLTK_
+		Fl_Native_File_Chooser dlg;
+		dlg.title("Load an audio-file");
+		dlg.type(Fl_Native_File_Chooser::BROWSE_FILE);
+		dlg.filter("Audio-Files\t*.{ogg,wav,mp3,flac}");
+		dlg.directory("../../media/music");
+		switch ( dlg.show() )
+		{
+			case -1: break; // ERROR
+			case 1:	break; // CANCEL
+			default: // FILE CHOSEN
+				myFilename = dlg.filename();
+				break;
+		}
+	#else
+		return false;
+	#endif
+	}
+
+	if (!Player->loadFile( myFilename ))
+	{
+		dbERROR("CGUIAudioPlayer::loadFile() - Could not load file\n")
+		return false;
+	}
+
+	/// all success
+	if (TrackName)
+	{
+		TrackName->setText( core::stringw(
+			Player->getFileName() ).c_str() );
+	}
+	if (TrackInfo)
+	{
+		TrackInfo->setText( getTrackInfo().c_str() );
+	}
+
+	createPreviewTexture();
+
+	return true;
+}
+
+bool CGUIAudioPlayer::closeFile()
+{
+	if (!Player)
+		return false;
+
+	Player->stop();
+	return true;
+}
+
+bool CGUIAudioPlayer::createPreviewTexture()
+{
+	if (!Player)
+	{
+		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Invalid pointer to IAudioPlayer\n")
+		return false;
+	}
+
+	if (!Player->isLoaded())
+	{
+		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - IAudioPlayer has no file loaded\n")
+		return false;
+	}
+
+	video::IVideoDriver* driver = Environment->getVideoDriver();
+	if (!driver)
+	{
+		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Invalid pointer to IVideoDriver\n")
+		return false;
+	}
+
+	core::dimension2du img_size( (u32)PreviewRect.getWidth(), (u32)PreviewRect.getHeight() );
+	img_size.getOptimalSize(
+			!driver->queryFeature( video::EVDF_TEXTURE_NPOT ),
+			!driver->queryFeature( video::EVDF_TEXTURE_NSQUARE ), true);
+
+	if ((img_size.Width == 0) || (img_size.Height == 0))
+	{
+		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Invalid image size\n")
+		return false;
+	}
+
+//	const u32 sample_rate = Player->getSampleRate();
+//	const u32 sample_count = Player->getSampleCount();
+//	const u32 channel_count = Player->getChannelCount();
+//
+//	if ( sample_count == 0 )
+//		return false;
+//
+//	if ( channel_count == 0 )
+//		return false;
+//
+//	if ( channel_index >= (s32)channel_count)
+//		return false;
+
+	const video::SColor bgColor(1,255,255,255);
+	const video::SColor fgColor(255,255,255,255);
+	const f32 duration = 1000.0f*Player->getDuration(); // in seconds
+	const u32 channelCount = Player->getChannelCount();
+	const f32 channelHeight = (f32)img_size.Height / (f32)channelCount;
+
+	/// create image
+	video::IImage* img = driver->createImage( video::ECF_A8R8G8B8, img_size );
+	if (!img)
+	{
+		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Could not create image (%d x %d)\n", img_size.Width, img_size.Height)
+		return false;
+	}
+
+	img->fill( bgColor );
+
+	core::array<s16> samples;
+
+	/// loop channels
+	for ( u32 ch = 0; ch < channelCount; ch++)
+	{
+		/// fill array with samples
+		Player->getSamples( samples, 100 * img_size.Width, ch, 0.0f, duration );
+
+		/// calculate the minimum and maximum values
+		s16 y_min = 32767;
+		s16 y_max = -32768;
+		for ( u32 i = 0; i < samples.size(); i++ )
+		{
+			const s16 y = samples[i];
+			if (y_min > y)
+				y_min = y;
+			if (y_max < y)
+				y_max = y;
+		}
+
+		/// set scaling factor to inverse of diff in y
+		const f32 y_scale = 0.9f*core::reciprocal( (f32)(y_max - y_min) );
+		const f32 x_step = (f32)img_size.Width / (f32)(samples.size()-1);
+
+		/// draw image
+		for ( u32 i = 0; i < samples.size()-1; i++ )
+		{
+			s16 s0 = samples[i];
+			s16 s1 = samples[i+1];
+			f32 y0 = channelHeight * (core::clamp<f32>( 1.0f - (0.5f + y_scale * s0), 0.0f, 1.0f ) + ch);
+			f32 y1 = channelHeight * (core::clamp<f32>( 1.0f - (0.5f + y_scale * s1), 0.0f, 1.0f ) + ch);
+			//f32 y0 = y + core::clamp<f32>( 0.5f + y_scale * s0, 0.0f, 1.0f ) * channelHeight;
+			//f32 y1 = y + core::clamp<f32>( 0.5f + y_scale * s1, 0.0f, 1.0f ) * channelHeight;
+			f32 x0 = x_step * i;
+			f32 x1 = x_step * (i+1);
+			sfx::drawLine( img, core::rectf( x0,y0, x1,y1 ), fgColor );
+		}
+	}
+
+	driver->writeImageToFile( img, PreviewTexName );
+
+	video::ITexture* tex = driver->getTexture( PreviewTexName );
+	if (tex)
+	{
+		driver->removeTexture( tex );
+		tex = 0;
+	}
+
+	if (!driver->addTexture( PreviewTexName, img ))
+	{
+		img->drop();
+		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Could not create PreviewTexture\n")
+		return false;
+	}
+
+	img->drop();
+	return true;
 }
 
 } // end namespace gui

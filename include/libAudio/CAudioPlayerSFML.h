@@ -56,6 +56,11 @@ public:
 			delete Buffer;
 			Buffer = 0;
 		}
+
+		IsLoaded = false;
+		IsPlaying = false;
+		IsLooped = false;
+		IsShuffled = false;
 	}
 
 	/// AudioDevice Control
@@ -164,6 +169,8 @@ public:
 	{
 		dbPRINT( "CAudioPlayerSFML::loadFile(%s)\n", filename.c_str() );
 
+		///@todo add some check for same filename here
+
 		sf::SoundBuffer* bgBuffer = new sf::SoundBuffer();
 		if (!bgBuffer)
 			return false;
@@ -176,33 +183,32 @@ public:
 		{
 			return false;
 		}
-		else
+
+		FileName = filename;
+		IsLoaded = true;
+
+		if (Buffer)
 		{
-			if (Buffer)
-			{
-				stop();
-				delete Buffer;
-				Buffer = 0;
-			}
-
-			Buffer = bgBuffer;
-			FileName = filename;
-
-			if (Sound && Buffer)
-			{
-		#if ( SFML_VERSION_MAJOR < 2 )
-			Sound->SetBuffer( *Buffer );
-		#else
-			Sound->setBuffer( *Buffer );
-		#endif
-			}
-			else
-			{
-				return false;
-			}
-
-			return true;
+			stop();
 		}
+
+		if (Sound && bgBuffer)
+		{
+	#if ( SFML_VERSION_MAJOR < 2 )
+		Sound->SetBuffer( *bgBuffer );
+	#else
+		Sound->setBuffer( *bgBuffer );
+	#endif
+		}
+
+		if (Buffer)
+		{
+			delete Buffer;
+		}
+
+		Buffer = bgBuffer;
+
+		return (Sound->getBuffer() == Buffer);
 	}
 
 	/// @brief save a sound to given filename
@@ -424,9 +430,9 @@ public:
 
 public:
 
-	virtual void getSamples( core::array<s16>& container, u32 numSamples, u32 timeStart, u32 channelIndex )
+	void getSamples( core::array<s16>& container, u32 nSamples, u32 timeStart, u32 channelIndex )
 	{
-		if (numSamples==0) return;
+		if (nSamples==0) return;
 
 		const s16* p_start = getSamples();
 		if (!p_start)
@@ -435,8 +441,8 @@ public:
 			return;
 		}
 
-		if (container.allocated_size() < numSamples)
-			container.reallocate( numSamples );
+		if (container.allocated_size() < nSamples)
+			container.reallocate( nSamples );
 
 		const u32 sample_rate = getSampleRate();
 		const u32 sample_count = getSampleCount();
@@ -460,27 +466,28 @@ public:
 
 		// fill array with samples
 		u32 i=0;
-		for ( ; i<numSamples; i++)
+		for ( ; i<nSamples; i++)
 		{
 			p += channel_count;
 
 			if ( p >= p_end ) break;
 
-			container.push_back( s16(*p) );
+			container.push_back( *p );
 		}
 
-		if (i<numSamples)
+		if (i<nSamples)
 		{
-			for (u32 j=i; j<numSamples; j++)
+			const s16 zero(0);
+			for (u32 j=i; j<nSamples; j++)
 			{
-				container.push_back( 0 );
+				container.push_back( zero );
 			}
 		}
 	}
 
-	virtual void getSamples( core::array<f32>& container, u32 numSamples, u32 timeStart, u32 channelIndex )
+	void getSamples( core::array<f32>& container, u32 nSamples, u32 timeStart, u32 channelIndex )
 	{
-		if (numSamples==0) return;
+		if (nSamples==0) return;
 
 		const s16* p_start = getSamples();
 		if (!p_start)
@@ -489,8 +496,8 @@ public:
 			return;
 		}
 
-		if (container.allocated_size() < numSamples)
-			container.reallocate( numSamples );
+		if (container.allocated_size() < nSamples)
+			container.reallocate( nSamples );
 
 		const u32 sample_rate = getSampleRate();
 		const u32 sample_count = getSampleCount();
@@ -514,7 +521,7 @@ public:
 
 		// fill array with samples
 		u32 i=0;
-		for ( ; i<numSamples; i++)
+		for ( ; i<nSamples; i++)
 		{
 			p += channel_count;
 
@@ -523,12 +530,80 @@ public:
 			container.push_back( f32(*p) );
 		}
 
-		if (i<numSamples)
+		if (i<nSamples)
 		{
-			for (u32 j=i; j<numSamples; j++)
+			const f32 zero(0);
+			for (u32 j=i; j<nSamples; j++)
 			{
-				container.push_back( 0.0f );
+				container.push_back( zero );
 			}
+		}
+	}
+
+	bool getSamples( core::array<s16>& container, u32 nSamples, u32 channel_index, f32 time_start, f32 time_end )
+	{
+		if (!Buffer)
+			return false;
+
+		if ( nSamples == 0 )
+			return false;
+
+		const f32 duration = 1000.0f * getDuration();
+
+		if ( duration <= time_start )
+			return false;
+
+		if ( time_end > duration )
+			time_end = duration;
+
+		if ( time_end - time_start <= core::ROUNDING_ERROR_f32 )
+			return false;
+
+		const u32 sr = getSampleRate();
+		const u32 sc = getSampleCount();
+		const u32 cc = getChannelCount();
+
+		if ( sc == 0 )
+			return false;
+
+		if ( cc == 0 )
+			return false;
+
+		if ( channel_index >= cc )
+			return false;
+
+		container.reallocate( nSamples );
+		container.set_used( 0 );
+
+//		const T zero(0);
+//		for ( u32 i=0; i<container.size(); i++)
+//		{
+//			container.push_back( zero );
+//		}
+
+		const f32 time_delta = (time_end - time_start) / (f32)(nSamples);
+
+		const s16* buffer_start = getSamples();
+
+		// fill with samples from soundbuffer
+//		container.set_used( 0 );
+
+		for ( u32 i=0; i<nSamples; i++)
+		{
+			u32 sample_delta = core::floor32( (f32)sc* ((time_start + time_delta*i) / duration) );
+
+			sample_delta -= sample_delta % cc;
+
+			sample_delta += channel_index;
+
+			if ( sample_delta >= sc )
+				break;
+
+			s16* p = const_cast<s16*>(buffer_start);
+
+			p += sample_delta;
+
+			container.push_back( s16(*p) );
 		}
 	}
 

@@ -27,7 +27,7 @@ Application::Application( IrrlichtDevice* Device )
 , FFT_Size(4*1024)
 , FFT_MatrixRows(100)
 , FFT_MatrixCols(250)
-, MeshSize(1000,250,1000)
+, MeshSize(1000,200,1000)
 , Transform( FFT_Size )
 , FFT_Range(0,150)
 , FFT_Threshold(50)
@@ -52,8 +52,6 @@ Application::Application( IrrlichtDevice* Device )
 	}
 
 	setupGUI();
-
-	player.play();
 }
 
 Application::~Application()
@@ -378,11 +376,15 @@ bool Application::setupGUI()
 		false, L"GUI AudioPlayer (SFML API)", env->getRootGUIElement(), -1);
 
 	gui::CGUIAudioPlayer* playerPanel = new gui::CGUIAudioPlayer(
-		0, env, playerWindow, -1, playerWindow->getClientRect() );
+		&player, env, playerWindow, -1, playerWindow->getClientRect() );
 
-	player.loadFile( DefaultAudioFilename );
+	playerPanel->loadFile( DefaultAudioFilename );
 
-	playerPanel->setPlayer( &player );
+//	playerPanel->setPlayer( &player );
+
+	player.play();
+
+
 	return true;
 }
 

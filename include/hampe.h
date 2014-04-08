@@ -8,6 +8,7 @@
 #include "CompileConfig.h"
 
 // extensions
+#include <debugPrint.h>
 #include <core.h>
 #include <libImage/SRange.h>
 #include <libImage/drawLoadingScreen.h>

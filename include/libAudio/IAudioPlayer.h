@@ -60,6 +60,11 @@ public:
 
 	virtual E_AUDIO_PLAY_STATUS getStatus() const = 0;
 
+	virtual bool isLoaded() const
+	{
+		return IsLoaded;
+	}
+
 	virtual bool isPlaying() const = 0;
 
 	virtual bool isLooped() const
@@ -83,6 +88,8 @@ public:
 	}
 
 /// TrackControl
+
+
 
 	virtual bool loadFile( const core::stringc& filename ) = 0;
 
@@ -125,6 +132,8 @@ public:
 	virtual void getSamples( core::array<s16>& container, u32 numSamples, u32 timeStart, u32 channelIndex ) = 0;
 
 	virtual void getSamples( core::array<f32>& container, u32 numSamples, u32 timeStart, u32 channelIndex ) = 0;
+
+	virtual bool getSamples( core::array<s16>& container, u32 nSamples, u32 channel_index, f32 time_start, f32 time_end ) = 0;
 
 	virtual core::stringc getFileName()
 	{
