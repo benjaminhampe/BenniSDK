@@ -87,7 +87,7 @@ s32 main( s32 argc, c8** argv)
 
 #endif // _IRR_COMPILE_WITH_FLTK_
 
-	IrrlichtDevice* device = createOpenGlDevice( -100, -200, 32, false, false );
+	IrrlichtDevice* device = createOpenGlDevice( 0, -200, 32, false, false );
 	if (!device)
 	{
 		dbPRINT("Could not create Irrlicht-Device\n")

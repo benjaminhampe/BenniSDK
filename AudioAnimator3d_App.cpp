@@ -10,7 +10,8 @@ namespace irr
 Application::Application( IrrlichtDevice* Device )
 : Device(Device)
 , AppTitle(L"Animated FFT-PowerSpectrum (c) 2014 by BenjaminHampe@gmx.de")
-, DefaultAudioFilename("../../media/music/razor.ogg")
+//, DefaultAudioFilename("../../media/music/razor.ogg")
+, DefaultAudioFilename("../../media/music/get-lucky.ogg")
 //, DefaultAudioFilename("../../media/music/benni_amelie_half.ogg")
 //, DefaultAudioFilename("../../media/music/benni_coldplay_science_test.ogg")
 //, DefaultAudioFilename("../../media/music/benni_klassik_test_001.ogg")
@@ -24,12 +25,12 @@ Application::Application( IrrlichtDevice* Device )
 , ScreenSize(0,0)
 , ScreenRect(0,0,0,0)
 , Wallpaper(0)
-, FFT_Size(4*1024)
-, FFT_MatrixRows(96)
-, FFT_MatrixCols(256)
-, MeshSize(1000,250,1000)
+, FFT_Size(8*1024)
+, FFT_MatrixRows(100)
+, FFT_MatrixCols(400)
+, MeshSize(1000,200,500)
 , Transform( FFT_Size )
-, FFT_Range(0,150)
+, FFT_Range(0,140)
 , FFT_Threshold(20)
 //, FFT_Matrix( FFT_MatrixRows, FFT_MatrixCols )
 , FFT_SceneNode(0)
@@ -63,13 +64,10 @@ Application::Application( IrrlichtDevice* Device )
 			false, L"GUI AudioPlayer (SFML API)", env->getRootGUIElement(), -1);
 
 		gui::CGUIAudioPlayer* playerPanel = new gui::CGUIAudioPlayer(
-			0, env, playerWindow, -1, playerWindow->getClientRect() );
+			&player, env, playerWindow, -1, playerWindow->getClientRect() );
 
-		player.loadFile( DefaultAudioFilename );
-
-		playerPanel->setPlayer( &player );
-
-		player.play();
+		playerPanel->loadFile( DefaultAudioFilename );
+		playerPanel->play();
 
 	}
 }
@@ -77,6 +75,28 @@ Application::Application( IrrlichtDevice* Device )
 Application::~Application()
 {
 
+}
+
+void Application::updateDebugBox()
+{
+	if (!DebugBox)
+		return;
+
+	core::stringw txt = L"DebugInternalVars\n";
+	txt += L"-------------------------\n";
+	txt += L"FFT_Size = "; txt += FFT_Size; txt += L"\n";
+	txt += L"db_Min = "; txt += FFT_Range.Min; txt += L"\n";
+	txt += L"db_Max = "; txt += FFT_Range.Max; txt += L"\n";
+	txt += L"db_Threshold = "; txt += FFT_Threshold; txt += L"\n";
+	txt += L"MatrixCols = "; txt += FFT_MatrixCols; txt += L"\n";
+	txt += L"MatrixRows = "; txt += FFT_MatrixRows; txt += L"\n";
+	txt += L"TransformSize = "; txt += Transform.size(); txt += L"\n";
+	txt += L"FFT_InputSize = "; txt += FFT_Input.size(); txt += L"\n";
+	txt += L"FFT_OutputSize = "; txt += FFT_Output.size(); txt += L"\n";
+	txt += L"M_Cols = "; txt += FFT_Matrix.getCols(); txt += L"\n";
+	txt += L"M_Rows = "; txt += FFT_Matrix.getRows(); txt += L"\n";
+
+	DebugBox->setText( txt.c_str() );
 }
 
 bool Application::setup()
@@ -164,8 +184,8 @@ bool Application::setup()
 
 
 	/// +++ IO-Buffer +++
-	FFT_Input.reallocate( FFT_Size );
-	FFT_Input.set_used( FFT_Size );
+	FFT_Input.reallocate( FFT_Size/3 );
+	FFT_Input.set_used( FFT_Size/3 );
 
 	FFT_Output.reallocate( FFT_MatrixCols );
 	FFT_Output.set_used( FFT_MatrixCols );
@@ -206,13 +226,6 @@ bool Application::setup()
 bool Application::setupGUI()
 {
 	dbPRINT( "Application::setupGUI()\n" )
-
-//	gui::IGUIWindow* win = createWindow( env, L"Realtime-Monitor for AudioSignals",
-//		100,100, ScreenSize.Width-200,ScreenSize.Height-200);
-//
-//	gui::CGUIAudioDisplaySFML* rtmon = new gui::CGUIAudioDisplaySFML(
-//		44100, 4*1024, env, win, -1, win->getClientRect());
-//
 	gui::IGUIEnvironment* env = Device->getGUIEnvironment();
 	if (!env)
 		return false;
@@ -364,24 +377,16 @@ bool Application::setupGUI()
 	y += dy;
 
 	ui_FFT_Size = env->addComboBox( core::recti(x,y,x+dx-1, y+dy-1), env->getRootGUIElement(), -1);
-	ui_FFT_Size->addItem(L"1");
-	ui_FFT_Size->addItem(L"2");
-	ui_FFT_Size->addItem(L"4");
-	ui_FFT_Size->addItem(L"8");
-	ui_FFT_Size->addItem(L"16");
-	ui_FFT_Size->addItem(L"32");
-	ui_FFT_Size->addItem(L"64");
-	ui_FFT_Size->addItem(L"128");
-	ui_FFT_Size->addItem(L"256");
-	ui_FFT_Size->addItem(L"512");
-	ui_FFT_Size->addItem(L"1024");
-	ui_FFT_Size->addItem(L"2048");
-	ui_FFT_Size->addItem(L"4096");
-	ui_FFT_Size->addItem(L"8192");
-	ui_FFT_Size->addItem(L"16384");
-	ui_FFT_Size->addItem(L"32768");
-	ui_FFT_Size->addItem(L"65536");
-	ui_FFT_Size->setSelected(12);
+
+	u32 p2 = 1;
+	for (u32 i=0; i<17; i++)
+	{
+		ui_FFT_Size->addItem( core::stringw(p2).c_str());
+		p2 <<= 1;
+	}
+	p2 = (u32)core::round32(core::Math::log2( (f32)FFT_Size ));
+	ui_FFT_Size->setSelected(p2);
+
 	y += dy;
 
 	ui_AxisMode = env->addComboBox( core::recti(x,y,x+dx-1, y+dy-1), env->getRootGUIElement(), -1);
@@ -389,6 +394,13 @@ bool Application::setupGUI()
 	ui_AxisMode->addItem(L"Logarithmic 10");
 	ui_AxisMode->setSelected(0);
 	y += dy;
+
+	DebugBox = env->addStaticText( L"",
+		core::recti( ScreenSize.Width-100, ScreenSize.Height/4, ScreenSize.Width-1, 3*ScreenSize.Height/4),
+		false, true, env->getRootGUIElement(), -1, true );
+	DebugBox->setOverrideColor( fgColor );
+	DebugBox->setBackgroundColor( bgColor );
+	DebugBox->setTextAlignment( gui::EGUIA_LOWERRIGHT, gui::EGUIA_CENTER );
 
 	return true;
 }
@@ -455,21 +467,6 @@ bool Application::run()
 			/// if window is active ( can be minimized but still active )
 			if (Device->isWindowFocused())
 			{
-				/// Waveform
-//				mm_waveform.shiftRow();
-//
-//				const f32 y_scale_wav = MeshSize.Y / 32768.0f;
-//				const f32 y_offset_wav = 0.5f*MeshSize.Y;
-//
-//				const u32 i_max_wav = core::min_<u32>( FFT_Input.size(), mm_waveform.getCols() );
-//
-//				for (u32 i=0; i<i_max_wav; i++)
-//				{
-//					const f32 y = y_scale_wav*(f32)FFT_Input[i]+y_offset_wav;
-//					mm_waveform.setElement( 0, i, y );
-//				}
-//
-//				node_wav->createMesh();
 				if (player.isPlaying())
 				{
 				/// fill SampleBuffer for FFT
@@ -510,40 +507,17 @@ bool Application::run()
 					scene::ICameraSceneNode* camera = smgr->getActiveCamera();
 					if (camera)
 					{
-					driver->setTransform( video::ETS_WORLD, core::IdentityMatrix );
-					driver->setTransform( video::ETS_VIEW, camera->getViewMatrix() );
-					driver->setTransform( video::ETS_PROJECTION, camera->getProjectionMatrix() );
+						driver->setTransform( video::ETS_WORLD, core::IdentityMatrix );
+						driver->setTransform( video::ETS_VIEW, camera->getViewMatrix() );
+						driver->setTransform( video::ETS_PROJECTION, camera->getProjectionMatrix() );
 					}
-
-					/// render FrontWav
-//					sfx::createFilledPath(
-//						&FrontWav,
-//						core::dimension2df(MeshSize.X, MeshSize.Y),
-//						FFT_Input,
-//						&WAV_Gradient,
-//						core::vector3df( -MeshSize.X,0,0),
-//						mm_waveform_cols );
-//
-//					driver->setMaterial( FrontWav.getMaterial() );
-//
-//					video::drawMeshBufferEx( driver, &FrontWav, scene::EPT_TRIANGLES );
-
-					/// render FFT_FrontMesh
-//					sfx::createFilledPath(
-//						&FFT_FrontMesh,
-//						core::dimension2df(MeshSize.X, MeshSize.Y),
-//						FFT_Output,
-//						&FFT_Gradient,
-//						core::vector3df(0,0,0) );
-//
-//					driver->setMaterial( FFT_FrontMesh.getMaterial() );
-//
-//					video::drawMeshBufferEx( driver, &FFT_FrontMesh, scene::EPT_TRIANGLES );
 
 					/// draw CoordSystems
 					video::drawXMeter( core::vector3df( 0.0f,0.0f,-1.0f), 0 , core::round32(MeshSize.X) );
 					video::drawZMeter( core::vector3df( -1.0f,0.0f,0.0f), 0 , core::round32(MeshSize.Z) );
 					video::drawYMeter( core::vector3df( 0.0f,0.0f,-1.0f), -1, core::round32(MeshSize.Y) );
+
+					updateDebugBox();
 
 					/// draw GUI
 					env->drawAll();
@@ -576,11 +550,6 @@ bool Application::run()
 						txt += core::round32(eye.X); txt += L",";
 						txt += core::round32(eye.Y); txt += L",";
 						txt += core::round32(eye.Z); txt += L")";
-//						txt += L", near(";
-//						txt += cam->getNearValue();
-//						txt += L"), far(";
-//						txt += core::round32(cam->getFarValue() ); txt += L")";
-//						txt += L" )";
 					}
 
 					Device->setWindowCaption( txt.c_str() );
@@ -904,15 +873,15 @@ void Application::OnChangedComboBox_FFTSize( s32 selected )
 
 	if (selected >= 0)
 	{
-		u32 value = core::Math::pow( 2, selected + 1 );
+		u32 value = core::Math::pow( 2, selected );
 		FFT_Size = value;
 
 		Transform.resize( FFT_Size );
 
 		FFT_Size = Transform.size();
 
-		FFT_Input.reallocate( FFT_Size );
-		FFT_Input.set_used( FFT_Size );
+		FFT_Input.reallocate( FFT_Size/3 );
+		FFT_Input.set_used( FFT_Size/3 );
 
 		dbPRINT("Changed FFT-Size to %d\n", Transform.size() )
 	//					FFT_Size = value;

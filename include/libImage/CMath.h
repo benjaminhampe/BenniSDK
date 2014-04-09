@@ -77,6 +77,12 @@ public:
 	//! @return Logarithm of value to a given base
 	static f64 log( f64 value, f64 base );
 
+	//! @brief Calculate logarithm of
+	static f32 log2( f32 value );
+
+	//! @brief Calculate logarithm of
+	static f64 log2( f64 value );
+
 	//! @brief Calculate decadic logarithm of value in single precision
 	//! @return Decadic logarithm of value
 	static f32 lg( f32 value );

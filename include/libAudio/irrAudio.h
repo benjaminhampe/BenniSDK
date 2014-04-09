@@ -126,7 +126,7 @@ namespace irr
 			if ( sample_count == 0 ) return 0;
 
 			if (_out.allocated_size() < sample_count)
-				_out.reallocate( sample_count, false );
+				_out.reallocate( sample_count );
 
 			const u32 sc = _in->getSampleCount();
 			const u32 cc = _in->getChannelCount();

@@ -65,6 +65,7 @@ private:
 	gui::IGUISpinBox* ui_DecibelThreshold;
 	gui::IGUIComboBox* ui_FFT_Size;
 
+	gui::IGUIStaticText* DebugBox;
 public:
 
 	Application( IrrlichtDevice* device );
@@ -87,6 +88,8 @@ public:
 	virtual void OnChangedSpinBox_DecibelThreshold( f32 value );
 	virtual void OnChangedComboBox_FFTSize( s32 selected );
 	virtual void OnChangedComboBox_AxisMode( s32 selected );
+
+	void updateDebugBox();
 
 	bool setup();
 

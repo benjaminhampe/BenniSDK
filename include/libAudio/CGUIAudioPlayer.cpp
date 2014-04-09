@@ -15,7 +15,7 @@ namespace gui
 CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	IGUIEnvironment* env, IGUIElement* parent, s32 id, core::rect<s32> rectangle )
 : IGUIElement(EGUIET_ELEMENT, env, parent, id, rectangle)
-, Font(0), Player(0), PreviewTexName(_IRR_TEXT("CGUIAudioPlayer_PreviewTexture.png"))
+, Font(0), Player(0), PreviewTexName(_IRR_TEXT("CGUIAudioPlayer_PreviewTexture"))
 , IsMouseClicked(false), IsMouseOver(false), MousePos(-10000,-10000)
 {
 	setName("CGUIAudioPlayer");
@@ -155,7 +155,30 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 //! destructor
 CGUIAudioPlayer::~CGUIAudioPlayer()
 {
+	/// Delete Texture
+	video::ITexture* tex = Environment->getVideoDriver()->getTexture( PreviewTexName );
+	if (tex)
+	{
+		Environment->getVideoDriver()->removeTexture( tex );
+		tex = 0;
+	}
+}
 
+void CGUIAudioPlayer::play()
+{
+	if (!Player)
+		return;
+
+	if (MasterVolume)
+		Player->setVolume( MasterVolume->getValue() );
+
+	if (MasterPitch)
+		Player->setPitch( MasterPitch->getValue() );
+
+	if (MasterPan)
+		Player->setPan( MasterPan->getValue() );
+
+	Player->play();
 }
 
 //! draws the element and its children
@@ -475,7 +498,7 @@ void CGUIAudioPlayer::setPlayer( IAudioPlayer* player )
 		MasterPan->setValue( Player->getPan() );
 	}
 
-	//createPreviewTexture();
+	createPreviewTexture();
 }
 
 bool CGUIAudioPlayer::loadFile( const core::stringc& filename )
@@ -555,23 +578,17 @@ bool CGUIAudioPlayer::createPreviewTexture()
 {
 	if (!Player)
 	{
-		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Invalid pointer to IAudioPlayer\n")
+		//dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Invalid pointer to IAudioPlayer\n")
 		return false;
 	}
 
 	if (!Player->isLoaded())
 	{
-		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - IAudioPlayer has no file loaded\n")
+		//dbERROR( "CGUIAudioPlayer::createPreviewTexture() - IAudioPlayer has no file loaded\n")
 		return false;
 	}
 
 	video::IVideoDriver* driver = Environment->getVideoDriver();
-	if (!driver)
-	{
-		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Invalid pointer to IVideoDriver\n")
-		return false;
-	}
-
 	core::dimension2du img_size( (u32)PreviewRect.getWidth(), (u32)PreviewRect.getHeight() );
 	img_size.getOptimalSize(
 			!driver->queryFeature( video::EVDF_TEXTURE_NPOT ),
@@ -651,7 +668,7 @@ bool CGUIAudioPlayer::createPreviewTexture()
 		}
 	}
 
-	driver->writeImageToFile( img, PreviewTexName );
+	//driver->writeImageToFile( img, PreviewTexName );
 
 	/// Delete Texture
 	video::ITexture* tex = driver->getTexture( PreviewTexName );

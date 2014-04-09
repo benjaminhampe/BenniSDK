@@ -59,6 +59,16 @@ f64 Math::log( f64 value, f64 base )
 	return ::log10( value ) / ::log10( base );
 }
 
+f32 Math::log2( f32 value )
+{
+	return ::log2f( value );
+}
+
+f64 Math::log2( f64 value )
+{
+	return ::log2( value );
+}
+
 f32 Math::lg( f32 value )
 {
 	return ::log10f( value );

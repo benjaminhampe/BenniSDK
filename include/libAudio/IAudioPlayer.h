@@ -5,7 +5,7 @@
 #ifndef __IRR_EXT_I_AUDIO_PLAYER_H__
 #define __IRR_EXT_I_AUDIO_PLAYER_H__
 
-#include <libAudio/FourierTransformRtoC.h>
+#include <irrlicht.h>
 
 namespace irr
 {
@@ -89,8 +89,6 @@ public:
 
 /// TrackControl
 
-
-
 	virtual bool loadFile( const core::stringc& filename ) = 0;
 
 	virtual bool saveFile( const core::stringc& filename ) = 0;
@@ -119,15 +117,21 @@ public:
 
 	virtual u32 getDuration() const = 0;
 
+	virtual f32 getDurationAsSeconds() const = 0;
+
 	virtual u32 getPosition() = 0;
+
+	virtual f32 getPositionAsSeconds() = 0;
 
 	virtual void setPosition( u32 time_index_in_ms ) = 0;
 
-	virtual void setPitch( f32 value = 1.0f ) = 0;
+	virtual void setPositionAsSeconds( f32 seconds ) = 0;
 
-	virtual void setVolume( f32 value = 0.5f ) = 0;
+	virtual void setPitch( f32 value ) = 0;
 
-	virtual void setPan( f32 value = 0.0f ) = 0;
+	virtual void setVolume( f32 value ) = 0;
+
+	virtual void setPan( f32 value ) = 0;
 
 	virtual void getSamples( core::array<s16>& container, u32 numSamples, u32 timeStart, u32 channelIndex ) = 0;
 

@@ -10,8 +10,6 @@
 #ifdef _IRR_COMPILE_WITH_SFML_AUDIO_
 
 #include "IAudioPlayer.h"
-#include <libAudio/FourierTransformRtoC.h>
-//#include <libAudio/irrAudio.h>
 
 namespace irr
 {
@@ -98,18 +96,6 @@ public:
 			return 0;
 	}
 
-//	/// @brief
-//	virtual sf::Sound* getSound()
-//	{
-//		return Sound;
-//	}
-//
-//	/// @brief
-//	virtual const sf::Sound* getSound() const
-//	{
-//		return Sound;
-//	}
-
 	/// @brief
 	virtual u32 getSampleRate() const
 	{
@@ -164,6 +150,72 @@ public:
 		return (u32)core::floor32( ( 1000.f * sc ) / (cc * sr) );
 	}
 
+	/// @brief This is a workaround for the obviously not working SFML pendant.
+	virtual f32 getDurationAsSeconds() const
+	{
+		if (!Buffer)
+			return 0;
+
+	#if ( SFML_VERSION_MAJOR < 2 )
+		const f32 cc = (f32)Buffer->GetChannelsCount();
+		const f32 sr = (f32)Buffer->GetSampleRate();
+		const f32 sc = (f32)Buffer->GetSamplesCount();
+	#else
+		const f32 cc = (f32)Buffer->getChannelCount();
+		const f32 sr = (f32)Buffer->getSampleRate();
+		const f32 sc = (f32)Buffer->getSampleCount();
+	#endif
+		return sc / (cc * sr);
+	}
+
+	virtual u32 getPosition()
+	{
+		if (!Sound)
+			return 0;
+	#if ( SFML_VERSION_MAJOR < 2 )
+		return Sound->GetPlayingOffset();
+	#else
+		return Sound->getPlayingOffset().asMilliseconds();
+	#endif
+	}
+
+	virtual f32 getPositionAsSeconds()
+	{
+		if (!Sound)
+			return 0;
+	#if ( SFML_VERSION_MAJOR < 2 )
+		return Sound->GetPlayingOffset();
+	#else
+		return Sound->getPlayingOffset().asSeconds();
+	#endif
+	}
+
+	virtual void setPosition( u32 time_index_in_ms )
+	{
+		dbPRINT( "CAudioPlayerSFML::setPosition(%d)\n", time_index_in_ms );
+
+		if (!Sound)
+			return;
+	#if ( SFML_VERSION_MAJOR < 2 )
+		Sound->SetPlayingOffset( (f32)time_index_in_ms / (f32)getDuration() );
+	#else
+		Sound->setPlayingOffset( sf::milliseconds( time_index_in_ms ) );
+	#endif
+	}
+
+	virtual void setPositionAsSeconds( f32 seconds )
+	{
+		dbPRINT( "CAudioPlayerSFML::setPositionAsSeconds(%f)\n", seconds );
+
+		if (!Sound)
+			return;
+	#if ( SFML_VERSION_MAJOR < 2 )
+		Sound->SetPlayingOffset( seconds / (f32)getDurationAsSeconds() );
+	#else
+		Sound->setPlayingOffset( sf::seconds( seconds ) );
+	#endif
+	}
+
 	/// @brief load a sound from given filename
 	virtual bool loadFile( const core::stringc& filename )
 	{
@@ -175,40 +227,16 @@ public:
 		if (!bgBuffer)
 			return false;
 
-		sf::Sound* bgSound = new sf::Sound();
-		if (!bgSound)
-		{
-			delete bgBuffer;
-			return false;
-		}
-
 	#if ( SFML_VERSION_MAJOR < 2 )
 		if ( !bgBuffer->LoadFromFile( filename.c_str()) )
 	#else
 		if ( !bgBuffer->loadFromFile( filename.c_str()) )
 	#endif
 		{
-			delete bgSound;
 			delete bgBuffer;
 			return false;
 		}
 
-	#if ( SFML_VERSION_MAJOR < 2 )
-		bgSound->SetBuffer( *bgBuffer );
-		bgSound->SetVolume( 0 );
-		bgSound->Play();
-		#warning Something missing here
-	#else
-		bgSound->setBuffer( *bgBuffer );
-		bgSound->setVolume( 0 );
-		bgSound->play();
-		while( bgSound->getStatus() != sf::Sound::Playing)
-		{
-
-		}
-		bgSound->stop();
-		const f32 vol = getVolume();
-	#endif
 		if (Buffer)
 		{
 			stop();
@@ -216,7 +244,11 @@ public:
 
 		if (Sound)
 		{
-			delete Sound;
+		#if ( SFML_VERSION_MAJOR < 2 )
+			Sound->SetBuffer( *bgBuffer );
+		#else
+			Sound->setBuffer( *bgBuffer );
+		#endif
 		}
 
 		if (Buffer)
@@ -225,10 +257,6 @@ public:
 		}
 
 		Buffer = bgBuffer;
-		Sound = bgSound;
-
-		setVolume( vol );
-
 		FileName = filename;
 		IsLoaded = true;
 
@@ -241,15 +269,6 @@ public:
 		dbPRINT( "CAudioPlayerSFML::saveFile(%s)\n", filename.c_str() );
 		return true;
 	}
-
-//	enum E_AUDIO_PLAY_STATUS
-//	{
-//		EAPS_STOPPED=0,
-//		EAPS_PLAYING,
-//		EAPS_PAUSED,
-//		EAPS_ERROR,
-//		EAPS_COUNT
-//	};
 
 	virtual E_AUDIO_PLAY_STATUS getStatus() const
 	{
@@ -308,7 +327,7 @@ public:
 		if (!Sound)
 			return;
 
-		setVolume( 0.0f );
+		setVolume( 0 );
 	}
 
 	/// @brief
@@ -326,14 +345,14 @@ public:
 			return;
 
 	#if ( SFML_VERSION_MAJOR < 2 )
-		Sound->SetVolume( 100.0f*Volume );
-		Sound->SetPitch( Pitch );
-		Sound->SetLoop( IsLooped );
+//		Sound->SetVolume( 100.0f*Volume );
+//		Sound->SetPitch( Pitch );
+//		Sound->SetLoop( IsLooped );
 		Sound->Play();
 	#else
-		Sound->setVolume( 100.0f*Volume );
-		Sound->setPitch( Pitch );
-		Sound->setLoop( IsLooped );
+//		Sound->setVolume( 100.0f*Volume );
+//		Sound->setPitch( Pitch );
+//		Sound->setLoop( IsLooped );
 		Sound->play();
 	#endif
 	}
@@ -398,7 +417,7 @@ public:
 	{
 		dbPRINT( "CAudioPlayerSFML::setPitch(%f)\n", value );
 
-		Pitch = core::clamp<f32>( value, 0.001f, 1000.0f );
+		Pitch = core::clamp<f32>( value, -1000.0f, 1000.0f );
 
 		if (!Sound)
 			return;
@@ -422,34 +441,6 @@ public:
 		#else
 
 		#endif
-	}
-
-	virtual u32 getPosition()
-	{
-		if (!Sound)
-			return 0;
-	#if ( SFML_VERSION_MAJOR < 2 )
-		return Sound->GetPlayingOffset();
-	#else
-		return Sound->getPlayingOffset().asMilliseconds();
-	#endif
-	}
-
-	virtual void setPosition( u32 time_index_in_ms )
-	{
-		dbPRINT( "CAudioPlayerSFML::setPosition(%d)\n", time_index_in_ms );
-
-		if (!Sound)
-			return;
-	#if ( SFML_VERSION_MAJOR < 2 )
-		//Sound->Pause();
-		Sound->SetPlayingOffset( (f32)time_index_in_ms / (f32)getDuration() );
-		//Sound->Play();
-	#else
-		//Sound->pause();
-		Sound->setPlayingOffset( sf::milliseconds( time_index_in_ms ) );
-		//Sound->play();
-	#endif
 	}
 
 public:
@@ -572,7 +563,10 @@ public:
 		if ( nSamples == 0 )
 			return false;
 
-		const f32 duration = 1000.0f * getDuration();
+		const f32 duration = getDurationAsSeconds();
+		const u32 sr = getSampleRate();
+		const u32 sc = getSampleCount();
+		const u32 cc = getChannelCount();
 
 		if ( duration <= time_start )
 			return false;
@@ -582,10 +576,6 @@ public:
 
 		if ( time_end - time_start <= core::ROUNDING_ERROR_f32 )
 			return false;
-
-		const u32 sr = getSampleRate();
-		const u32 sc = getSampleCount();
-		const u32 cc = getChannelCount();
 
 		if ( sc == 0 )
 			return false;
@@ -599,18 +589,8 @@ public:
 		container.reallocate( nSamples );
 		container.set_used( 0 );
 
-//		const T zero(0);
-//		for ( u32 i=0; i<container.size(); i++)
-//		{
-//			container.push_back( zero );
-//		}
-
 		const f32 time_delta = (time_end - time_start) / (f32)(nSamples);
-
 		const s16* buffer_start = getSamples();
-
-		// fill with samples from soundbuffer
-//		container.set_used( 0 );
 
 		for ( u32 i=0; i<nSamples; i++)
 		{

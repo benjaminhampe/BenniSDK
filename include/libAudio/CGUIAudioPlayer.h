@@ -7,11 +7,6 @@
 
 #include <CompileConfig.h>
 
-#ifdef _IRR_COMPILE_WITH_FLTK_
-#include <FL/Fl.H>
-#include <FL/Fl_Native_File_Chooser.H>
-#endif // _IRR_COMPILE_WITH_FLTK_
-
 #include <libAudio/IAudioPlayer.h>
 
 namespace irr
@@ -78,7 +73,7 @@ public:
 
 	bool closeFile();
 
-
+	void play();
 //	//! Writes attributes of the element.
 //	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 //
