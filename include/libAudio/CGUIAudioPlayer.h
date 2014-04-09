@@ -21,7 +21,6 @@ namespace gui
 
 class CGUIAudioPlayer : public IGUIElement
 {
-protected:
 private:
 	gui::IGUIFont* Font;	// big font for drawing filename
 	IAudioPlayer* Player;
@@ -43,14 +42,19 @@ private:
 	IGUICheckBox* ChkLoopMode;		// LoopMode	( playlist )
 	IGUICheckBox* ChkShuffleMode;	// ShuffleMode ( playlist )
 	core::recti PreviewRect;
+	io::path PreviewTexName;
 	//video::ITexture* PreviewTexture;
 
-	bool isMouseOver;
-	io::path PreviewTexName;
+	bool IsMouseOver;
+	bool IsMouseClicked;
+	core::position2di MousePos;
+
+protected:
+
+	bool createPreviewTexture();
+	bool OnSetPlayPosition( f32 seconds );
 
 public:
-	bool createPreviewTexture();
-
 	//! value constructor
 	CGUIAudioPlayer( IAudioPlayer* player, IGUIEnvironment* env,
 		IGUIElement* parent, s32 id, core::rect<s32> rectangle );

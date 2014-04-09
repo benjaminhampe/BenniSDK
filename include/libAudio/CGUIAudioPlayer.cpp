@@ -16,6 +16,7 @@ CGUIAudioPlayer::CGUIAudioPlayer( IAudioPlayer* player,
 	IGUIEnvironment* env, IGUIElement* parent, s32 id, core::rect<s32> rectangle )
 : IGUIElement(EGUIET_ELEMENT, env, parent, id, rectangle)
 , Font(0), Player(0), PreviewTexName(_IRR_TEXT("CGUIAudioPlayer_PreviewTexture.png"))
+, IsMouseClicked(false), IsMouseOver(false), MousePos(-10000,-10000)
 {
 	setName("CGUIAudioPlayer");
 	setTabStop(true);
@@ -163,6 +164,14 @@ void CGUIAudioPlayer::draw()
 	if (!IsVisible)
 		return;
 
+	if (Player && IsMouseOver && IsMouseClicked)
+	{
+		s32 x1 = AbsoluteRect.UpperLeftCorner.X+PreviewRect.UpperLeftCorner.X;
+		s32 x2 = x1 + PreviewRect.getWidth();
+		f32 duration = 0.001f*(f32)Player->getDuration();
+		f32 dt = ((f32)duration*(f32)(MousePos.X-x1)) / (f32)(x2-x1);
+		OnSetPlayPosition( dt );
+	}
 	/// update here player when playing
 	/// position
 	/// scrollbar position
@@ -203,7 +212,26 @@ void CGUIAudioPlayer::draw()
 			video::SColor(255,255,255,0) );
 	}
 
+	if (IsMouseOver)
+	{
+		driver->draw2DRectangleOutline( PreviewRect + AbsoluteRect.UpperLeftCorner, video::SColor(255,255,0,0) );
+
+		if (IsMouseClicked)
+		{
+			driver->draw2DRectangleOutline( core::recti(-10,-10,10,10)+MousePos, video::SColor(255,0,0,255) );
+		}
+	}
+
 	IGUIElement::draw();
+}
+
+/// event-handler
+bool CGUIAudioPlayer::OnSetPlayPosition( f32 seconds )
+{
+	if (!Player)
+		return false;
+
+	Player->setPosition( (u32)core::round32(1000.0f * seconds) );
 }
 
 //! called if an event happened.
@@ -212,101 +240,138 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 	if (!isEnabled())
 		return IGUIElement::OnEvent(event);
 
-	switch(event.EventType)
+	/// handle MouseEvents
+	if (event.EventType == EET_MOUSE_INPUT_EVENT)
 	{
-		case EET_KEY_INPUT_EVENT:
+		const SEvent::SMouseInput& e = event.MouseInput;
+
+		if (e.Event == EMIE_MOUSE_MOVED)
 		{
-		} break;
+			MousePos.X = e.X;
+			MousePos.Y = e.Y;
 
-		case EET_GUI_EVENT:
-		{
-			IGUIElement* caller = event.GUIEvent.Caller;
+			bool bMouseOver = isMouseOver( MousePos, PreviewRect + AbsoluteRect.UpperLeftCorner );
 
-			if ( !this->isMyChild(caller) )
-				break;
-
-			if ( event.GUIEvent.EventType == EGET_SPINBOX_CHANGED )
+			if (IsMouseOver != bMouseOver)
 			{
-				const f32& value = ((IGUISpinBox*)caller)->getValue();
+				IsMouseOver = bMouseOver;
 
-				if (caller == MasterVolume)
+				if (!IsMouseClicked)
 				{
-					if (Player)
-						Player->setVolume( value );
-					return true;
-				}
-
-				if (caller == MasterPan)
-				{
-					if (Player)
-						Player->setPan( value );
-					return true;
-				}
-
-				if (caller == MasterPitch)
-				{
-					if (Player)
-						Player->setPitch( value );
 					return true;
 				}
 			}
+		}
 
-			if ( event.GUIEvent.EventType == EGET_BUTTON_CLICKED )
+		if (e.Event == EMIE_LMOUSE_PRESSED_DOWN)
+		{
+			IsMouseClicked = true;
+			if (IsMouseOver)
+				return true;
+		}
+
+		if (e.Event == EMIE_LMOUSE_LEFT_UP)
+		{
+			IsMouseClicked = false;
+			if (IsMouseOver)
+				return true;
+		}
+
+		return IGUIElement::OnEvent(event);
+	}
+	else if (event.EventType == EET_KEY_INPUT_EVENT)
+	{
+
+	}
+	else if (event.EventType == EET_GUI_EVENT)
+	{
+		IGUIElement* caller = event.GUIEvent.Caller;
+
+		if ( !this->isMyChild(caller) )
+			return IGUIElement::OnEvent(event);
+
+		if ( event.GUIEvent.EventType == EGET_SPINBOX_CHANGED )
+		{
+			const f32& value = ((IGUISpinBox*)caller)->getValue();
+
+			if (caller == MasterVolume)
 			{
-				if (caller == LoadButton)
-				{
-					loadFile();
-					return true;
-				}
+				if (Player)
+					Player->setVolume( value );
+				return true;
+			}
 
-				if (caller == PlayButton)
-				{
-					if (Player)
-						Player->play();
-					return true;
-				}
+			if (caller == MasterPan)
+			{
+				if (Player)
+					Player->setPan( value );
+				return true;
+			}
 
-				else if (caller == PauseButton)
-				{
-					if (Player)
-						Player->pause();
-					return true;
-				}
+			if (caller == MasterPitch)
+			{
+				if (Player)
+					Player->setPitch( value );
+				return true;
+			}
+		}
 
-				else if (caller == StopButton)
-				{
-					if (Player)
-						Player->stop();
-					return true;
-				}
+		if ( event.GUIEvent.EventType == EGET_BUTTON_CLICKED )
+		{
+			if (caller == LoadButton)
+			{
+				loadFile();
+				return true;
+			}
 
-				else if (caller == RewindButton)
-				{
+			if (caller == PlayButton)
+			{
+				if (Player)
+					Player->play();
+				return true;
+			}
+
+			else if (caller == PauseButton)
+			{
+				if (Player)
+					Player->pause();
+				return true;
+			}
+
+			else if (caller == StopButton)
+			{
+				if (Player)
+					Player->stop();
+				return true;
+			}
+
+			else if (caller == RewindButton)
+			{
 //					if (Player)
 //						Player->rewind();
-					return true;
-				}
+				return true;
+			}
 
-				else if (caller == ForwardButton)
-				{
+			else if (caller == ForwardButton)
+			{
 //					if (Player)
 //						Player->forward();
-					return true;
-				}
+				return true;
+			}
 
-				else if (caller == PrevButton)
-				{
+			else if (caller == PrevButton)
+			{
 //					if (Player)
 //						Player->prev();
-					return true;
-				}
+				return true;
+			}
 
-				else if (caller == NextButton)
-				{
+			else if (caller == NextButton)
+			{
 //					if (Player)
 //						Player->next();
-					return true;
-				}
+				return true;
+			}
 
 //				else if (caller == ButtonResume)
 //				{
@@ -318,10 +383,10 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 //                  Player->record();
 //					return true;
 //				}
-			}
+		}
 
-			if ( event.GUIEvent.EventType == EGET_CHECKBOX_CHANGED )
-			{
+		if ( event.GUIEvent.EventType == EGET_CHECKBOX_CHANGED )
+		{
 //				if (caller == ChkMute )
 //				{
 //					Player->mute();
@@ -337,14 +402,7 @@ bool CGUIAudioPlayer::OnEvent(const SEvent& event)
 //					Player->setShuffled( !Player->isShuffled() );
 //					return true;
 //				}
-			}
-		} break;
-
-		case EET_MOUSE_INPUT_EVENT:
-		{
-		} break;
-	default:
-		break;
+		}
 	}
 
 	return IGUIElement::OnEvent(event);

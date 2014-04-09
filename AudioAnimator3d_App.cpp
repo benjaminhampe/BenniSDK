@@ -25,12 +25,12 @@ Application::Application( IrrlichtDevice* Device )
 , ScreenRect(0,0,0,0)
 , Wallpaper(0)
 , FFT_Size(4*1024)
-, FFT_MatrixRows(100)
-, FFT_MatrixCols(250)
-, MeshSize(1000,200,1000)
+, FFT_MatrixRows(128)
+, FFT_MatrixCols(320)
+, MeshSize(1000,250,1000)
 , Transform( FFT_Size )
 , FFT_Range(0,150)
-, FFT_Threshold(50)
+, FFT_Threshold(20)
 //, FFT_Matrix( FFT_MatrixRows, FFT_MatrixCols )
 , FFT_SceneNode(0)
 , ui_WireframeButton(0)
@@ -102,7 +102,7 @@ bool Application::setup()
 
 	if (camera)
 	{
-        camera->setPosition( core::vector3df(0.5f*MeshSize.X,1.0f*MeshSize.Y,-0.28f*MeshSize.X) );
+        camera->setPosition( core::vector3df(0.5f*MeshSize.X,2.0f*MeshSize.Y,-0.28f*MeshSize.X) );
         camera->setTarget( core::vector3df(0.5f*MeshSize.X,0.0f,0.3f*MeshSize.Z) );
         camera->setNearValue( 0.1f );
         camera->setFarValue( 10000.f );
@@ -133,12 +133,12 @@ bool Application::setup()
 //	FFT_Gradient.addColor( video::SColor(255,50,50,50), 0.20f );
 //	FFT_Gradient.addColor( video::SColor(255,75,75,75), 0.30f );
 //	FFT_Gradient.addColor( video::SColor(255,100,100,100), 0.40f );
-	FFT_Gradient.addColor( video::SColor(255,255,255,255), 0.5f );
-	FFT_Gradient.addColor( video::SColor(255,0,0,255), 0.70f );
-	FFT_Gradient.addColor( video::SColor(255,0,200,0), .80f );
+	FFT_Gradient.addColor( video::SColor(255,0,0,255), 0.60f );
+	FFT_Gradient.addColor( video::SColor(255,0,200,0), .75f );
 	FFT_Gradient.addColor( video::SColor(255,255,255,0), .90f );
 //	FFT_Gradient.addColor( video::SColor(255,255,255,0), .95f );
-	FFT_Gradient.addColor( video::SColor(255,255,0,0), 1.0f );
+	FFT_Gradient.addColor( video::SColor(255,255,0,0), .95f );
+	FFT_Gradient.addColor( video::SColor(255,255,255,255), 1.0f );
 	FFT_Gradient.setTableSize( 1024 );
 	FFT_Gradient.updateTable();
 

@@ -193,6 +193,14 @@ public:
 	//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
 	static f64 round(f64 zahl, s32 stellen);
 
+	//! @brief Round( f32 realNumber, s32 stellen ) -> Rundet auf Anzahl Stellen nach dem Komma, Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
+	//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
+	static f32 round_any(f32 zahl, s32 stellen);
+
+	//! @brief Round( f64 realnumber, s32 stellen )  -> Rundet auf Anzahl Stellen nach dem Komma, Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
+	//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
+	static f64 round_any(f64 zahl, s32 stellen);
+
 	//! @brief Split<FloatType,IntType>( FloatType realNumber, FloatType& f_part, IntType& i_part )
 	//! @return Split<FloatType,IntType>( FloatType realNumber, FloatType& f_part, IntType& i_part )
 	template<class FloatType,class IntType>

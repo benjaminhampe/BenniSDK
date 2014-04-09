@@ -43,7 +43,7 @@ s32 main( s32 argc, c8** argv)
 	Fl::scheme("gtk+");
 #endif // _IRR_COMPILE_WITH_FLTK_
 
-	IrrlichtDevice* device = createOpenGlDevice( -100, -200, 16, false, true );
+	IrrlichtDevice* device = createOpenGlDevice( -100, -200, 32, false, false );
 	if (!device)
 	{
 		dbPRINT("Could not create Irrlicht-Device\n")

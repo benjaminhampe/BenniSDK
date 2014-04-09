@@ -26,15 +26,36 @@ void PRINT_INFO()
 #endif
 }
 
+#include <cstdlib>
+#include <iostream>
+#include <cmath>
+
+namespace std {
+
+	double round(double v, double digit)
+	{
+		double p = pow(10.0, digit);
+		double t = v * p;
+		double r = floor(t + 0.5);
+		return r / p;
+	}
+
+	float round(float v, float digit)
+	{
+		float p = powf(10.0f, digit);
+		float t = v * p;
+		float r = floorf(t + 0.5f);
+		return r / p;
+	}
+}
+
 using namespace irr;
-using namespace std;
 
 void testMath( const core::stringc& filename = "testMath.out" )
 {
 	dbPRINT( "testMath()\n" );
 
-	fstream fout( filename.c_str(), ios::out );
-
+	std::fstream fout( filename.c_str(), std::ios::out );
 	if (!fout.is_open())
 	{
 		dbPRINT( "Could not open file %s\n", filename.c_str() );
@@ -57,29 +78,57 @@ void testMath( const core::stringc& filename = "testMath.out" )
 		if (!b01)
 		{
 			found_errors++;
-			fout << "[" << i << "] " << *f << " :: ceil = " << v0 << "ceil32 = " << v1 << endl;
+			fout << "[" << i << "] " << *f << " :: ceil = " << v0 << "ceil32 = " << v1 << std::endl;
 		}
 
 		if (i%tries_until_next_info == 0)
 		{
-			cout<< "Tested " << i << " Numbers, found " << found_errors << " errors." << endl;
+			std::cout<< "Tested " << i << " Numbers, found " << found_errors << " errors." << std::endl;
 		}
 	}
 
-	cout << "found_errors = " << found_errors << endl;
-	fout << "found_errors = " << found_errors << endl;
+	std::cout << "found_errors = " << found_errors << std::endl;
+	fout << "found_errors = " << found_errors << std::endl;
 	fout.close();
 }
 
-/*
-The main function. Creates all objects and does the XML handling.
-*/
 s32 main( s32 argc, c8** argv )
 {
 	PRINT_INFO();
 
-	testMath( "testMath.out" );
+	std::cout << "STL Math double" << std::endl;
+	std::cout << std::round(4.45, 1) << std::endl;
+	std::cout << std::round(4.55, 1) << std::endl;
 
+	std::cout << "STL Math float" << std::endl;
+	std::cout << std::round(4.45f, 1) << std::endl;
+	std::cout << std::round(4.55f, 1) << std::endl;
+
+	std::cout << "My Math" << std::endl;
+	std::cout << core::Math::round(4.45, 1) << std::endl;
+	std::cout << core::Math::round(4.55, 1) << std::endl;
+
+	std::cout << "My Math" << std::endl;
+	std::cout << core::Math::round(4.45f, 1) << std::endl;
+	std::cout << core::Math::round(4.55f, 1) << std::endl;
+	//testMath( "testMath.out" );
+
+	std::cout << "STL Math double" << std::endl;
+	std::cout << std::round(-4.45, 1) << std::endl;
+	std::cout << std::round(-4.55, 1) << std::endl;
+
+	std::cout << "STL Math float" << std::endl;
+	std::cout << std::round(-4.45f, 1) << std::endl;
+	std::cout << std::round(-4.55f, 1) << std::endl;
+
+	std::cout << "My Math" << std::endl;
+	std::cout << core::Math::round(-4.45, 1) << std::endl;
+	std::cout << core::Math::round(-4.55, 1) << std::endl;
+
+	std::cout << "My Math" << std::endl;
+	std::cout << core::Math::round(-4.45f, 1) << std::endl;
+	std::cout << core::Math::round(-4.55f, 1) << std::endl;
+	//testMath( "testMath.out" );
 	//app destroys device in destructor
 	return 0;
 }

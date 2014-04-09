@@ -132,6 +132,22 @@ s32 Math::sign( f64 value )
 	return m_sign;
 }
 
+//! @brief Round( f32 realNumber, s32 stellen ) -> Rundet auf Anzahl Stellen nach dem Komma, Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
+//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
+f32 Math::round_any(f32 zahl, s32 stellen)
+{
+
+	s32 s = sign(zahl);
+
+}
+
+//! @brief Round( f64 realnumber, s32 stellen )  -> Rundet auf Anzahl Stellen nach dem Komma, Laufzeitoptimiert, 2.Parameter nur von 0 bis 8!!!, sonst Absturz!!!
+//! @return Round = int( (realNumber + 0.5f)*10^stellen ) / 10^stellen
+f64 Math::round_any(f64 zahl, s32 stellen)
+{
+
+}
+
 // Rundet gesammten Nachkommateil,
 // "dirty version" durch einfachen Cast auf __int32
 f32 Math::round(f32 zahl)
