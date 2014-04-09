@@ -60,8 +60,15 @@ namespace irr
 		s32 padding = 5, bool withBorder = false, bool wordWrap = false, bool fillBackground = true,
 		gui::IGUIFont* font = 0, s32 id = -1);
 
+	//! @brief create a FPS-Camera
+    scene::ICameraSceneNode* createFPS( scene::ISceneManager* smgr, f32 move_speed, f32 turn_speed);
+
 	///@brief draw backdrop-texture to current rendertarget ( screen or RTT )
 	void drawBackdrop( video::IVideoDriver* driver, video::ITexture* tex );
+
+	//! @brief drawLoadingScreen()
+	bool drawLoadingScreen( video::IVideoDriver* driver, video::ITexture* background_tex,
+		const core::stringw& text, gui::IGUIFont* text_font, const video::SColor& text_color = 0xffffffff);
 
 	//! @brief create a IGUIWindow
 	gui::IGUIWindow* createWindow( gui::IGUIEnvironment* env,

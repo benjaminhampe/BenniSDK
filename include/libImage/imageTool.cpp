@@ -4,8 +4,6 @@
 
 #include "imageTool.h"
 
-#include <../source/Irrlicht/CImage.h>
-
 namespace irr
 {
 

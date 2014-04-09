@@ -25,8 +25,8 @@ Application::Application( IrrlichtDevice* Device )
 , ScreenRect(0,0,0,0)
 , Wallpaper(0)
 , FFT_Size(4*1024)
-, FFT_MatrixRows(128)
-, FFT_MatrixCols(320)
+, FFT_MatrixRows(96)
+, FFT_MatrixCols(256)
 , MeshSize(1000,250,1000)
 , Transform( FFT_Size )
 , FFT_Range(0,150)
@@ -52,6 +52,26 @@ Application::Application( IrrlichtDevice* Device )
 	}
 
 	setupGUI();
+
+	/// GUI AudioPlayer
+	if (Device)
+	{
+		gui::IGUIEnvironment* env = Device->getGUIEnvironment();
+
+		gui::IGUIWindow* playerWindow = env->addWindow(
+			core::recti( 50, 3*ScreenSize.Height/4, ScreenSize.Width-50, ScreenSize.Height-10),
+			false, L"GUI AudioPlayer (SFML API)", env->getRootGUIElement(), -1);
+
+		gui::CGUIAudioPlayer* playerPanel = new gui::CGUIAudioPlayer(
+			0, env, playerWindow, -1, playerWindow->getClientRect() );
+
+		player.loadFile( DefaultAudioFilename );
+
+		playerPanel->setPlayer( &player );
+
+		player.play();
+
+	}
 }
 
 Application::~Application()
@@ -97,7 +117,7 @@ bool Application::setup()
 	scene::ICameraSceneNode* camera = smgr->getActiveCamera();
 	if (!camera)
 	{
-        camera = Camera::createFPS( smgr, 0.1f, 100.f );
+        camera = createFPS( smgr, 0.1f, 100.f );
 	}
 
 	if (camera)
@@ -133,12 +153,12 @@ bool Application::setup()
 //	FFT_Gradient.addColor( video::SColor(255,50,50,50), 0.20f );
 //	FFT_Gradient.addColor( video::SColor(255,75,75,75), 0.30f );
 //	FFT_Gradient.addColor( video::SColor(255,100,100,100), 0.40f );
+	FFT_Gradient.addColor( video::SColor(255,255,255,255), .5f );
 	FFT_Gradient.addColor( video::SColor(255,0,0,255), 0.60f );
 	FFT_Gradient.addColor( video::SColor(255,0,200,0), .75f );
 	FFT_Gradient.addColor( video::SColor(255,255,255,0), .90f );
 //	FFT_Gradient.addColor( video::SColor(255,255,255,0), .95f );
-	FFT_Gradient.addColor( video::SColor(255,255,0,0), .95f );
-	FFT_Gradient.addColor( video::SColor(255,255,255,255), 1.0f );
+	FFT_Gradient.addColor( video::SColor(255,255,0,0), 1.0f );
 	FFT_Gradient.setTableSize( 1024 );
 	FFT_Gradient.updateTable();
 
@@ -369,21 +389,6 @@ bool Application::setupGUI()
 	ui_AxisMode->addItem(L"Logarithmic 10");
 	ui_AxisMode->setSelected(0);
 	y += dy;
-
-	/// GUI AudioPlayer
-	gui::IGUIWindow* playerWindow = env->addWindow(
-		core::recti( 50, 3*ScreenSize.Height/4, ScreenSize.Width-50, ScreenSize.Height-10),
-		false, L"GUI AudioPlayer (SFML API)", env->getRootGUIElement(), -1);
-
-	gui::CGUIAudioPlayer* playerPanel = new gui::CGUIAudioPlayer(
-		&player, env, playerWindow, -1, playerWindow->getClientRect() );
-
-	playerPanel->loadFile( DefaultAudioFilename );
-
-//	playerPanel->setPlayer( &player );
-
-	player.play();
-
 
 	return true;
 }

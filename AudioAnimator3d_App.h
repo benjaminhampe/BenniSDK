@@ -5,7 +5,20 @@
 #ifndef AUDIOANIMATOR3D_APP_H
 #define AUDIOANIMATOR3D_APP_H
 
-#include <hampe.h>
+#include <CompileConfig.h>
+#include <debugPrint.h>
+#include <core.h>
+
+#include <libImage/CMath.h>
+#include <libImage/CMatrix.h>
+#include <libImage/CMatrixSceneNode.h>
+#include <libImage/CLinearColorGradientTable.h>
+
+#include <libAudio/FourierTransformRtoC.h>
+#include <libAudio/irrAudio.h>
+#include <libAudio/IAudioPlayer.h>
+#include <libAudio/CAudioPlayerSFML.h>
+#include <libAudio/CGUIAudioPlayer.h>
 
 namespace irr
 {

@@ -27,7 +27,7 @@
 			</Target>
 			<Target title="Win64_Release_static">
 				<Option platforms="Windows;" />
-				<Option output="bin/Win64-gcc/AudioAnimator3d_fltk_x64" prefix_auto="0" extension_auto="1" />
+				<Option output="bin/Win64-gcc/AudioAnimator3d_x64_fltk" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="bin/Win64-gcc/" />
 				<Option object_output="obj/Win64-gcc_Release_static" />
 				<Option type="0" />
@@ -85,7 +85,7 @@
 			</Target>
 			<Target title="Win64_Debug_static">
 				<Option platforms="Windows;" />
-				<Option output="bin/Win64-gcc/AudioAnimator3d_fltk_x64" prefix_auto="0" extension_auto="1" />
+				<Option output="bin/Win64-gcc/AudioAnimator3d_x64_fltk_debug" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="bin/Win64-gcc/" />
 				<Option object_output="obj/Win64-gcc_Debug_static" />
 				<Option type="1" />
@@ -142,7 +142,7 @@
 			</Target>
 			<Target title="Win64_Release_shared">
 				<Option platforms="Windows;" />
-				<Option output="bin/Win64-gcc/AudioAnimator3d_fltk_x64" prefix_auto="0" extension_auto="1" />
+				<Option output="bin/Win64-gcc/AudioAnimator3d_x64_fltk" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="bin/Win64-gcc/" />
 				<Option object_output="obj/Win64-gcc_Release_shared" />
 				<Option type="0" />
@@ -150,21 +150,37 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DNDEBUG" />
+					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-DWIN32" />
+					<Add option="-D_WIN32" />
+					<Add option="-DSFML_STATIC" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="fltk" />
+					<Add library="fltk_forms" />
+					<Add library="fltk_gl" />
+					<Add library="fltk_images" />
+					<Add library="fltk_jpeg" />
+					<Add library="fltk_png" />
 					<Add library="bin\Win64-gcc\Irrlicht.dll" />
 					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
 					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
 					<Add library="freetype" />
 					<Add library="fftw3" />
-					<Add library="user32" />
-					<Add library="kernel32" />
-					<Add library="gdi32" />
+					<Add library="glu32" />
+					<Add library="opengl32" />
 					<Add library="winmm" />
 					<Add library="advapi32" />
-					<Add library="opengl32" />
-					<Add library="glu32" />
+					<Add library="comdlg32" />
+					<Add library="comctl32" />
+					<Add library="ole32" />
+					<Add library="uuid" />
+					<Add library="gdi32" />
+					<Add library="kernel32" />
+					<Add library="user32" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
 					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
 					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
@@ -173,7 +189,7 @@
 			</Target>
 			<Target title="Win64_Debug_shared">
 				<Option platforms="Windows;" />
-				<Option output="bin/Win64-gcc/AudioAnimator3d_fltk_x64" prefix_auto="0" extension_auto="1" />
+				<Option output="bin/Win64-gcc/AudioAnimator3d_x64_fltk_debug" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="bin/Win64-gcc/" />
 				<Option object_output="obj/Win64-gcc_Debug_shared" />
 				<Option type="1" />
@@ -181,20 +197,36 @@
 				<Compiler>
 					<Add option="-D_DEBUG" />
 					<Add option="-DDEBUG" />
+					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D__GNUWIN32__" />
+					<Add option="-DWIN32" />
+					<Add option="-D_WIN32" />
+					<Add option="-DSFML_STATIC" />
 				</Compiler>
 				<Linker>
+					<Add library="fltk" />
+					<Add library="fltk_forms" />
+					<Add library="fltk_gl" />
+					<Add library="fltk_images" />
+					<Add library="fltk_jpeg" />
+					<Add library="fltk_png" />
 					<Add library="bin\Win64-gcc\Irrlicht.dll" />
 					<Add library="bin\Win64-gcc\sfml-audio-2.dll" />
 					<Add library="bin\Win64-gcc\sfml-system-2.dll" />
 					<Add library="freetype" />
 					<Add library="fftw3" />
-					<Add library="user32" />
-					<Add library="kernel32" />
-					<Add library="gdi32" />
+					<Add library="glu32" />
+					<Add library="opengl32" />
 					<Add library="winmm" />
 					<Add library="advapi32" />
-					<Add library="opengl32" />
-					<Add library="glu32" />
+					<Add library="comdlg32" />
+					<Add library="comctl32" />
+					<Add library="ole32" />
+					<Add library="uuid" />
+					<Add library="gdi32" />
+					<Add library="kernel32" />
+					<Add library="user32" />
 					<Add directory="lib/libfftw-3.3.3/lib/mingw64" />
 					<Add directory="lib/libfreetype-2.5.2/lib/Linux" />
 					<Add directory="lib/libSFML-2.1/lib/gcc_x64" />
@@ -222,7 +254,6 @@
 		<Unit filename="include/core.cpp" />
 		<Unit filename="include/core.h" />
 		<Unit filename="include/debugPrint.h" />
-		<Unit filename="include/hampe.h" />
 		<Unit filename="include/libAudio/CADSREnvelope.cpp" />
 		<Unit filename="include/libAudio/CADSREnvelope.h" />
 		<Unit filename="include/libAudio/CAudioPlayerSFML.cpp" />
@@ -280,8 +311,6 @@
 		<Unit filename="include/libImage/CMatrix.h" />
 		<Unit filename="include/libImage/CMatrixSceneNode.cpp" />
 		<Unit filename="include/libImage/CMatrixSceneNode.h" />
-		<Unit filename="include/libImage/Camera.cpp" />
-		<Unit filename="include/libImage/Camera.h" />
 		<Unit filename="include/libImage/ColorConstants.h" />
 		<Unit filename="include/libImage/IColorGradient.h" />
 		<Unit filename="include/libImage/IFunction.h" />
@@ -290,8 +319,6 @@
 		<Unit filename="include/libImage/UString.h" />
 		<Unit filename="include/libImage/draw3DCircle.cpp" />
 		<Unit filename="include/libImage/draw3DCircle.h" />
-		<Unit filename="include/libImage/drawLoadingScreen.cpp" />
-		<Unit filename="include/libImage/drawLoadingScreen.h" />
 		<Unit filename="include/libImage/geometry.cpp" />
 		<Unit filename="include/libImage/geometry.h" />
 		<Unit filename="include/libImage/geometry_meshbuffer.cpp" />

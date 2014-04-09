@@ -1,13 +1,12 @@
 #ifndef __C_GUI_TTFONT_H_INCLUDED__
 #define __C_GUI_TTFONT_H_INCLUDED__
 
-#include "../CompileConfig.h"
+#include <CompileConfig.h>
 
 #include "IGUITTFont.h"
 
 #ifdef _IRR_COMPILE_WITH_FREETYPE2_
 
-#include <irrlicht.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 

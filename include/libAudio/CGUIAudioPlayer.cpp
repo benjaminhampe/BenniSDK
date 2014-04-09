@@ -164,6 +164,7 @@ void CGUIAudioPlayer::draw()
 	if (!IsVisible)
 		return;
 
+	///@todo Should be integrated as event inside event-handler
 	if (Player && IsMouseOver && IsMouseClicked)
 	{
 		s32 x1 = AbsoluteRect.UpperLeftCorner.X+PreviewRect.UpperLeftCorner.X;
@@ -524,7 +525,18 @@ bool CGUIAudioPlayer::loadFile( const core::stringc& filename )
 	{
 		TrackInfo->setText( getTrackInfo().c_str() );
 	}
-
+	if (MasterVolume)
+	{
+		Player->setVolume( MasterVolume->getValue() );
+	}
+	if (MasterPitch)
+	{
+		Player->setPitch( MasterPitch->getValue() );
+	}
+	if (MasterPan)
+	{
+		Player->setPan( MasterPan->getValue() );
+	}
 	createPreviewTexture();
 
 	return true;
@@ -590,7 +602,7 @@ bool CGUIAudioPlayer::createPreviewTexture()
 	const u32 channelCount = Player->getChannelCount();
 	const f32 channelHeight = (f32)img_size.Height / (f32)channelCount;
 
-	/// create image
+	/// Create image
 	video::IImage* img = driver->createImage( video::ECF_A8R8G8B8, img_size );
 	if (!img)
 	{
@@ -605,10 +617,10 @@ bool CGUIAudioPlayer::createPreviewTexture()
 	/// loop channels
 	for ( u32 ch = 0; ch < channelCount; ch++)
 	{
-		/// fill array with samples
+		/// write channel-data to array
 		Player->getSamples( samples, 100 * img_size.Width, ch, 0.0f, duration );
 
-		/// calculate the minimum and maximum values
+		/// minimum and maximum values for proper scaling ( more to see for the user )
 		s16 y_min = 32767;
 		s16 y_max = -32768;
 		for ( u32 i = 0; i < samples.size(); i++ )
@@ -641,6 +653,7 @@ bool CGUIAudioPlayer::createPreviewTexture()
 
 	driver->writeImageToFile( img, PreviewTexName );
 
+	/// Delete Texture
 	video::ITexture* tex = driver->getTexture( PreviewTexName );
 	if (tex)
 	{
@@ -648,13 +661,22 @@ bool CGUIAudioPlayer::createPreviewTexture()
 		tex = 0;
 	}
 
-	if (!driver->addTexture( PreviewTexName, img ))
+	/// Create Texture ( setting texture-flags is a workaround for not funtioning
+	/// preview-texture creation on startup of the program )
+	bool bMipMaps = driver->getTextureCreationFlag( video::ETCF_CREATE_MIP_MAPS );
+	driver->setTextureCreationFlag( video::ETCF_ALWAYS_32_BIT, true );
+	driver->setTextureCreationFlag( video::ETCF_CREATE_MIP_MAPS, false );
+	driver->setTextureCreationFlag( video::ETCF_ALLOW_NON_POWER_2, driver->queryFeature( video::EVDF_TEXTURE_NSQUARE ) );
+	tex = driver->addTexture( PreviewTexName, img );
+	if (!tex)
 	{
 		img->drop();
 		dbERROR( "CGUIAudioPlayer::createPreviewTexture() - Could not create PreviewTexture\n")
 		return false;
 	}
+	driver->setTextureCreationFlag( video::ETCF_CREATE_MIP_MAPS, bMipMaps );
 
+	/// Delete Image
 	img->drop();
 	return true;
 }

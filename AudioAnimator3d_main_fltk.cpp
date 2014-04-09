@@ -18,7 +18,33 @@
  * test system 2: Core i5 2x 2,53 GHz, 4GiB RAM, Geforce 310M 1024MiByte VRAM + Intel Graphics Hybrid
  */
 
-#include "AudioAnimator3d_App.h"
+#include <CompileConfig.h>
+
+// extensions
+#include <debugPrint.h>
+#include <core.h>
+
+#include <libImage/SRange.h>
+#include <libImage/UString.h>
+#include <libImage/IGUITTFont.h>
+#include <libImage/CGUITTFont.h>
+#include <libImage/CMath.h>
+#include <libImage/CMatrix.h>
+#include <libImage/CMatrixSceneNode.h>
+#include <libImage/ColorConstants.h>
+#include <libImage/IColorGradient.h>
+#include <libImage/CLinearColorGradient.h>
+#include <libImage/CLinearColorGradientTable.h>
+#include <libImage/renderByPrimitiveType.h>
+#include <libImage/sinCosTable.h>
+#include <libImage/geometry.h>
+#include <libImage/geometry_meshbuffer.h>
+
+#include <libAudio/FourierTransformRtoC.h>
+#include <libAudio/irrAudio.h>
+#include <libAudio/IAudioPlayer.h>
+#include <libAudio/CAudioPlayerSFML.h>
+#include <libAudio/CGUIAudioPlayer.h>
 
 #include <../source/Irrlicht/os.cpp>
 #include <../source/Irrlicht/CImage.cpp>
@@ -26,21 +52,39 @@
 #include <../source/Irrlicht/CMeshSceneNode.cpp>
 #include <../source/Irrlicht/CShadowVolumeSceneNode.cpp>
 
+#include "AudioAnimator3d_App.h"
+
 using namespace irr;
 
-//void btn_pressed(Fl_Widget*, void *data)
+/// This window callback allows the user to save & exit, don't save, or cancel.
+//static void window_cb (Fl_Widget *widget, void *)
 //{
-//   scene::ICameraSceneNode* ptr = (scene::ICameraSceneNode *) data;
+//    Fl_Window *window = (Fl_Window *)widget;
 //
-//   core::vector3df pos = ptr->getPosition();
-//   pos.Y++;
-//   ptr->setPosition(pos);
+//    // fl_choice presents a modal dialog window with up to three choices.
+//    int result = fl_choice("Do you want to save before quitting?",
+//                           "Don't Save",  // 0
+//                           "Save",        // 1
+//                           "Cancel"       // 2
+//                           );
+//    if (result == 0) {  // Close without saving
+//        window->hide();
+//    } else if (result == 1) {  // Save and close
+//        save();
+//        window->hide();
+//    } else if (result == 2) {  // Cancel / don't close
+//        // don't do anything
+//    }
 //}
+//
+///Set your window's callback wherever you set up your Fl_Window, e.g. in your main function:
+//window->callback( win_cb );
 
 s32 main( s32 argc, c8** argv)
 {
 #ifdef _IRR_COMPILE_WITH_FLTK_
 	Fl::scheme("gtk+");
+
 #endif // _IRR_COMPILE_WITH_FLTK_
 
 	IrrlichtDevice* device = createOpenGlDevice( -100, -200, 32, false, false );

@@ -175,30 +175,48 @@ public:
 		if (!bgBuffer)
 			return false;
 
+		sf::Sound* bgSound = new sf::Sound();
+		if (!bgSound)
+		{
+			delete bgBuffer;
+			return false;
+		}
+
 	#if ( SFML_VERSION_MAJOR < 2 )
 		if ( !bgBuffer->LoadFromFile( filename.c_str()) )
 	#else
 		if ( !bgBuffer->loadFromFile( filename.c_str()) )
 	#endif
 		{
+			delete bgSound;
+			delete bgBuffer;
 			return false;
 		}
 
-		FileName = filename;
-		IsLoaded = true;
+	#if ( SFML_VERSION_MAJOR < 2 )
+		bgSound->SetBuffer( *bgBuffer );
+		bgSound->SetVolume( 0 );
+		bgSound->Play();
+		#warning Something missing here
+	#else
+		bgSound->setBuffer( *bgBuffer );
+		bgSound->setVolume( 0 );
+		bgSound->play();
+		while( bgSound->getStatus() != sf::Sound::Playing)
+		{
 
+		}
+		bgSound->stop();
+		const f32 vol = getVolume();
+	#endif
 		if (Buffer)
 		{
 			stop();
 		}
 
-		if (Sound && bgBuffer)
+		if (Sound)
 		{
-	#if ( SFML_VERSION_MAJOR < 2 )
-		Sound->SetBuffer( *bgBuffer );
-	#else
-		Sound->setBuffer( *bgBuffer );
-	#endif
+			delete Sound;
 		}
 
 		if (Buffer)
@@ -207,6 +225,12 @@ public:
 		}
 
 		Buffer = bgBuffer;
+		Sound = bgSound;
+
+		setVolume( vol );
+
+		FileName = filename;
+		IsLoaded = true;
 
 		return (Sound->getBuffer() == Buffer);
 	}

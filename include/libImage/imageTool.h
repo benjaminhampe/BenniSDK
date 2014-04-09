@@ -5,8 +5,7 @@
 #ifndef __IRR_EXT_IMAGE_TOOL_H__
 #define __IRR_EXT_IMAGE_TOOL_H__
 
-#include <CompileConfig.h>
-
+#include <debugPrint.h>
 #include <irrlicht.h>
 #include <../source/Irrlicht/CColorConverter.h>
 #include <../source/Irrlicht/CImage.h>

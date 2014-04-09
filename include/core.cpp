@@ -536,6 +536,38 @@ gui::IGUIStaticText* createLabel( gui::IGUIEnvironment* env, gui::IGUIElement* p
 	return label;
 }
 
+//! @brief create a FPS-Camera
+scene::ICameraSceneNode* createFPS( scene::ISceneManager* smgr, f32 move_speed, f32 turn_speed)
+{
+	if (!smgr)
+		return 0;
+
+	SKeyMap KeyMapArray[6];
+	KeyMapArray[0].Action = EKA_MOVE_FORWARD;
+	KeyMapArray[1].Action = EKA_MOVE_BACKWARD;
+	KeyMapArray[2].Action = EKA_STRAFE_LEFT;
+	KeyMapArray[3].Action = EKA_STRAFE_RIGHT;
+	KeyMapArray[4].Action = EKA_CROUCH;
+	KeyMapArray[5].Action = EKA_JUMP_UP;
+	KeyMapArray[0].KeyCode = KEY_KEY_W;
+	KeyMapArray[1].KeyCode = KEY_KEY_S;
+	KeyMapArray[2].KeyCode = KEY_KEY_A;
+	KeyMapArray[3].KeyCode = KEY_KEY_D;
+	KeyMapArray[4].KeyCode = KEY_KEY_C;
+	KeyMapArray[5].KeyCode = KEY_SPACE;
+
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS( smgr->getRootSceneNode(), turn_speed, move_speed, -1, KeyMapArray, 6);
+	if (camera)
+	{
+		camera->setNearValue( 0.01f );
+		camera->setFarValue( 10000.0f );
+		camera->setPosition( core::vector3df( 0,100,0) );
+		camera->setTarget( core::vector3df(0,0,100) );
+	}
+	return camera;
+}
+
+
 ///@brief draw backdrop-texture to current rendertarget ( screen or RTT )
 void drawBackdrop( video::IVideoDriver* driver, video::ITexture* tex )
 {
@@ -558,6 +590,37 @@ void drawBackdrop( video::IVideoDriver* driver, video::ITexture* tex )
 	driver->draw2DImage( tex, r_dst, r_src );
 }
 
+//! @brief drawLoadingScreen()
+bool drawLoadingScreen( video::IVideoDriver* driver, video::ITexture* background_tex,
+	const core::stringw& text, gui::IGUIFont* text_font, const video::SColor& text_color)
+{
+	if (!driver)
+		return false;
+
+	core::dimension2du screen = driver->getScreenSize();
+
+	if (background_tex)
+	{
+		const core::dimension2du& tex_size = background_tex->getSize();
+
+		f32 aspect = (f32)tex_size.Height / (f32)tex_size.Width;
+
+		s32 height = aspect * screen.Width;
+
+		s32 y = ( (s32)screen.Height - height ) / 2;
+
+		driver->draw2DImage( background_tex,
+			core::recti( 0, y, screen.Width - 1, y + height ),
+			core::recti( core::position2di(0,0), background_tex->getSize()) );
+	}
+
+	if (text_font)
+	{
+		text_font->draw( text, core::recti(core::position2di(0,0), screen), text_color, true, true);
+	}
+
+	return true;
+}
 //! @brief create a IGUIWindow
 gui::IGUIWindow* createWindow( gui::IGUIEnvironment* env,
 	const wchar_t* txt, s32 x, s32 y, u32 w, u32 h,
