@@ -15,7 +15,6 @@
 #include <../source/Irrlicht/CShadowVolumeSceneNode.h>
 #include <GL/gl.h>
 
-
 namespace irr
 {
 namespace scene

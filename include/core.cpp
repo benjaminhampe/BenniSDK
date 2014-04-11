@@ -480,7 +480,7 @@ void drawText( gui::IGUIFont* font,	const core::stringw& txt,
 		color, false, false, clipRect);
 }
 
-//! @brief create a aligned static UI text-element
+//! @brief create an aligned static UI text-element
 gui::IGUIStaticText* createLabel( gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 	const core::stringw& txt, s32 x, s32 y, s32 hAlign, s32 vAlign,
 	s32 padding, bool withBorder, bool wordWrap, bool fillBackground,

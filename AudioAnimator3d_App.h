@@ -147,7 +147,7 @@ public:
 		out.set_used( 0 );
 
 		// calculate min and max frequency
-		const f32 f_min = 10.0f; // (f32)sampleRate/(f32)fftSize
+		const f32 f_min = (f32)sampleRate/(f32)fftSize;
 		const f32 f_max = ((f32)sampleRate*(f32)nPoints)/(f32)fftSize;
 		const f32 f_step = (f32)sampleRate/(f32)fftSize;
 

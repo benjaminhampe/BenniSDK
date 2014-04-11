@@ -91,7 +91,7 @@ void CGUIAudioDisplaySFML::updateFFT()
 {
 	Transform.setInputData( Data.getArray() );
 	Transform.fft();
-	Transform.getScaledPowerSpectrum( Frequencies, ZoomRect.UpperLeftCorner.Y, ZoomRect.LowerRightCorner.Y );
+	Transform.getPowerSpectrumThreshold32( Frequencies, ZoomRect.UpperLeftCorner.Y, ZoomRect.LowerRightCorner.Y, 0.0f );
 
 	// collectCandidates();
 }

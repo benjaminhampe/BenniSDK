@@ -30,7 +30,7 @@ Application::Application( IrrlichtDevice* Device )
 , FFT_MatrixCols(400)
 , MeshSize(1000,200,500)
 , Transform( FFT_Size )
-, FFT_Range(0,140)
+, FFT_Range(0,90)
 , FFT_Threshold(20)
 //, FFT_Matrix( FFT_MatrixRows, FFT_MatrixCols )
 , FFT_SceneNode(0)
@@ -459,10 +459,9 @@ bool Application::run()
 			/// get current PlayPosition
 			u32 PlayPosition = player.getPosition();
 
-			// decrease time to be sync with audio
+			/// decrease time by render-time to be sync with audio
 			if (PlayPosition > renderTime * ChannelCount )
 				PlayPosition -= renderTime * ChannelCount;
-
 
 			/// if window is active ( can be minimized but still active )
 			if (Device->isWindowFocused())
@@ -476,7 +475,7 @@ bool Application::run()
 				Transform.setInputData<s16>( FFT_Input );
 				Transform.fft();
 				//Transform.getPowerSpectrumAsDecibels<f32>( FFT_Output );
-				Transform.getScaledPowerSpectrumAsDecibelsThresholdFast<f32>( FFT_Output, FFT_Range.Min, FFT_Range.Max, FFT_Threshold );
+				Transform.getPowerSpectrumThreshold32( FFT_Output, FFT_Range.Min, FFT_Range.Max, FFT_Threshold );
 
 				/// shift Matrix
 				FFT_Matrix.shiftRow();
